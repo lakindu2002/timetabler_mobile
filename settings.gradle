@@ -1,0 +1,2 @@
+rootProject.name = "EEA-CB007787-Mobile"
+include ':app'
