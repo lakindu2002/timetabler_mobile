@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">TimeTabler</string>
     <string name="main_logo_cap">Application Logo</string>
+    <string name="header_login_01">Hey,</string>
+    <string name="header_login_02">Login Now.</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="login_caption">Login</string>
 </resources>
