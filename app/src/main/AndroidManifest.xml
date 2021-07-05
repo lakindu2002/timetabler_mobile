@@ -10,9 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile">
         <activity
-            android:name=".view.shared.SharedContainer"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
