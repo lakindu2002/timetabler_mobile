@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">EEA-CB007787-Mobile</string>
+    <string name="app_name">TimeTabler</string>
+    <string name="main_logo_cap">Application Logo</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
