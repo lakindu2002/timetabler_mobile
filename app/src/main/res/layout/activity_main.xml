@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#a3b6f8"
+    android:background="#B8C7FD"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -15,7 +15,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:contentDescription="@string/main_logo_cap"
-        android:src="@drawable/app_logo" />
+        android:src="@drawable/logo" />
 
     <ProgressBar
         android:layout_width="75dp"
