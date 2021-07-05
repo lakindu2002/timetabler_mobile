@@ -20,6 +20,6 @@ public class MainActivity extends AppCompatActivity {
             Intent theIntent = new Intent(MainActivity.this, SharedContainer.class);
             startActivity(theIntent);
             finish();
-        }, 1000);
+        }, 100000);
     }
 }
