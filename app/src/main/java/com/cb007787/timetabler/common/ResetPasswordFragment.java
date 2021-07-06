@@ -43,12 +43,7 @@ public class ResetPasswordFragment extends Fragment {
         Snackbar theSnackbar = Snackbar.make(requireView(), getString(R.string.reset_info_text), Snackbar.LENGTH_INDEFINITE);
         theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_primary, null));
         //add a dismiss button
-        theSnackbar.setAction("Dismiss", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                theSnackbar.dismiss();
-            }
-        });
+        theSnackbar.setAction("Dismiss", v -> theSnackbar.dismiss());
         theSnackbar.show();
 
     }
