@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile">
-        <activity android:name=".common.CommonContainer" />
+        <activity
+            android:name=".common.CommonContainer"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
