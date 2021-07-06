@@ -8,7 +8,7 @@
     <string name="login_caption">Login</string>
     <string name="reset_header_01">Reset Your Default Password</string>
     <string name="reset_info_header_02">Valid For 5 Minutes</string>
-    <string name="reset_info_text">Change your default password before proceeding</string>
+    <string name="reset_info_text">Change Your Default Password Before Proceeding</string>
     <string name="reset_pw_cap">Reset Password Picture</string>
     <string name="reset_p01">Provide New Password</string>
     <string name="reset_p02">Re-Enter New Password</string>
