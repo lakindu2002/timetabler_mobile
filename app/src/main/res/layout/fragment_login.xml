@@ -85,7 +85,7 @@
         android:layout_margin="20dp"
         android:fontFamily="@font/poppins_medium"
         android:text="@string/login_caption"
-        android:backgroundTint="@color/success_btn"
+        android:backgroundTint="@color/btn_primary"
         android:textAllCaps="false"
         android:textSize="16sp" />
 </RelativeLayout>

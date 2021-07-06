@@ -41,7 +41,7 @@ public class ResetPasswordFragment extends Fragment {
     private void constructInitialSnackbar() {
         //requireView - Get the root view for the fragment's layout (the one returned by onCreateView).
         Snackbar theSnackbar = Snackbar.make(requireView(), getString(R.string.reset_info_text), Snackbar.LENGTH_INDEFINITE);
-        theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_primary, null));
         //add a dismiss button
         theSnackbar.setAction("Dismiss", new View.OnClickListener() {
             @Override
