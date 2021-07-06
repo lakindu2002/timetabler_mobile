@@ -76,7 +76,7 @@
             android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/login_button"
         android:layout_width="match_parent"
         android:layout_height="70dp"
@@ -85,6 +85,7 @@
         android:layout_margin="20dp"
         android:fontFamily="@font/poppins_medium"
         android:text="@string/login_caption"
+        android:backgroundTint="@color/success_btn"
         android:textAllCaps="false"
         android:textSize="16sp" />
 </RelativeLayout>

@@ -9,4 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background">#e8effd</color>
     <color name="splash_bg">#e8effd</color>
+    <color name="success_btn">#007BFF</color>
+    <color name="btn_info">#17A2B8</color>
+    <color name="btn_danger">#DC3545</color>
+    <color name="btn_secondary">#6C757D</color>
 </resources>
