@@ -86,5 +86,45 @@ public class ResetPasswordFragment extends Fragment {
         Generally the View passed into the snackbar can be the view that was interacted with to trigger
         the snackbar, such as a button that was clicked, or a card that was swiped.
          */
+        if (isPasswordValid()) {
+
+        }
+    }
+
+    private boolean isPasswordValid() {
+        boolean isPasswordValid = false;
+
+        if (firstPassword.getText().toString().length() == 0) {
+            firstPasswordLayout.setError("Password Cannot Be Empty");
+        } else {
+            isPasswordValid = true;
+            firstPasswordLayout.setError(null);
+        }
+
+        if (secondPassword.getText().toString().length() == 0) {
+            isPasswordValid = false;
+            secondPasswordLayout.setError("Password Cannot Be Empty");
+        } else {
+            isPasswordValid = true;
+            secondPasswordLayout.setError(null);
+        }
+
+        if (firstPassword.getText().toString().length() >= 8 && secondPassword.getText().toString().length() >= 8) {
+            if (secondPassword.getText().toString().equals(firstPassword.getText().toString())) {
+                isPasswordValid = true;
+                secondPasswordLayout.setError(null);
+                firstPasswordLayout.setError(null);
+            } else {
+                isPasswordValid = false;
+                firstPasswordLayout.setError("Passwords Do Not Match");
+                secondPasswordLayout.setError("Passwords Do Not Match");
+            }
+        } else {
+            Snackbar validationError = Snackbar.make(requireView(), "Passwords Should Be Greater Than 8 Characters", Snackbar.LENGTH_LONG);
+            validationError.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+            validationError.show();
+            isPasswordValid = false;
+        }
+        return isPasswordValid;
     }
 }
