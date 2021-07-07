@@ -13,6 +13,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+/**
+ * Class used to handle the reset password layout and business logic
+ *
+ * @author Lakindu Hewawasam
+ */
 public class ResetPasswordFragment extends Fragment {
 
     private TextInputLayout firstPasswordLayout;

@@ -8,6 +8,11 @@ import androidx.fragment.app.FragmentManager;
 
 import com.cb007787.timetabler.R;
 
+/**
+ * UI Activity designed to hold a fragment container that will hold the reset password and login UIs.
+ *
+ * @author Lakindu Hewawasam
+ */
 public class CommonContainer extends AppCompatActivity {
 
 

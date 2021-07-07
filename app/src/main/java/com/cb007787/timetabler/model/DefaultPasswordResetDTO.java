@@ -1,5 +1,12 @@
 package com.cb007787.timetabler.model;
 
+/**
+ * POJO Class used to reset the default password of the first time login user.
+ * <p>
+ * Class will carry the JSON Request to the Server.
+ *
+ * @author Lakindu Hewawasam
+ */
 public class DefaultPasswordResetDTO {
     private String username;
     private String newPassword;

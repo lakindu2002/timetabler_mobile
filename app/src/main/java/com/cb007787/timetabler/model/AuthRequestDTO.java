@@ -1,5 +1,10 @@
 package com.cb007787.timetabler.model;
 
+/**
+ * POJO Class used to hold the login request that will be sent to the TimeTabler API.
+ *
+ * @author Lakindu Hewawasam
+ */
 public class AuthRequestDTO {
     private String username;
     private String password;

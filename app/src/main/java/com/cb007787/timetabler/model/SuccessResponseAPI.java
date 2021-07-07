@@ -1,5 +1,10 @@
 package com.cb007787.timetabler.model;
 
+/**
+ * POJO class will carry the basic success 200 response given by the API.
+ *
+ * @author Lakindu Hewawasam
+ */
 public class SuccessResponseAPI {
     private String message;
     private int code;
