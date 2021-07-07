@@ -35,6 +35,6 @@ public class CommonContainer extends AppCompatActivity {
     }
 
     private void loadLogin() {
-        this.fragmentManager.beginTransaction().replace(fragmentContainerView.getId(), new ResetPasswordFragment()).commit();
+        this.fragmentManager.beginTransaction().replace(fragmentContainerView.getId(), new LoginFragment()).commit();
     }
 }
