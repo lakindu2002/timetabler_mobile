@@ -12,10 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile">
         <activity
-            android:name=".common.CommonContainer"
+            android:name=".view.common.CommonContainer"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

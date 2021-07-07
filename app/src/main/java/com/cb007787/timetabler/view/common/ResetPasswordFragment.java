@@ -1,4 +1,4 @@
-package com.cb007787.timetabler.common;
+package com.cb007787.timetabler.view.common;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

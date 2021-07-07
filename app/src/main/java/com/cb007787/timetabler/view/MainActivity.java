@@ -1,4 +1,4 @@
-package com.cb007787.timetabler;
+package com.cb007787.timetabler.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,8 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.cb007787.timetabler.common.CommonContainer;
+import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.view.common.CommonContainer;
 
 public class MainActivity extends AppCompatActivity {
 
