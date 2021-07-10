@@ -17,6 +17,12 @@ Clone the repo using the `ssh` link or the `https` link. If using `ssh` make sur
 - Sync the gradle project
 - Run on an emulator.
 
+## Dependencies Used
+- UI: Google Material UI
+- Networking: Retrofit + Jackson Parser
+
+## Endpoint Declaration 
+- Testing: `http://localhost:8080`
 
 **Please note that this project requires a minimum sdk of Android 8.0 (SDK - 26 or Oreo).**
 
