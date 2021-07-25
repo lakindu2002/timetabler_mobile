@@ -1,9 +1,9 @@
 package com.cb007787.timetabler.service;
 
-import com.cb007787.timetabler.model.AuthRequestDTO;
 import com.cb007787.timetabler.model.AuthReturnDTO;
-import com.cb007787.timetabler.model.DefaultPasswordResetDTO;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
+
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,14 +19,15 @@ import retrofit2.http.PUT;
  * @since 7th July 2021
  */
 public interface AuthService {
+
     /**
      * Call is the HTTP Request made
      *
      * @param theLoginRequest The request body
      * @return The return provided from the API on 200 status code.
      */
-    @POST("/login")
-    Call<AuthReturnDTO> login(@Body AuthRequestDTO theLoginRequest);
+    @POST("auth/login")
+    Call<AuthReturnDTO> login(@Body HashMap<String, String> theLoginRequest);
 
     /**
      * Makes an HTTP call to the <b>/reset</b> endpoint of the Auth API to reset default password
@@ -34,6 +35,6 @@ public interface AuthService {
      * @param resetRequest Request body containing the username and the new password.
      * @return The success provided by the API upon successful password reset.
      */
-    @PUT("/reset")
-    Call<SuccessResponseAPI> resetDefaultPassword(@Body DefaultPasswordResetDTO resetRequest);
+    @PUT("auth/reset")
+    Call<SuccessResponseAPI> resetDefaultPassword(@Body HashMap<String, String> resetRequest);
 }
