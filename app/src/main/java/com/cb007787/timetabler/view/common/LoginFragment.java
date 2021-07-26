@@ -139,6 +139,8 @@ public class LoginFragment extends Fragment {
             //error occurred during logging in
             if (authResponse.code() == 423) {
                 //account is locked, requires default password reset.
+                //navigate to reset password page.
+                requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.common_holder, new ResetPasswordFragment()).commit();
                 Snackbar theSnackbar = Snackbar.make(requireView(), "You need to reset your default password before logging in.", Snackbar.LENGTH_LONG);
                 theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
                 theSnackbar.show();
