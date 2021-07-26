@@ -1,5 +1,6 @@
 package com.cb007787.timetabler.view.common;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.AuthService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,15 +37,13 @@ public class ResetPasswordFragment extends Fragment {
 
     private TextInputLayout firstPasswordLayout;
     private TextInputEditText firstPassword;
-
     private TextInputLayout secondPasswordLayout;
     private TextInputEditText secondPassword;
-
     private ProgressBar resetSpinner;
-
     private Button resetPasswordButton;
 
     private AuthService authService;
+    private PasswordReset passwordResetInformation;
 
     public ResetPasswordFragment() {
         this.authService = APIConfigurer.getApiConfigurer().getAuthService();
@@ -64,6 +66,15 @@ public class ResetPasswordFragment extends Fragment {
         // Inflate the layout for this fragment
         View theInflatedView = inflater.inflate(R.layout.fragment_reset_password, container, false);
         getReferences(theInflatedView);
+
+        //retrieve the saved reset username and reset token from the shared preference
+        String jsonResetInformation = requireActivity().getSharedPreferences(getString(R.string.preference_name), Context.MODE_PRIVATE).getString(getString(R.string.reset_pw_information), null);
+        try {
+            //de-serialize the JSON string back to the password reset class using object mapper.
+            this.passwordResetInformation = new ObjectMapper().readValue(jsonResetInformation, PasswordReset.class);
+        } catch (JsonProcessingException e) {
+            System.out.println("ERROR OCCURRED WHILE PARSING JSON");
+        }
 
         return theInflatedView;
     }
@@ -96,7 +107,7 @@ public class ResetPasswordFragment extends Fragment {
         if (isPasswordValid()) {
             //entered passwords are valid
             HashMap<String, String> authRequest = new HashMap<>();
-            authRequest.put("username", "");
+            authRequest.put("username", passwordResetInformation.getUsernameNeedingReset());
             authRequest.put("password", firstPassword.getText().toString());
 
             this.authService.resetDefaultPassword(authRequest).enqueue(new Callback<SuccessResponseAPI>() {

@@ -1,5 +1,7 @@
 package com.cb007787.timetabler.view.common;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +15,10 @@ import androidx.fragment.app.Fragment;
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturnDTO;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.AuthService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -22,12 +26,15 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
 /**
@@ -122,9 +129,19 @@ public class LoginFragment extends Fragment {
      * @param authResponse The return from the api
      */
     private void handleOnResponse(Response<AuthReturnDTO> authResponse) throws IOException {
+        SharedPreferences.Editor editor = requireContext().getSharedPreferences(getString(R.string.preference_name), Context.MODE_PRIVATE).edit();
+
         if (authResponse.isSuccessful()) {
             //user has been successfully logged in
             AuthReturnDTO authReturnDTO = authResponse.body();
+
+            //add the success auth information to the shared preferences.
+            editor.putString(getString(R.string.token), authResponse.headers().get("Authorization"));
+            editor.putLong(getString(R.string.token_expiry), authReturnDTO.getTokenExpiresIn());
+            //save the user information as the json string.
+            editor.putString(getString(R.string.logged_in_user), new ObjectMapper().writeValueAsString(authReturnDTO));
+
+            editor.apply();
 
             Snackbar theSnackbar = Snackbar.make(
                     requireView(),
@@ -134,12 +151,17 @@ public class LoginFragment extends Fragment {
             theSnackbar.show();
 
             //navigate based on role
-            navigateBasedOnRole();
+            navigateBasedOnRole(authReturnDTO);
         } else {
             //error occurred during logging in
             if (authResponse.code() == 423) {
                 //account is locked, requires default password reset.
                 //navigate to reset password page.
+                PasswordReset passwordResetObject = APIConfigurer.getPasswordResetObject(authResponse.errorBody());
+                //attach the reset information onto the shared preferences so that it can be accessed from the fragment.
+                editor.putString(getString(R.string.reset_pw_information), new ObjectMapper().writeValueAsString(passwordResetObject));
+                editor.apply();
+
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.common_holder, new ResetPasswordFragment()).commit();
                 Snackbar theSnackbar = Snackbar.make(requireView(), "You need to reset your default password before logging in.", Snackbar.LENGTH_LONG);
                 theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
@@ -155,7 +177,7 @@ public class LoginFragment extends Fragment {
         this.loadingSpinner.setVisibility(View.GONE);
     }
 
-    private void navigateBasedOnRole() {
+    private void navigateBasedOnRole(AuthReturnDTO authReturnDTO) {
         //access the user role and navigate to the required directory based on the role.
     }
 
@@ -166,7 +188,6 @@ public class LoginFragment extends Fragment {
      */
     private void handleFailCommunication(Throwable exception) {
         //requireView - return view that fragment is inflated on
-        LOGGER.warning("EXCEPTION - " + exception.getMessage());
         Snackbar theSnackbar = Snackbar.make(requireView(), "An unexpected error occurred while logging in.", Snackbar.LENGTH_LONG);
         theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
         theSnackbar.show();

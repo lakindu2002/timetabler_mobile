@@ -1,6 +1,7 @@
 package com.cb007787.timetabler.service;
 
 import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.PasswordReset;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -36,6 +37,10 @@ public class APIConfigurer {
      */
     public static ErrorResponseAPI getTheErrorReturned(ResponseBody errorBody) throws IOException {
         return errorConverter.convert(errorBody);
+    }
+
+    public static PasswordReset getPasswordResetObject(ResponseBody errorBody) throws IOException {
+        return (PasswordReset) getApiConfigurer().getTheAPI().responseBodyConverter(PasswordReset.class, new Annotation[]{}).convert(errorBody);
     }
 
     public static APIConfigurer getApiConfigurer() {
