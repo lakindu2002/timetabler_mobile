@@ -5,13 +5,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
+import com.cb007787.timetabler.service.APIConfigurer;
+import com.cb007787.timetabler.service.AuthService;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Class used to handle the reset password layout and business logic
@@ -26,9 +37,14 @@ public class ResetPasswordFragment extends Fragment {
     private TextInputLayout secondPasswordLayout;
     private TextInputEditText secondPassword;
 
+    private ProgressBar resetSpinner;
+
     private Button resetPasswordButton;
 
+    private AuthService authService;
+
     public ResetPasswordFragment() {
+        this.authService = APIConfigurer.getApiConfigurer().getAuthService();
     }
 
     @Override
@@ -40,17 +56,6 @@ public class ResetPasswordFragment extends Fragment {
     public void onStart() {
         //hook executed after fragment lifecycle has started
         super.onStart();
-        constructInitialSnackbar();
-    }
-
-    private void constructInitialSnackbar() {
-        //requireView - Get the root view for the fragment's layout (the one returned by onCreateView).
-        Snackbar theSnackbar = Snackbar.make(requireView(), getString(R.string.reset_info_text), Snackbar.LENGTH_INDEFINITE);
-        theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
-        //add a dismiss button
-        theSnackbar.setActionTextColor(getResources().getColor(R.color.snackbar_action, null));
-        theSnackbar.setAction("Dismiss", v -> theSnackbar.dismiss());
-        theSnackbar.show();
     }
 
     @Override
@@ -69,6 +74,7 @@ public class ResetPasswordFragment extends Fragment {
         this.secondPasswordLayout = theInflatedView.findViewById(R.id.second_pw_reset);
         this.secondPassword = theInflatedView.findViewById(R.id.second_pw);
         this.resetPasswordButton = theInflatedView.findViewById(R.id.reset_pw_btn);
+        this.resetSpinner = theInflatedView.findViewById(R.id.reset_spinner);
 
         //by the use of :: it invokes the handleResetClicked method.
         //JVM assumes it is an implementation of the View.OnClickListener.
@@ -86,9 +92,32 @@ public class ResetPasswordFragment extends Fragment {
         Generally the View passed into the snackbar can be the view that was interacted with to trigger
         the snackbar, such as a button that was clicked, or a card that was swiped.
          */
+        this.resetSpinner.setVisibility(View.VISIBLE);
         if (isPasswordValid()) {
+            //entered passwords are valid
+            HashMap<String, String> authRequest = new HashMap<>();
+            authRequest.put("username", "");
+            authRequest.put("password", firstPassword.getText().toString());
 
+            this.authService.resetDefaultPassword(authRequest).enqueue(new Callback<SuccessResponseAPI>() {
+                @Override
+                public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                    //handle response from api
+                    handleOnResponse(response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                    //handle failure to send request or process response
+                }
+            });
+        } else {
+            this.resetSpinner.setVisibility(View.GONE);
         }
+    }
+
+    private void handleOnResponse(Response<SuccessResponseAPI> resetResponse) {
+        this.resetSpinner.setVisibility(View.GONE);
     }
 
     private boolean isPasswordValid() {
