@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.common.LoginFragment">
 
@@ -38,27 +38,27 @@
         android:id="@+id/username_field_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        app:boxStrokeErrorColor="@color/btn_danger"
-        app:counterEnabled="true"
-        app:counterMaxLength="30"
-        app:errorEnabled="true"
-        app:errorIconTint="@color/btn_danger"
-        app:errorTextColor="@color/btn_danger"
         android:layout_height="wrap_content"
         android:layout_below="@id/header_title_02"
         android:layout_marginTop="25dp"
-        app:endIconMode="clear_text">
+        app:boxStrokeErrorColor="@color/btn_danger"
+        app:counterEnabled="true"
+        app:counterMaxLength="30"
+        app:endIconMode="clear_text"
+        app:errorEnabled="true"
+        app:errorIconTint="@color/btn_danger"
+        app:errorTextColor="@color/btn_danger">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_username_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:allowUndo="true"
-            android:maxLength="30"
             android:fontFamily="@font/poppins"
             android:foreground="#00000000"
             android:hint="@string/username_hint"
             android:inputType="text"
+            android:maxLength="30"
             android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,27 +66,27 @@
         android:id="@+id/password_field_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        app:boxStrokeErrorColor="@color/btn_danger"
-        app:counterEnabled="true"
-        app:counterMaxLength="30"
-        app:errorEnabled="true"
-        app:errorIconTint="@color/btn_danger"
-        app:errorTextColor="@color/btn_danger"
         android:layout_height="wrap_content"
         android:layout_below="@id/username_field_layout"
         android:layout_marginTop="10dp"
-        app:endIconMode="password_toggle">
+        app:boxStrokeErrorColor="@color/btn_danger"
+        app:counterEnabled="true"
+        app:counterMaxLength="30"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
+        app:errorIconTint="@color/btn_danger"
+        app:errorTextColor="@color/btn_danger">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_password_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLength="30"
             android:allowUndo="true"
             android:fontFamily="@font/poppins"
             android:foreground="#00000000"
             android:hint="@string/password_hint"
             android:inputType="textPassword"
+            android:maxLength="30"
             android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,9 +97,18 @@
         android:layout_below="@id/password_field_layout"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp"
+        android:backgroundTint="@color/btn_primary"
         android:fontFamily="@font/poppins_medium"
         android:text="@string/login_caption"
-        android:backgroundTint="@color/btn_primary"
         android:textAllCaps="false"
         android:textSize="16sp" />
+
+    <ProgressBar
+        android:id="@+id/login_progress"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_below="@id/login_button"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="true"
+        android:visibility="gone" />
 </RelativeLayout>

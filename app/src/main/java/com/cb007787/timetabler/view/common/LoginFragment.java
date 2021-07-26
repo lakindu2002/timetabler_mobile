@@ -5,18 +5,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.AuthService;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -38,8 +42,9 @@ public class LoginFragment extends Fragment {
     private TextInputEditText usernameField;
     private TextInputEditText passwordField;
     private Button loginButton;
+    private ProgressBar loadingSpinner;
 
-    private Logger LOGGER;
+    private final Logger LOGGER;
 
     private AuthService authService;
 
@@ -69,6 +74,7 @@ public class LoginFragment extends Fragment {
         this.passwordLayout = inflatedView.findViewById(R.id.password_field_layout);
         this.usernameField = inflatedView.findViewById(R.id.login_username_field);
         this.passwordField = inflatedView.findViewById(R.id.login_password_field);
+        this.loadingSpinner = inflatedView.findViewById(R.id.login_progress);
         this.loginButton = inflatedView.findViewById(R.id.login_button);
 
         //replace lambda with method expression
@@ -76,6 +82,8 @@ public class LoginFragment extends Fragment {
     }
 
     public void onLoginClicked(View theClickedButton) {
+        this.loadingSpinner.setVisibility(View.VISIBLE);
+
         if (areInputsValid()) {
             //proceed with login
             HashMap<String, String> theLoginRequest = new HashMap<String, String>();
@@ -87,7 +95,11 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onResponse(@NonNull Call<AuthReturnDTO> call, @NonNull Response<AuthReturnDTO> response) {
                     //when the api sends a response - pass or fail
-                    handleOnResponse(response);
+                    try {
+                        handleOnResponse(response);
+                    } catch (IOException e) {
+                        LOGGER.warning("FAILURE DURING ERROR PARSING ON LOGIN");
+                    }
                 }
 
                 @Override
@@ -97,6 +109,7 @@ public class LoginFragment extends Fragment {
                 }
             });
         } else {
+            this.loadingSpinner.setVisibility(View.GONE);
             Snackbar validationError = Snackbar.make(theClickedButton, "Please Provide Valid Inputs", Snackbar.LENGTH_LONG);
             validationError.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
             validationError.show();
@@ -108,14 +121,40 @@ public class LoginFragment extends Fragment {
      *
      * @param authResponse The return from the api
      */
-    private void handleOnResponse(Response<AuthReturnDTO> authResponse) {
+    private void handleOnResponse(Response<AuthReturnDTO> authResponse) throws IOException {
         if (authResponse.isSuccessful()) {
             //user has been successfully logged in
-            LOGGER.info("LOGGED IN SUCCESSFULLY");
+            AuthReturnDTO authReturnDTO = authResponse.body();
+
+            Snackbar theSnackbar = Snackbar.make(
+                    requireView(),
+                    String.format("Welcome, %s %s", authReturnDTO.getFirstName(), authReturnDTO.getLastName()),
+                    Snackbar.LENGTH_LONG);
+            theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
+            theSnackbar.show();
+
+            //navigate based on role
+            navigateBasedOnRole();
         } else {
-            LOGGER.info("FAILED TO LOGIN");
             //error occurred during logging in
+            if (authResponse.code() == 423) {
+                //account is locked, requires default password reset.
+                Snackbar theSnackbar = Snackbar.make(requireView(), "You need to reset your default password before logging in.", Snackbar.LENGTH_LONG);
+                theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
+                theSnackbar.show();
+            } else {
+                //other error.
+                ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(authResponse.errorBody());
+                Snackbar theSnackbar = Snackbar.make(requireView(), theErrorReturned.getErrorMessage(), Snackbar.LENGTH_LONG);
+                theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+                theSnackbar.show();
+            }
         }
+        this.loadingSpinner.setVisibility(View.GONE);
+    }
+
+    private void navigateBasedOnRole() {
+        //access the user role and navigate to the required directory based on the role.
     }
 
     /**
@@ -129,6 +168,7 @@ public class LoginFragment extends Fragment {
         Snackbar theSnackbar = Snackbar.make(requireView(), "An unexpected error occurred while logging in.", Snackbar.LENGTH_LONG);
         theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
         theSnackbar.show();
+        this.loadingSpinner.setVisibility(View.GONE);
     }
 
     private boolean areInputsValid() {

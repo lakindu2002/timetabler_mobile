@@ -1,5 +1,13 @@
 package com.cb007787.timetabler.service;
 
+import com.cb007787.timetabler.model.ErrorResponseAPI;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+
+import okhttp3.ResponseBody;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -7,12 +15,27 @@ public class APIConfigurer {
     private static final APIConfigurer apiConfigurer = new APIConfigurer();
 
     private Retrofit theAPI;
+    private static Converter<ResponseBody, ErrorResponseAPI> errorConverter;
 
     private APIConfigurer() {
         this.theAPI = new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create()) //use Jackson to deserialize JSON to Java.
                 .baseUrl("http://192.168.1.3:8080/api/") //add the base url for the api
                 .build(); //build the Retrofit instance
+
+        //create a Converter that accepts a ResponseBody and produces a ErrorResponseAPI.
+        errorConverter = this.theAPI.responseBodyConverter(ErrorResponseAPI.class, new Annotation[]{});
+    }
+
+    /**
+     * Method will accept the error response body from the response and convert it to the error object
+     *
+     * @param errorBody The response body for the error
+     * @return The ErrorResponseAPI instance containing the error information
+     * @throws IOException The exception thrown when JSON cannot be parsed into ErrorResponseAPI type.
+     */
+    public static ErrorResponseAPI getTheErrorReturned(ResponseBody errorBody) throws IOException {
+        return errorConverter.convert(errorBody);
     }
 
     public static APIConfigurer getApiConfigurer() {
