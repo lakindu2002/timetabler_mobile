@@ -16,6 +16,8 @@ import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.AuthService;
+import com.cb007787.timetabler.service.PreferenceInformation;
+import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.snackbar.Snackbar;
@@ -68,12 +70,14 @@ public class ResetPasswordFragment extends Fragment {
         getReferences(theInflatedView);
 
         //retrieve the saved reset username and reset token from the shared preference
-        String jsonResetInformation = requireActivity().getSharedPreferences(getString(R.string.preference_name), Context.MODE_PRIVATE).getString(getString(R.string.reset_pw_information), null);
+
+        //de-serialize the JSON string back to the password reset class using object mapper.
         try {
-            //de-serialize the JSON string back to the password reset class using object mapper.
-            this.passwordResetInformation = new ObjectMapper().readValue(jsonResetInformation, PasswordReset.class);
+            this.passwordResetInformation = SharedPreferenceService.getResetInformation(
+                    requireContext(), PreferenceInformation.PREFERENCE_NAME
+            );
         } catch (JsonProcessingException e) {
-            System.out.println("ERROR OCCURRED WHILE PARSING JSON");
+            System.out.println("ERROR PARSING JSON");
         }
 
         return theInflatedView;

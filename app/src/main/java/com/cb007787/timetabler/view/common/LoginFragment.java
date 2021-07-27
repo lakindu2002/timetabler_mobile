@@ -18,6 +18,8 @@ import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.AuthService;
+import com.cb007787.timetabler.service.PreferenceInformation;
+import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -129,19 +131,14 @@ public class LoginFragment extends Fragment {
      * @param authResponse The return from the api
      */
     private void handleOnResponse(Response<AuthReturnDTO> authResponse) throws IOException {
-        SharedPreferences.Editor editor = requireContext().getSharedPreferences(getString(R.string.preference_name), Context.MODE_PRIVATE).edit();
-
         if (authResponse.isSuccessful()) {
             //user has been successfully logged in
             AuthReturnDTO authReturnDTO = authResponse.body();
 
             //add the success auth information to the shared preferences.
-            editor.putString(getString(R.string.token), authResponse.headers().get("Authorization"));
-            editor.putLong(getString(R.string.token_expiry), authReturnDTO.getTokenExpiresIn());
-            //save the user information as the json string.
-            editor.putString(getString(R.string.logged_in_user), new ObjectMapper().writeValueAsString(authReturnDTO));
-
-            editor.apply();
+            SharedPreferenceService.setLoginSuccessVariables(
+                    requireContext(), authReturnDTO, authResponse.headers().get("Authorization"), PreferenceInformation.PREFERENCE_NAME
+            );
 
             Snackbar theSnackbar = Snackbar.make(
                     requireView(),
@@ -159,8 +156,11 @@ public class LoginFragment extends Fragment {
                 //navigate to reset password page.
                 PasswordReset passwordResetObject = APIConfigurer.getPasswordResetObject(authResponse.errorBody());
                 //attach the reset information onto the shared preferences so that it can be accessed from the fragment.
-                editor.putString(getString(R.string.reset_pw_information), new ObjectMapper().writeValueAsString(passwordResetObject));
-                editor.apply();
+                //attach the reset password JWT Token to the shared preferences
+
+                SharedPreferenceService.setResetUserInformation(
+                        requireContext(), passwordResetObject, authResponse.headers().get("Authorization"), PreferenceInformation.PREFERENCE_NAME
+                );
 
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.common_holder, new ResetPasswordFragment()).commit();
                 Snackbar theSnackbar = Snackbar.make(requireView(), "You need to reset your default password before logging in.", Snackbar.LENGTH_LONG);

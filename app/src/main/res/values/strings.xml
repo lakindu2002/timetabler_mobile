@@ -13,9 +13,4 @@
     <string name="reset_p01">Provide New Password</string>
     <string name="reset_p02">Re-Enter New Password</string>
     <string name="reset_pw_btn">Reset Password</string>
-    <string name="preference_name">TimeTablerPreferences</string>
-    <string name="logged_in_user">logged_in_user</string>
-    <string name="token_expiry">token_expiry</string>
-    <string name="token">token</string>
-    <string name="reset_pw_information">reset_information</string>
 </resources>
