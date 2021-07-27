@@ -1,5 +1,6 @@
 package com.cb007787.timetabler.view.common;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,12 +27,35 @@ public class CommonContainer extends AppCompatActivity {
 
         this.fragmentContainerView = findViewById(R.id.common_holder);
         this.fragmentManager = getSupportFragmentManager();
+
+        loadFragments();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        loadLogin();
+    private void loadFragments() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            //activity was loaded from an intent
+            switch (intent.getStringExtra("loadingPage")) {
+                case "LOGIN": {
+                    loadLogin();
+                    break;
+                }
+                case "RESET": {
+                    loadReset();
+                    break;
+                }
+                default: {
+                    loadLogin();
+                }
+            }
+        } else {
+            //directly loaded, default to login
+            loadLogin();
+        }
+    }
+
+    private void loadReset() {
+        this.fragmentManager.beginTransaction().replace(fragmentContainerView.getId(), new ResetPasswordFragment()).commit();
     }
 
     private void loadLogin() {

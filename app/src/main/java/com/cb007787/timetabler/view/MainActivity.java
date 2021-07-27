@@ -41,13 +41,18 @@ public class MainActivity extends AppCompatActivity {
             if (resetInfo.getTokenExpirationTime() > new Date().getTime()) {
                 //expiration token is valid,
                 //send the password reset fragment
+                Intent intent = new Intent(MainActivity.this, CommonContainer.class);
+                intent.putExtra("loadingPage", "RESET");
+                startActivity(intent);
             } else {
                 //password reset token has expired, clear the password reset information
                 SharedPreferenceService.clearSharedPreferences(this, PreferenceInformation.PREFERENCE_NAME);
                 //send to login
-                startActivity(new Intent(MainActivity.this, CommonContainer.class));
-                finish();
+                Intent intent = new Intent(MainActivity.this, CommonContainer.class);
+                intent.putExtra("loadingPage", "LOGIN");
+                startActivity(intent);
             }
+            finish();
 
         } else if (loggedInUser != null) {
             //there is a user
@@ -56,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
                 //token has expired, remove the objects from shared preferences and send to login
                 SharedPreferenceService.clearSharedPreferences(this, PreferenceInformation.PREFERENCE_NAME);
 
-                startActivity(new Intent(MainActivity.this, CommonContainer.class));
+                Intent intent = new Intent(MainActivity.this, CommonContainer.class);
+                intent.putExtra("loadingPage", "LOGIN");
+                startActivity(intent);
                 finish();
             } else {
                 //check role and send to the respective home page
@@ -64,7 +71,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             //no session is present at all,
             //direct to login
-            startActivity(new Intent(MainActivity.this, CommonContainer.class));
+            Intent intent = new Intent(MainActivity.this, CommonContainer.class);
+            intent.putExtra("loadingPage", "LOGIN");
+            startActivity(intent);
             finish();
         }
     }
