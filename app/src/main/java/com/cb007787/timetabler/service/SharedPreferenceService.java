@@ -15,11 +15,6 @@ public class SharedPreferenceService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger LOGGER = Logger.getLogger(SharedPreferenceService.class.getName());
 
-    public static SharedPreferences getThePreferenceFile(Context theContext, PreferenceInformation fileName) {
-        LOGGER.info("RETRIEVING SHARED PREFERENCE FILE");
-        return theContext.getSharedPreferences(fileName.getLabelForIdentifier(), Context.MODE_PRIVATE);
-    }
-
     public static void setLoginSuccessVariables(Context theContext, AuthReturnDTO authReturnDTO, String token, PreferenceInformation fileName) throws JsonProcessingException {
         SharedPreferences.Editor edit = theContext.getSharedPreferences(fileName.getLabelForIdentifier(), Context.MODE_PRIVATE).edit();
 
@@ -74,5 +69,9 @@ public class SharedPreferenceService {
             LOGGER.info("FOUND RESETTING USER, RETURNING RESET USER");
             return objectMapper.readValue(resetInfoJSON, PasswordReset.class);
         }
+    }
+
+    public static String getToken(Context theContext, PreferenceInformation fileName) {
+        return theContext.getSharedPreferences(fileName.getLabelForIdentifier(), Context.MODE_PRIVATE).getString(PreferenceInformation.JWT_TOKEN.getLabelForIdentifier(), null);
     }
 }

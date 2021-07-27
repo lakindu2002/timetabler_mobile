@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 
@@ -36,5 +37,5 @@ public interface AuthService {
      * @return The success provided by the API upon successful password reset.
      */
     @PUT("auth/reset")
-    Call<SuccessResponseAPI> resetDefaultPassword(@Body HashMap<String, String> resetRequest);
+    Call<SuccessResponseAPI> resetDefaultPassword(@Body HashMap<String, String> resetRequest, @Header("Authorization") String token);
 }

@@ -9,9 +9,7 @@ public class SuccessResponseAPI {
     private String message;
     private int code;
 
-    public SuccessResponseAPI(String message, int code) {
-        this.message = message;
-        this.code = code;
+    public SuccessResponseAPI() {
     }
 
     public String getMessage() {

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.service.APIConfigurer;
@@ -24,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -114,16 +116,21 @@ public class ResetPasswordFragment extends Fragment {
             authRequest.put("username", passwordResetInformation.getUsernameNeedingReset());
             authRequest.put("password", firstPassword.getText().toString());
 
-            this.authService.resetDefaultPassword(authRequest).enqueue(new Callback<SuccessResponseAPI>() {
+            this.authService.resetDefaultPassword(authRequest, SharedPreferenceService.getToken(requireContext(), PreferenceInformation.PREFERENCE_NAME)).enqueue(new Callback<SuccessResponseAPI>() {
                 @Override
                 public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
                     //handle response from api
-                    handleOnResponse(response);
+                    try {
+                        handleOnResponse(response);
+                    } catch (IOException e) {
+                        System.out.println("ERROR PARSING ERROR JSON BODY");
+                    }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
                     //handle failure to send request or process response
+                    handleFailCommunication(t);
                 }
             });
         } else {
@@ -131,7 +138,30 @@ public class ResetPasswordFragment extends Fragment {
         }
     }
 
-    private void handleOnResponse(Response<SuccessResponseAPI> resetResponse) {
+    private void handleOnResponse(Response<SuccessResponseAPI> resetResponse) throws IOException {
+        if (resetResponse.isSuccessful()) {
+            Snackbar theSnackbar = Snackbar.make(requireView(), resetResponse.body().getMessage(), Snackbar.LENGTH_LONG);
+            theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+            theSnackbar.show();
+
+            //since password has been resetted successfully, clear the shared preferences again so that user can re-login
+            SharedPreferenceService.clearSharedPreferences(requireContext(), PreferenceInformation.PREFERENCE_NAME);
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.common_holder, new LoginFragment()).commit();
+
+        } else {
+            ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(resetResponse.errorBody());
+            Snackbar theSnackbar = Snackbar.make(requireView(), theErrorReturned.getErrorMessage(), Snackbar.LENGTH_LONG);
+            theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+            theSnackbar.show();
+        }
+        this.resetSpinner.setVisibility(View.GONE);
+    }
+
+    private void handleFailCommunication(Throwable exception) {
+        //requireView - return view that fragment is inflated on
+        Snackbar theSnackbar = Snackbar.make(requireView(), "An unexpected error occurred while resetting your password", Snackbar.LENGTH_LONG);
+        theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        theSnackbar.show();
         this.resetSpinner.setVisibility(View.GONE);
     }
 
