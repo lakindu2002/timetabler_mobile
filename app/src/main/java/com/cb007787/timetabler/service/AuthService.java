@@ -20,6 +20,7 @@ import retrofit2.http.PUT;
  * @since 7th July 2021
  */
 public interface AuthService {
+    String API_ENDPOINT = "auth/";
 
     /**
      * Call is the HTTP Request made
@@ -27,7 +28,7 @@ public interface AuthService {
      * @param theLoginRequest The request body
      * @return The return provided from the API on 200 status code.
      */
-    @POST("auth/login")
+    @POST(API_ENDPOINT + "login")
     Call<AuthReturnDTO> login(@Body HashMap<String, String> theLoginRequest);
 
     /**
@@ -36,6 +37,6 @@ public interface AuthService {
      * @param resetRequest Request body containing the username and the new password.
      * @return The success provided by the API upon successful password reset.
      */
-    @PUT("auth/reset")
+    @PUT(API_ENDPOINT + "reset")
     Call<SuccessResponseAPI> resetDefaultPassword(@Body HashMap<String, String> resetRequest, @Header("Authorization") String token);
 }

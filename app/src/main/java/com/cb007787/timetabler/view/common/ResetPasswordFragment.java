@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -45,6 +46,7 @@ public class ResetPasswordFragment extends Fragment {
     private TextInputEditText secondPassword;
     private ProgressBar resetSpinner;
     private Button resetPasswordButton;
+    private TextView resetUsername;
 
     private AuthService authService;
     private PasswordReset passwordResetInformation;
@@ -62,6 +64,7 @@ public class ResetPasswordFragment extends Fragment {
     public void onStart() {
         //hook executed after fragment lifecycle has started
         super.onStart();
+        this.resetUsername.setText(String.format("Hello %s,", passwordResetInformation.getUsernameNeedingReset()));
     }
 
     @Override
@@ -92,6 +95,7 @@ public class ResetPasswordFragment extends Fragment {
         this.secondPassword = theInflatedView.findViewById(R.id.second_pw);
         this.resetPasswordButton = theInflatedView.findViewById(R.id.reset_pw_btn);
         this.resetSpinner = theInflatedView.findViewById(R.id.reset_spinner);
+        this.resetUsername = theInflatedView.findViewById(R.id.user_name_reset);
 
         //by the use of :: it invokes the handleResetClicked method.
         //JVM assumes it is an implementation of the View.OnClickListener.
