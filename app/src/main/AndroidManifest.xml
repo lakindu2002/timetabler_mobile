@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cb007787.timetabler">
-
-    <!--add the internet permissions to communicate to the API-->
+    <!-- add the internet permissions to communicate to the API -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -13,6 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".view.academic_admin.AcademicAdminHome"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.lecturer.LecturerHome"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.student.StudentHome"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.system_admin.SystemAdminHome"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.common.CommonContainer"
             android:screenOrientation="portrait" />

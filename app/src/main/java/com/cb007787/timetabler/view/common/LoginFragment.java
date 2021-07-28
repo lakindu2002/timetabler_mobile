@@ -1,6 +1,7 @@
 package com.cb007787.timetabler.view.common;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,10 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.AuthService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminHome;
+import com.cb007787.timetabler.view.lecturer.LecturerHome;
+import com.cb007787.timetabler.view.student.StudentHome;
+import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -179,6 +184,28 @@ public class LoginFragment extends Fragment {
 
     private void navigateBasedOnRole(AuthReturnDTO authReturnDTO) {
         //access the user role and navigate to the required directory based on the role.
+        Intent theRoleIntent = null;
+
+        switch (authReturnDTO.getRole().toLowerCase().trim()) {
+            case "academic administrator": {
+                theRoleIntent = new Intent(requireContext(), AcademicAdminHome.class);
+                break;
+            }
+            case "system administrator": {
+                theRoleIntent = new Intent(requireContext(), SystemAdminHome.class);
+                break;
+            }
+            case "lecturer": {
+                theRoleIntent = new Intent(requireContext(), LecturerHome.class);
+                break;
+            }
+            case "student": {
+                theRoleIntent = new Intent(requireContext(), StudentHome.class);
+                break;
+            }
+        }
+        startActivity(theRoleIntent);
+        requireActivity().finish(); //remove the splash screen from activity back trace.
     }
 
     /**
@@ -213,6 +240,4 @@ public class LoginFragment extends Fragment {
         }
         return isUsernameValid && isPasswordValid;
     }
-
-
 }

@@ -10,7 +10,11 @@ import com.cb007787.timetabler.model.AuthReturnDTO;
 import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminHome;
 import com.cb007787.timetabler.view.common.CommonContainer;
+import com.cb007787.timetabler.view.lecturer.LecturerHome;
+import com.cb007787.timetabler.view.student.StudentHome;
+import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Date;
@@ -67,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 //check role and send to the respective home page
+                navigateToHome(loggedInUser.getRole());
             }
         } else {
             //no session is present at all,
@@ -76,5 +81,30 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+    private void navigateToHome(String role) {
+        Intent theRoleIntent = null;
+
+        switch (role.toLowerCase().trim()) {
+            case "academic administrator": {
+                theRoleIntent = new Intent(this, AcademicAdminHome.class);
+                break;
+            }
+            case "system administrator": {
+                theRoleIntent = new Intent(this, SystemAdminHome.class);
+                break;
+            }
+            case "lecturer": {
+                theRoleIntent = new Intent(this, LecturerHome.class);
+                break;
+            }
+            case "student": {
+                theRoleIntent = new Intent(this, StudentHome.class);
+                break;
+            }
+        }
+        startActivity(theRoleIntent);
+        finish(); //remove the splash screen from activity back trace.
     }
 }
