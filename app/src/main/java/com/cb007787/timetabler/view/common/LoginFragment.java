@@ -145,13 +145,6 @@ public class LoginFragment extends Fragment {
                     requireContext(), authReturnDTO, authResponse.headers().get("Authorization"), PreferenceInformation.PREFERENCE_NAME
             );
 
-            Snackbar theSnackbar = Snackbar.make(
-                    requireView(),
-                    String.format("Welcome, %s %s", authReturnDTO.getFirstName(), authReturnDTO.getLastName()),
-                    Snackbar.LENGTH_LONG);
-            theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
-            theSnackbar.show();
-
             //navigate based on role
             navigateBasedOnRole(authReturnDTO);
         } else {
