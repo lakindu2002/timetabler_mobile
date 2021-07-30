@@ -19,7 +19,7 @@
             android:name=".view.lecturer.LecturerHome"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.student.StudentHome"
+            android:name=".view.student.StudentContainer"
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.system_admin.SystemAdminHome"

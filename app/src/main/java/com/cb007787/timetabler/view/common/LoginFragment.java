@@ -1,8 +1,6 @@
 package com.cb007787.timetabler.view.common;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,25 +21,19 @@ import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminHome;
 import com.cb007787.timetabler.view.lecturer.LecturerHome;
-import com.cb007787.timetabler.view.student.StudentHome;
+import com.cb007787.timetabler.view.student.StudentContainer;
 import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
 /**
@@ -193,7 +185,7 @@ public class LoginFragment extends Fragment {
                 break;
             }
             case "student": {
-                theRoleIntent = new Intent(requireContext(), StudentHome.class);
+                theRoleIntent = new Intent(requireContext(), StudentContainer.class);
                 break;
             }
         }

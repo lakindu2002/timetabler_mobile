@@ -13,7 +13,7 @@ import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminHome;
 import com.cb007787.timetabler.view.common.CommonContainer;
 import com.cb007787.timetabler.view.lecturer.LecturerHome;
-import com.cb007787.timetabler.view.student.StudentHome;
+import com.cb007787.timetabler.view.student.StudentContainer;
 import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case "student": {
-                theRoleIntent = new Intent(this, StudentHome.class);
+                theRoleIntent = new Intent(this, StudentContainer.class);
                 break;
             }
         }
