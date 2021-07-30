@@ -17,4 +17,10 @@
     <string name="student_enrolments">Enrolments</string>
     <string name="user_profile">Profile</string>
     <string name="logout">Logout</string>
+    <string name="operation">My Operations</string>
+    <string name="profile">My Profile</string>
+    <string name="full_name_header">John Doe</string>
+    <string name="welcome_home">Home</string>
+    <string name="openDrawer">Open Drawer</string>
+    <string name="closeDrawer">Close Drawer</string>
 </resources>
