@@ -14,7 +14,7 @@
     <string name="reset_p02">Re-Enter New Password</string>
     <string name="reset_pw_btn">Reset Password</string>
     <string name="student_home">Home</string>
-    <string name="student_enrolments">Enrolments</string>
+    <string name="student_enrolments">Enrolments (Batch)</string>
     <string name="user_profile">Profile</string>
     <string name="logout">Logout</string>
     <string name="operation">My Operations</string>
@@ -25,4 +25,5 @@
     <string name="closeDrawer">Close Drawer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="student_header_batch">Batch Code</string>
 </resources>

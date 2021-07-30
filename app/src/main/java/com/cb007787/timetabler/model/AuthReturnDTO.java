@@ -13,7 +13,17 @@ public class AuthReturnDTO {
     private String role;
     private long tokenExpiresIn;
 
+    public String batchCode;
+
     public AuthReturnDTO() {
+    }
+
+    public String getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
     }
 
     public String getUsername() {

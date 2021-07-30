@@ -34,8 +34,8 @@ public class StudentContainer extends AppCompatActivity implements NavigationVie
 
 
     private NavigationView theNavigation;
-    private TextView usernameNavHeader;
     private TextView fullNameNavHeader;
+    private TextView batchCodeHeader;
 
 
     @Override
@@ -75,8 +75,9 @@ public class StudentContainer extends AppCompatActivity implements NavigationVie
         //navigation is passed as it is the parent view group for nav header because nav header is placed in navigation.
         //use the inflated view as the view for the content for the text fields.
         View theHeader = theNavigation.getHeaderView(0); //header 0 to get the header file for the navigation
-        this.usernameNavHeader = theHeader.findViewById(R.id.username_header);
         this.fullNameNavHeader = theHeader.findViewById(R.id.fullName_header);
+        this.batchCodeHeader = theHeader.findViewById(R.id.student_header_batch);
+        batchCodeHeader.setVisibility(View.VISIBLE);
     }
 
     private void showWelcomeMessageAndAssignHeadersInNav() {
@@ -87,8 +88,8 @@ public class StudentContainer extends AppCompatActivity implements NavigationVie
         theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
         theSnackbar.show();
 
-        usernameNavHeader.setText(loggedInStudent.getUsername());
-        fullNameNavHeader.setText(String.format("%s %s", loggedInStudent.getFirstName(), loggedInStudent.getLastName()));
+        fullNameNavHeader.setText(String.format("Welcome, %s %s", loggedInStudent.getFirstName(), loggedInStudent.getLastName()));
+        batchCodeHeader.setText(String.format("Batch Code - %s", loggedInStudent.getBatchCode()));
     }
 
     @Override
