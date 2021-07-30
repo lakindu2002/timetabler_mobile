@@ -4,12 +4,6 @@
         <item android:title="@string/operation">
             <menu>
                 <item
-                    android:id="@+id/student_home"
-                    android:enabled="true"
-                    android:icon="@drawable/ic_home"
-                    android:title="@string/student_home" />
-
-                <item
                     android:id="@+id/student_enrolments"
                     android:enabled="true"
                     android:icon="@drawable/ic_enrolments"

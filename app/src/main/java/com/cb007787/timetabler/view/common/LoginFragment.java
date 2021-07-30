@@ -21,7 +21,7 @@ import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminHome;
 import com.cb007787.timetabler.view.lecturer.LecturerHome;
-import com.cb007787.timetabler.view.student.StudentContainer;
+import com.cb007787.timetabler.view.student.StudentHome;
 import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -185,7 +185,7 @@ public class LoginFragment extends Fragment {
                 break;
             }
             case "student": {
-                theRoleIntent = new Intent(requireContext(), StudentContainer.class);
+                theRoleIntent = new Intent(requireContext(), StudentHome.class);
                 break;
             }
         }

@@ -13,13 +13,21 @@
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".view.student.StudentProfile"
+            android:parentActivityName=".view.student.StudentHome"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.student.StudentEnrolments"
+            android:parentActivityName=".view.student.StudentHome"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".view.academic_admin.AcademicAdminHome"
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.lecturer.LecturerHome"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.student.StudentContainer"
+            android:name=".view.student.StudentHome"
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.system_admin.SystemAdminHome"
