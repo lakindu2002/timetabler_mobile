@@ -18,4 +18,10 @@
         android:icon="@drawable/ic_profile"
         android:title="@string/user_profile" />
 
+    <item
+        android:id="@+id/student_logout"
+        android:enabled="true"
+        android:icon="@drawable/ic_logout"
+        android:title="@string/logout" />
+
 </menu>
