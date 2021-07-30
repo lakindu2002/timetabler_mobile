@@ -5,10 +5,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -91,15 +94,38 @@ public class StudentContainer extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent navigationIntent = null;
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        boolean isSelected = false;
 
         if (item.getItemId() == R.id.student_logout) {
             navigationIntent = new Intent(this, CommonContainer.class);
             navigationIntent.putExtra("loadingPage", "LOGIN");
+
             Toast.makeText(this, "You have successfully logged out", Toast.LENGTH_LONG).show();
+
+            isSelected = true;
+
+            startActivity(navigationIntent);
+            finish(); //remove current activity from stack
+
+        } else if (item.getItemId() == R.id.student_profile) {
+            supportFragmentManager.beginTransaction().replace(R.id.student_fragment_holder, new StudentProfile()).commit();
+            studentToolBar.setTitle(R.string.profile);
+            isSelected = true;
+        } else if (item.getItemId() == R.id.student_enrolments) {
+            supportFragmentManager.beginTransaction().replace(R.id.student_fragment_holder, new StudentEnrolments()).commit();
+            studentToolBar.setTitle(R.string.student_enrolments);
+            isSelected = true;
+        } else if (item.getItemId() == R.id.student_home) {
+            supportFragmentManager.beginTransaction().replace(R.id.student_fragment_holder, new StudentHome()).commit();
+            studentToolBar.setTitle(R.string.student_home);
+            isSelected = true;
         }
 
-        startActivity(navigationIntent);
-        finish(); //remove current activity from stack
-        return false;
+        if (studentLayout.isDrawerOpen(GravityCompat.START)) {
+            //layout open in start (left side), close the drawer
+            studentLayout.closeDrawer(GravityCompat.START); //close towards left side
+        }
+        return isSelected;
     }
 }

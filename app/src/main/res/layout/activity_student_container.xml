@@ -15,6 +15,7 @@
 
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/student_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true">
@@ -26,6 +27,12 @@
                 app:title="@string/welcome_home"
                 app:titleTextColor="@color/white" />
         </com.google.android.material.appbar.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/student_fragment_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/student_app_bar" />
 
 
     </RelativeLayout>
