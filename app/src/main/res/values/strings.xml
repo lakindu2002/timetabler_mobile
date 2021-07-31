@@ -34,10 +34,12 @@
     <string name="email">Email Address</string>
     <string name="email_hint">Provide The Email Address</string>
     <string name="contact">Contact Number</string>
-    <string name="contact_hint">Provide The Contact Number</string>
+    <string name="contact_hint">0000000000</string>
     <string name="member_since">Member Since</string>
     <string name="member_since_hint">Provide The Date</string>
     <string name="age">Date of Birth (Age)</string>
     <string name="age_hint">Provide Age</string>
     <string name="update_caption">Update Account</string>
+    <string name="password_01">Provide New Password</string>
+    <string name="password_02">Re-Enter New Password</string>
 </resources>

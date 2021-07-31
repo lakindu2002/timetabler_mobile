@@ -8,10 +8,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.cb007787.timetabler.R;
@@ -54,7 +56,9 @@ public class SharedUserProfile extends AppCompatActivity {
     private MaterialTextView lastName;
     private MaterialTextView age;
     private MaterialTextView email;
-    private MaterialTextView contact;
+    private EditText contact;
+    private EditText firstPassword;
+    private EditText secondPassword;
     private MaterialTextView memberSince;
 
     private Button updateBtn;
@@ -113,6 +117,8 @@ public class SharedUserProfile extends AppCompatActivity {
             //inputs are valid, set the inputs into user object and update the user.
             apiUser.setContactNumber(contact.getText().toString());
             //set the password and re-entered password as well.
+            apiUser.setPassword(firstPassword.getText().toString());
+            apiUser.setReEnterPassword(secondPassword.getText().toString());
 
             //call update endpoint
             Call<SuccessResponseAPI> updateAPICall = theUserService.updateUserAccount(jwtToken, apiUser);
@@ -148,6 +154,10 @@ public class SharedUserProfile extends AppCompatActivity {
             SuccessResponseAPI theSuccess = response.body();
             theSnackBar = Snackbar.make(loadingBar, theSuccess.getMessage(), Snackbar.LENGTH_LONG);
             theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+            //clear inputs after success password update
+            firstPassword.setText("");
+            secondPassword.setText("");
+
             getLoggedInUserInformation(); //get the logged in user information
         } else {
             //error occurred
@@ -159,8 +169,51 @@ public class SharedUserProfile extends AppCompatActivity {
         theSnackBar.show();
     }
 
+    /**
+     * Method will check if the contact number, first password and second password is valid.
+     *
+     * @return Boolean to indicate if validate or not
+     */
     private boolean areUpdateInputsValid() {
-        return true;
+        boolean contactValid = true;
+        boolean passwordValid = true;
+
+        if (TextUtils.isEmpty(contact.getText().toString())) {
+            contact.setError("Please provide a contact number");
+            contactValid = false;
+        } else if (!contact.getText().toString().matches("^[0-9]+$")) {
+            contact.setError("Please provide only digits in the contact number");
+            contactValid = false;
+        } else if (!(contact.getText().toString().length() == 10)) {
+            contact.setError("Please provide 10 digits for the contact number");
+            contactValid = false;
+        }
+
+        //validate password
+        if (!TextUtils.isEmpty(firstPassword.getText().toString()) || !TextUtils.isEmpty(secondPassword.getText().toString())) {
+            //user provided a password since either field is not empty, validate it
+
+            //password match
+            if (!firstPassword.getText().toString().equals(secondPassword.getText().toString())) {
+                firstPassword.setError("Passwords do not match");
+                secondPassword.setError("Passwords do not match");
+                passwordValid = false;
+                //password is not valid as they are not the same
+            }
+
+            //either password between 8 or 30 characters
+            if ((firstPassword.getText().toString().length() < 8) || firstPassword.getText().toString().length() > 30) {
+                firstPassword.setError("Passwords must be between 8 and 30 characters");
+                passwordValid = false;
+            }
+
+            if ((secondPassword.getText().toString().length() < 8) || secondPassword.getText().toString().length() > 30) {
+                secondPassword.setError("Passwords must be between 8 and 30 characters");
+                passwordValid = false;
+            }
+        }
+
+        return contactValid && passwordValid;
     }
 
     @Override
@@ -261,6 +314,8 @@ public class SharedUserProfile extends AppCompatActivity {
         email = findViewById(R.id.email_profile_label);
         contact = findViewById(R.id.contact_profile_label);
         memberSince = findViewById(R.id.membersince_profile_label);
+        firstPassword = findViewById(R.id.password_01_label);
+        secondPassword = findViewById(R.id.password_02_label);
 
         updateBtn = findViewById(R.id.update_account);
 

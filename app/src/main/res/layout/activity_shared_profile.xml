@@ -172,14 +172,78 @@
                         android:text="@string/contact"
                         android:textSize="16sp" />
 
-                    <com.google.android.material.textview.MaterialTextView
+                    <EditText
                         android:id="@+id/contact_profile_label"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:layout_below="@id/contact_profile"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/custom_edit_text"
                         android:fontFamily="@font/poppins"
+                        android:inputType="phone"
+                        android:maxLength="10"
+                        android:maxLines="1"
+                        android:paddingStart="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/contact_hint"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+
+                    <!--password 01-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/password_01"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/contact_profile_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/password_01"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/password_01_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_below="@id/password_01"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/custom_edit_text"
+                        android:fontFamily="@font/poppins"
+                        android:hint="@string/password_hint"
+                        android:inputType="textPassword"
+                        android:maxLength="30"
+                        android:maxLines="1"
+                        android:paddingStart="5dp"
+                        android:paddingTop="5dp"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+
+                    <!--password 02-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/password_02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/password_01_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/password_02"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/password_02_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_below="@id/password_02"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/custom_edit_text"
+                        android:fontFamily="@font/poppins"
+                        android:hint="@string/password_hint"
+                        android:inputType="textPassword"
+                        android:maxLength="30"
+                        android:maxLines="1"
+                        android:paddingStart="5dp"
+                        android:paddingTop="5dp"
                         android:textColor="@color/black"
                         android:textSize="18sp" />
 
@@ -188,7 +252,7 @@
                         android:id="@+id/membersince_profile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/contact_profile_label"
+                        android:layout_below="@id/password_02_label"
                         android:fontFamily="@font/poppins"
                         android:paddingTop="20dp"
                         android:text="@string/member_since"
@@ -217,8 +281,6 @@
                         android:text="@string/update_caption"
                         android:textAllCaps="false"
                         android:textSize="16sp" />
-
-
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
         </ScrollView>
