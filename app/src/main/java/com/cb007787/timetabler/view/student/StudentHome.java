@@ -21,6 +21,7 @@ import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.common.CommonContainer;
+import com.cb007787.timetabler.view.common.SharedUserProfile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.navigation.NavigationView;
 
@@ -100,7 +101,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
             isSelected = true;
 
         } else if (item.getItemId() == R.id.student_profile) {
-            navigationIntent = new Intent(this, StudentUserProfile.class);
+            navigationIntent = new Intent(this, SharedUserProfile.class);
             isSelected = true;
         } else if (item.getItemId() == R.id.student_enrolments) {
             navigationIntent = new Intent(this, StudentEnrolments.class);

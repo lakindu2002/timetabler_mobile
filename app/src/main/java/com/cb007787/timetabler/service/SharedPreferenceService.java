@@ -80,15 +80,12 @@ public class SharedPreferenceService {
         return theContext.getSharedPreferences(fileName.getLabelForIdentifier(), Context.MODE_PRIVATE).getString(PreferenceInformation.JWT_TOKEN.getLabelForIdentifier(), null);
     }
 
-    public static boolean isTokenValid(Context theContext, PreferenceInformation fileName) {
+    public static void validateToken(Context theContext, PreferenceInformation fileName) {
         try {
             long tokenExpirationTime = getLoggedInUser(theContext, fileName).getTokenExpiresIn();
             Date currentDate = new Date(System.currentTimeMillis());
 
-            if (tokenExpirationTime > currentDate.getTime()) {
-                //token is valid since current time is less than token expiration time in MS
-                return true;
-            } else {
+            if (tokenExpirationTime < currentDate.getTime()) {
                 //token is expired, redirect to login and show session expired message
                 Intent expiredLogin = new Intent(theContext, CommonContainer.class);
                 expiredLogin.putExtra("loadingPage", "LOGIN");
@@ -97,12 +94,10 @@ public class SharedPreferenceService {
                 //so type cast context to activity and finish the activity so back button does not navigate user back
                 clearSharedPreferences(theContext, fileName); //clear user data in shared preferences
                 Toast.makeText(theContext, "Your session has expired. Please log back in to access the resource", Toast.LENGTH_LONG).show();
-                return false;
             }
 
         } catch (JsonProcessingException e) {
             LOGGER.warning("ERROR PARSING JSON");
-            return false;
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.cb007787.timetabler.service;
 
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -22,4 +25,7 @@ public interface UserService {
      */
     @GET(BASE_ENDPOINT + "account/{username}")
     Call<User> getUserInformation(@Header("Authorization") String token, @Path("username") String username);
+
+    @PUT(BASE_ENDPOINT + "account/update")
+    Call<SuccessResponseAPI> updateUserAccount(@Header("Authorization") String token, @Body User updateUserRequest);
 }
