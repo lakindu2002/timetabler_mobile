@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -21,6 +23,10 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.service.UserService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminHome;
+import com.cb007787.timetabler.view.lecturer.LecturerHome;
+import com.cb007787.timetabler.view.student.StudentHome;
+import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
@@ -53,14 +59,9 @@ public class SharedUserProfile extends AppCompatActivity {
 
     private Button updateBtn;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shared_profile);
-
-        //if token expired, will navigate to login
-        SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
 
         try {
             loggedInUser = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
@@ -68,6 +69,13 @@ public class SharedUserProfile extends AppCompatActivity {
         } catch (JsonProcessingException e) {
             Log.i(SharedUserProfile.class.getName(), "Failed Parsing JSON");
         }
+
+        if (loggedInUser.getRole().toLowerCase().equals("student")) {
+            setContentView(R.layout.activity_shared_profile);
+        }
+
+        //if token expired, will navigate to login
+        SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
 
         getReferences();
         setSupportActionBar(toolbar);
@@ -246,15 +254,85 @@ public class SharedUserProfile extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swiper);
 
         //retrieve references to UI text fields.
-        username = findViewById(R.id.student_user_name_profile);
-        firstName = findViewById(R.id.student_first_name_profile);
-        lastName = findViewById(R.id.student_last_name_profile_label);
-        age = findViewById(R.id.student_age_profile_label);
-        email = findViewById(R.id.student_email_profile_label);
-        contact = findViewById(R.id.student_contact_profile_label);
-        memberSince = findViewById(R.id.student_membersince_profile_label);
+        username = findViewById(R.id.user_name_profile);
+        firstName = findViewById(R.id.first_name_profile);
+        lastName = findViewById(R.id.last_name_profile_label);
+        age = findViewById(R.id.age_profile_label);
+        email = findViewById(R.id.email_profile_label);
+        contact = findViewById(R.id.contact_profile_label);
+        memberSince = findViewById(R.id.membersince_profile_label);
 
         updateBtn = findViewById(R.id.update_account);
 
     }
+
+    /**
+     * Method listen to click events on the toolbar
+     *
+     * @param item The item clicked
+     * @return The select status
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            //clicked the home button for android - display home as up
+            //navigate to respective dashboards for each role
+            Intent homeIntent = null;
+            switch (loggedInUser.getRole().toLowerCase().trim()) {
+                case "student": {
+                    homeIntent = new Intent(this, StudentHome.class);
+                    startActivity(homeIntent);
+                    break;
+                }
+                case "system administrator": {
+                    homeIntent = new Intent(this, SystemAdminHome.class);
+                    startActivity(homeIntent);
+                    break;
+                }
+                case "lecturer": {
+                    homeIntent = new Intent(this, LecturerHome.class);
+                    startActivity(homeIntent);
+                    break;
+                }
+                case "academic admin": {
+                    homeIntent = new Intent(this, AcademicAdminHome.class);
+                    startActivity(homeIntent);
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        //event raised when the user clicks back using phone back button
+        Intent homeIntent = null;
+        switch (loggedInUser.getRole().toLowerCase().trim()) {
+            case "student": {
+                homeIntent = new Intent(this, StudentHome.class);
+                startActivity(homeIntent);
+                break;
+            }
+            case "system administrator": {
+                homeIntent = new Intent(this, SystemAdminHome.class);
+                startActivity(homeIntent);
+                break;
+            }
+            case "lecturer": {
+                homeIntent = new Intent(this, LecturerHome.class);
+                startActivity(homeIntent);
+                break;
+            }
+            case "academic admin": {
+                homeIntent = new Intent(this, AcademicAdminHome.class);
+                startActivity(homeIntent);
+                break;
+            }
+            default: {
+                super.onBackPressed();
+            }
+        }
+    }
+
 }

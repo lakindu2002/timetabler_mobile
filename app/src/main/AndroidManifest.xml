@@ -14,7 +14,6 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".view.common.SharedUserProfile"
-            android:parentActivityName=".view.student.StudentHome"
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.student.StudentEnrolments"

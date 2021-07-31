@@ -8,7 +8,7 @@
     tools:context=".view.common.SharedUserProfile">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/student_profile_app_bar"
+        android:id="@+id/user_profile_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true">
@@ -25,193 +25,202 @@
         layout="@layout/loading_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/student_profile_app_bar" />
+        android:layout_below="@id/user_profile_app_bar" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/student_profile_app_bar">
+        android:layout_below="@id/user_profile_app_bar">
 
         <!--add the import for the loading spinner as a reusable layout-->
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            tools:ignore="RtlSymmetry">
+            android:layout_height="match_parent">
 
-            <RelativeLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                app:cardBackgroundColor="@color/background"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="20dp">
 
-                <!--username-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_user_name_profile_label"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins"
-                    android:text="@string/username_hint"
-                    android:textSize="16sp" />
+                    android:paddingStart="15dp"
+                    android:paddingTop="10dp"
+                    tools:ignore="RtlSymmetry">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_user_name_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_user_name_profile_label"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/username"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!--username-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/user_name_profile_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins"
+                        android:text="@string/username_hint"
+                        android:textSize="16sp" />
 
-                <!--first name-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_first_name_profile_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_user_name_profile"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="20dp"
-                    android:text="@string/first_name"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/user_name_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/user_name_profile_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/username"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_first_name_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_first_name_profile_label"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/first_name_hint"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!--first name-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/first_name_profile_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/user_name_profile"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/first_name"
+                        android:textSize="16sp" />
 
-                <!--last name-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_last_name_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_first_name_profile"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="20dp"
-                    android:text="@string/last_name"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/first_name_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/first_name_profile_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/first_name_hint"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_last_name_profile_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_last_name_profile"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/last_name_hint"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!--last name-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/last_name_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/first_name_profile"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/last_name"
+                        android:textSize="16sp" />
 
-                <!--age-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_age_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_last_name_profile_label"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="20dp"
-                    android:text="@string/age"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/last_name_profile_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/last_name_profile"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/last_name_hint"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_age_profile_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_age_profile"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/age_hint"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!--age-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/age_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/last_name_profile_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/age"
+                        android:textSize="16sp" />
 
-                <!--email-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_email_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_age_profile_label"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="20dp"
-                    android:text="@string/email"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/age_profile_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/age_profile"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/age_hint"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_email_profile_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_email_profile"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/email_hint"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!--email-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/email_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/age_profile_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/email"
+                        android:textSize="16sp" />
 
-                <!--contact number-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_contact_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_email_profile_label"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="20dp"
-                    android:text="@string/contact"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/email_profile_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/email_profile"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/email_hint"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_contact_profile_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_contact_profile"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/contact_hint"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!--contact number-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/contact_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/email_profile_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/contact"
+                        android:textSize="16sp" />
 
-                <!--member since-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_membersince_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_contact_profile_label"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="20dp"
-                    android:text="@string/member_since"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/contact_profile_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/contact_profile"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/contact_hint"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/student_membersince_profile_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/student_membersince_profile"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/member_since_hint"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    <!--member since-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/membersince_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/contact_profile_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:text="@string/member_since"
+                        android:textSize="16sp" />
 
-                <Button
-                    android:id="@+id/update_account"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:layout_below="@id/student_membersince_profile_label"
-                    android:layout_centerHorizontal="true"
-                    android:layout_margin="20dp"
-                    android:backgroundTint="@color/btn_primary"
-                    android:fontFamily="@font/poppins_medium"
-                    android:text="@string/update_caption"
-                    android:textAllCaps="false"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/membersince_profile_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/membersince_profile"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/member_since_hint"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/update_account"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_below="@id/membersince_profile_label"
+                        android:layout_centerHorizontal="true"
+                        android:layout_margin="20dp"
+                        android:backgroundTint="@color/btn_primary"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="@string/update_caption"
+                        android:textAllCaps="false"
+                        android:textSize="16sp" />
 
 
-            </RelativeLayout>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
         </ScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
