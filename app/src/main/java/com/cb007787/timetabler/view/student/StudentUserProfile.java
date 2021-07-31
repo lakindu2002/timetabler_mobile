@@ -5,17 +5,31 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.service.PreferenceInformation;
+import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-public class StudentProfile extends AppCompatActivity {
+public class StudentUserProfile extends AppCompatActivity {
 
     private Toolbar toolbar;
+    private AuthReturnDTO loggedInUser;
+    private String jwtToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_profile);
+
+        try {
+            loggedInUser = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
+            jwtToken = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
+        } catch (JsonProcessingException e) {
+            Log.i(StudentUserProfile.class.getName(), "Failed Parsing JSON");
+        }
 
         getReferences();
         setSupportActionBar(toolbar);

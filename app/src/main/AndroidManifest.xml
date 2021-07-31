@@ -13,7 +13,7 @@
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".view.student.StudentProfile"
+            android:name=".view.student.StudentUserProfile"
             android:parentActivityName=".view.student.StudentHome"
             android:screenOrientation="portrait" />
         <activity

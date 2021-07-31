@@ -2,6 +2,7 @@ package com.cb007787.timetabler.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             loggedInUser = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
             resetInfo = SharedPreferenceService.getResetInformation(this, PreferenceInformation.PREFERENCE_NAME);
         } catch (JsonProcessingException e) {
-            System.out.println("ERROR PARSING JSON DURING RETRIEVAL");
+            Log.i(MainActivity.class.getName(), "ERROR PARSING JSON DURING RETRIEVAL");
         }
 
         if (resetInfo != null) {

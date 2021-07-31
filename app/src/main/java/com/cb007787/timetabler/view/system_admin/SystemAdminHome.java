@@ -3,6 +3,7 @@ package com.cb007787.timetabler.view.system_admin;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.cb007787.timetabler.R;
@@ -27,7 +28,7 @@ public class SystemAdminHome extends AppCompatActivity {
             loggedInSystemAdmin = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
             showWelcomeMessage();
         } catch (JsonProcessingException e) {
-            System.out.println("ERROR PARSING JSON");
+            Log.i(SystemAdminHome.class.getName(), "ERROR PARSING JSON");
         }
     }
 

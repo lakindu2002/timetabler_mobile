@@ -3,12 +3,14 @@ package com.cb007787.timetabler.view.lecturer;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturnDTO;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -26,7 +28,7 @@ public class LecturerHome extends AppCompatActivity {
             loggedInLecturer = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
             showWelcomeMessage();
         } catch (JsonProcessingException e) {
-            System.out.println("ERROR PARSING JSON");
+            Log.i(LecturerHome.class.getName(), "ERROR PARSING JSON");
         }
     }
 

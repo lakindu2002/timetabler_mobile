@@ -1,13 +1,17 @@
 package com.cb007787.timetabler.service;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.cb007787.timetabler.model.AuthReturnDTO;
 import com.cb007787.timetabler.model.PasswordReset;
+import com.cb007787.timetabler.view.common.CommonContainer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.sql.Date;
 import java.util.logging.Logger;
 
 public class SharedPreferenceService {
@@ -73,5 +77,30 @@ public class SharedPreferenceService {
 
     public static String getToken(Context theContext, PreferenceInformation fileName) {
         return theContext.getSharedPreferences(fileName.getLabelForIdentifier(), Context.MODE_PRIVATE).getString(PreferenceInformation.JWT_TOKEN.getLabelForIdentifier(), null);
+    }
+
+    public static boolean isTokenValid(Context theContext, PreferenceInformation fileName) {
+        try {
+            long tokenExpirationTime = getLoggedInUser(theContext, fileName).getTokenExpiresIn();
+            Date currentDate = new Date(System.currentTimeMillis());
+
+            if (tokenExpirationTime > currentDate.getTime()) {
+                //token is valid since current time is less than token expiration time in MS
+                return true;
+            } else {
+                //token is expired, redirect to login and show session expired message
+                Intent expiredLogin = new Intent(theContext, CommonContainer.class);
+                expiredLogin.putExtra("loadingPage", "LOGIN");
+                theContext.startActivity(expiredLogin);
+                ((Activity) theContext).finish(); //activity is part of app context
+                //so type cast context to activity and finish the activity so back button does not navigate user back
+                clearSharedPreferences(theContext, fileName); //clear user data in shared preferences
+                return false;
+            }
+
+        } catch (JsonProcessingException e) {
+            LOGGER.warning("ERROR PARSING JSON");
+            return false;
+        }
     }
 }

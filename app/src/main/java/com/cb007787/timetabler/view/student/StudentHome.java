@@ -7,10 +7,10 @@ import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -21,9 +21,9 @@ import com.cb007787.timetabler.model.AuthReturnDTO;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.common.CommonContainer;
+import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 public class StudentHome extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -50,7 +50,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
             loggedInStudent = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
             assignHeadersInNav();
         } catch (JsonProcessingException e) {
-            System.out.println("ERROR PARSING JSON");
+            Log.i(StudentHome.class.getName(), "ERROR PARSING JSON");
         }
 
     }
@@ -101,7 +101,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
             isSelected = true;
 
         } else if (item.getItemId() == R.id.student_profile) {
-            navigationIntent = new Intent(this, StudentProfile.class);
+            navigationIntent = new Intent(this, StudentUserProfile.class);
             isSelected = true;
         } else if (item.getItemId() == R.id.student_enrolments) {
             navigationIntent = new Intent(this, StudentEnrolments.class);
