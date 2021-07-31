@@ -1,6 +1,7 @@
 package com.cb007787.timetabler.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class User {
     private String username;
@@ -14,8 +15,26 @@ public class User {
     private String password;
     private String reEnterPassword;
     private Role userRole;
+    private BatchShow theBatch; //used when dealing with student info
+    private List<Module> theModule; //used when returning the modules taught by the lecturer
 
     public User() {
+    }
+
+    public BatchShow getTheBatch() {
+        return theBatch;
+    }
+
+    public List<Module> getTheModule() {
+        return theModule;
+    }
+
+    public void setTheModule(List<Module> theModule) {
+        this.theModule = theModule;
+    }
+
+    public void setTheBatch(BatchShow theBatch) {
+        this.theBatch = theBatch;
     }
 
     public Role getUserRole() {
@@ -104,5 +123,22 @@ public class User {
 
     public void setReEnterPassword(String reEnterPassword) {
         this.reEnterPassword = reEnterPassword;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", memberSince=" + memberSince +
+                ", age=" + age +
+                ", password='" + password + '\'' +
+                ", reEnterPassword='" + reEnterPassword + '\'' +
+                ", userRole=" + userRole +
+                '}';
     }
 }

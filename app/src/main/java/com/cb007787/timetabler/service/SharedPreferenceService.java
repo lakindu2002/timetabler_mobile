@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.PasswordReset;
@@ -95,6 +96,7 @@ public class SharedPreferenceService {
                 ((Activity) theContext).finish(); //activity is part of app context
                 //so type cast context to activity and finish the activity so back button does not navigate user back
                 clearSharedPreferences(theContext, fileName); //clear user data in shared preferences
+                Toast.makeText(theContext, "Your session has expired. Please log back in to access the resource", Toast.LENGTH_LONG).show();
                 return false;
             }
 
