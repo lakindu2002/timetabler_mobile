@@ -1,24 +1,21 @@
 package com.cb007787.timetabler.view.academic_admin;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.cb007787.timetabler.R;
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
-import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AcademicAdminHome extends AppCompatActivity {
 
-    private AuthReturnDTO loggedInAdmin;
+    private AuthReturn loggedInAdmin;
     private ViewGroup academicAdminLayout;
 
     @Override

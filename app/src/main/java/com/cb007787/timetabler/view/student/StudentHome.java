@@ -17,18 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.common.CommonContainer;
-import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.navigation.NavigationView;
 
 public class StudentHome extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout studentLayout;
-    private AuthReturnDTO loggedInStudent;
+    private AuthReturn loggedInStudent;
     private Toolbar studentToolBar;
 
 

@@ -7,16 +7,15 @@ import android.util.Log;
 import android.view.ViewGroup;
 
 import com.cb007787.timetabler.R;
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
-import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.snackbar.Snackbar;
 
 public class LecturerHome extends AppCompatActivity {
 
-    private AuthReturnDTO loggedInLecturer;
+    private AuthReturn loggedInLecturer;
     private ViewGroup lecturerLayout;
 
     @Override

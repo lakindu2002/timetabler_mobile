@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.cb007787.timetabler.R;
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.service.APIConfigurer;
@@ -97,9 +97,9 @@ public class LoginFragment extends Fragment {
             theLoginRequest.put("password", passwordField.getText().toString());
             //create an instance of the login request
 
-            this.authService.login(theLoginRequest).enqueue(new Callback<AuthReturnDTO>() {
+            this.authService.login(theLoginRequest).enqueue(new Callback<AuthReturn>() {
                 @Override
-                public void onResponse(@NonNull Call<AuthReturnDTO> call, @NonNull Response<AuthReturnDTO> response) {
+                public void onResponse(@NonNull Call<AuthReturn> call, @NonNull Response<AuthReturn> response) {
                     //when the api sends a response - pass or fail
                     try {
                         handleOnResponse(response);
@@ -109,7 +109,7 @@ public class LoginFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<AuthReturnDTO> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<AuthReturn> call, @NonNull Throwable t) {
                     //when the api runs into error with processing response or in network error
                     handleFailCommunication(t);
                 }
@@ -127,10 +127,10 @@ public class LoginFragment extends Fragment {
      *
      * @param authResponse The return from the api
      */
-    private void handleOnResponse(Response<AuthReturnDTO> authResponse) throws IOException {
+    private void handleOnResponse(Response<AuthReturn> authResponse) throws IOException {
         if (authResponse.isSuccessful()) {
             //user has been successfully logged in
-            AuthReturnDTO authReturnDTO = authResponse.body();
+            AuthReturn authReturnDTO = authResponse.body();
 
             //add the success auth information to the shared preferences.
             SharedPreferenceService.setLoginSuccessVariables(
@@ -167,7 +167,7 @@ public class LoginFragment extends Fragment {
         this.loadingSpinner.setVisibility(View.GONE);
     }
 
-    private void navigateBasedOnRole(AuthReturnDTO authReturnDTO) {
+    private void navigateBasedOnRole(AuthReturn authReturnDTO) {
         //access the user role and navigate to the required directory based on the role.
         Intent theRoleIntent = null;
 

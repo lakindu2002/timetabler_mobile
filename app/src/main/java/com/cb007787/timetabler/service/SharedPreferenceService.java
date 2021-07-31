@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.PasswordReset;
 import com.cb007787.timetabler.view.common.CommonContainer;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,7 +19,7 @@ public class SharedPreferenceService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger LOGGER = Logger.getLogger(SharedPreferenceService.class.getName());
 
-    public static void setLoginSuccessVariables(Context theContext, AuthReturnDTO authReturnDTO, String token, PreferenceInformation fileName) throws JsonProcessingException {
+    public static void setLoginSuccessVariables(Context theContext, AuthReturn authReturnDTO, String token, PreferenceInformation fileName) throws JsonProcessingException {
         SharedPreferences.Editor edit = theContext.getSharedPreferences(fileName.getLabelForIdentifier(), Context.MODE_PRIVATE).edit();
 
         edit.putString(PreferenceInformation.JWT_TOKEN.getLabelForIdentifier(), token);
@@ -49,7 +49,7 @@ public class SharedPreferenceService {
         LOGGER.info("CLEARED SHARED PREFERENCES FOR FILE: " + fileName.getLabelForIdentifier().toUpperCase());
     }
 
-    public static AuthReturnDTO getLoggedInUser(Context theContext, PreferenceInformation fileName) throws JsonProcessingException {
+    public static AuthReturn getLoggedInUser(Context theContext, PreferenceInformation fileName) throws JsonProcessingException {
         SharedPreferences sharedPreferences = theContext.getSharedPreferences(fileName.getLabelForIdentifier(), Context.MODE_PRIVATE);
         String loggedInUserJSON = sharedPreferences.getString(PreferenceInformation.LOGGED_IN_USER.getLabelForIdentifier(), null);
 
@@ -58,7 +58,7 @@ public class SharedPreferenceService {
             return null;
         } else {
             LOGGER.info("FOUND LOGGED IN USER AND RETURNING LOGGED IN USER");
-            return objectMapper.readValue(loggedInUserJSON, AuthReturnDTO.class);
+            return objectMapper.readValue(loggedInUserJSON, AuthReturn.class);
         }
     }
 

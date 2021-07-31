@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 
 import com.cb007787.timetabler.R;
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +16,7 @@ import com.google.android.material.snackbar.Snackbar;
 public class SystemAdminHome extends AppCompatActivity {
 
     private ViewGroup systemAdminLayout;
-    private AuthReturnDTO loggedInSystemAdmin;
+    private AuthReturn loggedInSystemAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

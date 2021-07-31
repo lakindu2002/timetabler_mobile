@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.cb007787.timetabler.R;
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class StudentUserProfile extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private AuthReturnDTO loggedInUser;
+    private AuthReturn loggedInUser;
     private String jwtToken;
 
     @Override
