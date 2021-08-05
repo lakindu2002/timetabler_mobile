@@ -123,7 +123,13 @@ public class StudentEnrolments extends AppCompatActivity {
         if (response.isSuccessful()) {
             //modules received
             List<Module> theModulesInStudentsBatch = response.body();
-            showRecycler(theModulesInStudentsBatch);
+            if (theModulesInStudentsBatch.size() > 0) {
+                showRecycler(theModulesInStudentsBatch);
+            } else {
+                Snackbar theSnackBar = Snackbar.make(toolbar, "There are no modules enrolled to your batch.", Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
+                theSnackBar.show();
+            }
         } else {
             //error from api
             ErrorResponseAPI theErrorResponse = APIConfigurer.getTheErrorReturned(response.errorBody());
