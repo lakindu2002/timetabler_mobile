@@ -7,8 +7,17 @@ public class BatchShow {
     private String batchName;
     private List<User> studentList;
     private List<Module> moduleList;
+    private List<LectureShow> lecturesForBatch;
 
     public BatchShow() {
+    }
+
+    public List<LectureShow> getLecturesForBatch() {
+        return lecturesForBatch;
+    }
+
+    public void setLecturesForBatch(List<LectureShow> lecturesForBatch) {
+        this.lecturesForBatch = lecturesForBatch;
     }
 
     public String getBatchCode() {

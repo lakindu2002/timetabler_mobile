@@ -42,4 +42,14 @@
     <string name="update_caption">Update Account</string>
     <string name="password_01">Provide New Password</string>
     <string name="password_02">Re-Enter New Password</string>
+    <string name="module_name">Module Name</string>
+    <string name="taught_by">Taught By - </string>
+    <string name="lecturer_name">Lecturer Name</string>
+    <string name="credit_count">Credit Count - </string>
+    <string name="independent_learning">Independent Learning - </string>
+    <string name="contact_learning">Contact Learning - </string>
+    <string name="_30">30</string>
+    <string name="_300_hours">300 Hours</string>
+    <string name="_50_hours">50 Hours</string>
+    <string name="contact_lecturer">Contact Lecturer</string>
 </resources>

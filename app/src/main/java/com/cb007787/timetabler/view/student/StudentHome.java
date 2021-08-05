@@ -42,6 +42,10 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_home);
         getReferences();
+
+        //check if token is valid
+        SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
+
         theNavigation.setNavigationItemSelectedListener(this);
 
         constructToggle();
