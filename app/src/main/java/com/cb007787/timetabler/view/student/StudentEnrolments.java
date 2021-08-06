@@ -146,7 +146,7 @@ public class StudentEnrolments extends AppCompatActivity {
 
     private void getReferences() {
         toolbar = findViewById(R.id.student_toolbar_enrolment);
-        moduleService = APIConfigurer.getApiConfigurer().getTheAPI().create(ModuleService.class);
+        moduleService = APIConfigurer.getApiConfigurer().getModuleService();
         progressIndicator = findViewById(R.id.progress_bar);
         swiper = findViewById(R.id.enrolment_swiper);
         recyclerView = findViewById(R.id.module_recycler);

@@ -28,13 +28,55 @@
                 app:titleTextColor="@color/white" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <FrameLayout
-            android:id="@+id/student_fragment_holder"
+
+        <include
+            android:id="@+id/student_home_loading"
+            layout="@layout/loading_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/student_app_bar"
+            android:visibility="visible" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/student_home_swiper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/student_app_bar" />
+            android:layout_below="@id/student_home_loading">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CalendarView
+                            android:id="@+id/student_lecture_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center" />
+
+                        <Button
+                            android:id="@+id/today_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/student_lecture_view"
+                            android:layout_centerHorizontal="true"
+                            android:backgroundTint="@color/btn_primary"
+                            android:text="@string/today" />
+
+                    </RelativeLayout>
+
+                </androidx.cardview.widget.CardView>
+            </RelativeLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
