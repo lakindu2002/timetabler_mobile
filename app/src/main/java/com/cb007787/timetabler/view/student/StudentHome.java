@@ -35,6 +35,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +77,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
         constructToggle();
         selectedDate = new Date();
+
         swipeRefreshLayout.setOnRefreshListener(() -> loadMyLectures(selectedDate));
 
         todayButton.setOnClickListener(theView -> theCalendar.setDate(new Date().getTime()));
@@ -160,6 +162,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
             @Override
             public void onFailure(@NonNull Call<List<LectureShow>> call, @NonNull Throwable t) {
                 handleError(t);
+                t.printStackTrace();
                 progressIndicator.setVisibility(View.GONE);
 
                 if (swipeRefreshLayout.isRefreshing()) {

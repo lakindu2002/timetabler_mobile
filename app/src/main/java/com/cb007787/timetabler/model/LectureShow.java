@@ -1,14 +1,13 @@
 package com.cb007787.timetabler.model;
 
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
 public class LectureShow {
     private int lectureId;
     private Date lectureDate;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private String startTime;
+    private String endTime;
     private Classroom theClassroom;
     private Module theModule;
     private List<BatchShow> batchesLectureConducedTo;
@@ -32,19 +31,19 @@ public class LectureShow {
         this.lectureDate = lectureDate;
     }
 
-    public LocalTime getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public LocalTime getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
