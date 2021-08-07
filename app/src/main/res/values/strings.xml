@@ -20,7 +20,7 @@
     <string name="operation">My Operations</string>
     <string name="profile">My Profile</string>
     <string name="full_name_header">John Doe</string>
-    <string name="welcome_home">Home</string>
+    <string name="welcome_home">My Timetable</string>
     <string name="openDrawer">Open Drawer</string>
     <string name="closeDrawer">Close Drawer</string>
     <string name="student_header_batch">Batch Code</string>
@@ -53,4 +53,10 @@
     <string name="_50_hours">50 Hours</string>
     <string name="contact_lecturer">Contact Lecturer</string>
     <string name="today">Today</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="start_time_end_time">Start Time - End Time</string>
+    <string name="l4_cr5">L4-CR5</string>
+    <string name="no_lecture_scheduled">No Lectures Scheduled For Date</string>
+    <string name="my_lectures">My Lectures</string>
 </resources>

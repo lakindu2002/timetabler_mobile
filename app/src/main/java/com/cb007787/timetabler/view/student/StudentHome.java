@@ -7,7 +7,8 @@ import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.LectureShow;
+import com.cb007787.timetabler.recyclers.LectureRecycler;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -35,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -53,14 +56,16 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
     private TextView batchCodeHeader;
     private LinearProgressIndicator progressIndicator;
     private CalendarView theCalendar;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private Button todayButton;
+    private RecyclerView theRecyclerView;
+    private TextView noLecture;
 
     private LectureService lectureService;
     private String jwtToken;
     private AuthReturn loggedInStudent;
-
+    private List<LectureShow> loadedLectures = new ArrayList<>();
     private Date selectedDate;
+    private LectureRecycler lectureAdapter;
 
 
     @Override
@@ -78,9 +83,25 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         constructToggle();
         selectedDate = new Date();
 
-        swipeRefreshLayout.setOnRefreshListener(() -> loadMyLectures(selectedDate));
+        todayButton.setOnClickListener(theView -> {
+                    this.selectedDate = new Date();
+                    theCalendar.setDate(selectedDate.getTime());
+                    loadMyLectures(selectedDate);
+                }
+        );
 
-        todayButton.setOnClickListener(theView -> theCalendar.setDate(new Date().getTime()));
+        theCalendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                //show data for selected date
+                Calendar selectedDate = Calendar.getInstance();
+                selectedDate.set(Calendar.DATE, dayOfMonth);
+                selectedDate.set(Calendar.MONTH, month);
+                selectedDate.set(Calendar.YEAR, year);
+
+                loadMyLectures(selectedDate.getTime());
+            }
+        });
 
         try {
             loggedInStudent = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
@@ -89,6 +110,25 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
             Log.i(StudentHome.class.getName(), "ERROR PARSING JSON");
         }
 
+        lectureAdapter = new LectureRecycler(this, loadedLectures);
+        RecyclerView.LayoutManager linearLayout = new LinearLayoutManager(this);
+        theRecyclerView.setLayoutManager(linearLayout);
+        theRecyclerView.setHasFixedSize(true);
+        theRecyclerView.setAdapter(lectureAdapter);
+        lectureAdapter.notifyDataSetChanged();
+    }
+
+    private void loadDataInRecycler(List<LectureShow> loadedLectures) {
+        //load the lectures in the
+        if (loadedLectures.size() > 0) {
+            noLecture.setVisibility(View.GONE);
+            theRecyclerView.setVisibility(View.VISIBLE);
+            lectureAdapter.setLoadedLectures(loadedLectures);
+            lectureAdapter.notifyDataSetChanged();
+        } else {
+            theRecyclerView.setVisibility(View.GONE);
+            noLecture.setVisibility(View.VISIBLE);
+        }
     }
 
     private void constructToggle() {
@@ -107,7 +147,8 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         this.studentToolBar = findViewById(R.id.student_toolbar);
         this.studentLayout = findViewById(R.id.student_drawer_layout);
         this.theNavigation = findViewById(R.id.student_navigation);
-        swipeRefreshLayout = findViewById(R.id.student_home_swiper);
+        theRecyclerView = findViewById(R.id.loaded_lectures);
+        noLecture = findViewById(R.id.no_lecture);
 
         //to retrieve references for the text view in header
         //inflate the Nav Header Layout.
@@ -144,18 +185,10 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
                 try {
                     handleOnResponse(response);
                     progressIndicator.setVisibility(View.GONE);
-
-                    if (swipeRefreshLayout.isRefreshing()) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-
                 } catch (IOException e) {
                     Log.e("loadMyLectures", "FAILED PARSING ERROR BODY");
                     progressIndicator.setVisibility(View.GONE);
 
-                    if (swipeRefreshLayout.isRefreshing()) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
                 }
             }
 
@@ -164,10 +197,6 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
                 handleError(t);
                 t.printStackTrace();
                 progressIndicator.setVisibility(View.GONE);
-
-                if (swipeRefreshLayout.isRefreshing()) {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
             }
         });
     }
@@ -175,6 +204,9 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
     private void handleOnResponse(Response<List<LectureShow>> response) throws IOException {
         if (!response.isSuccessful()) {
             constructError(APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage());
+        } else {
+            this.loadedLectures = response.body();
+            loadDataInRecycler(this.loadedLectures);
         }
     }
 
