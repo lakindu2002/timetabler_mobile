@@ -2,6 +2,7 @@ package com.cb007787.timetabler.view.common;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.AuthService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.system_admin.SystemAdminHome;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.snackbar.Snackbar;
@@ -82,7 +84,7 @@ public class ResetPasswordFragment extends Fragment {
                     requireContext(), PreferenceInformation.PREFERENCE_NAME
             );
         } catch (JsonProcessingException e) {
-            System.out.println("ERROR PARSING JSON");
+            Log.i(ResetPasswordFragment.class.getName(), "ERROR PARSING JSON");
         }
 
         return theInflatedView;
@@ -127,7 +129,7 @@ public class ResetPasswordFragment extends Fragment {
                     try {
                         handleOnResponse(response);
                     } catch (IOException e) {
-                        System.out.println("ERROR PARSING ERROR JSON BODY");
+                        Log.i(ResetPasswordFragment.class.getName(), "ERROR PARSING JSON");
                     }
                 }
 

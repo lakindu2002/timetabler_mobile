@@ -5,7 +5,7 @@ package com.cb007787.timetabler.model;
  *
  * @author Lakindu Hewawasam
  */
-public class AuthReturnDTO {
+public class AuthReturn {
     private String username;
     private String firstName;
     private String lastName;
@@ -13,7 +13,17 @@ public class AuthReturnDTO {
     private String role;
     private long tokenExpiresIn;
 
-    public AuthReturnDTO() {
+    public String batchCode;
+
+    public AuthReturn() {
+    }
+
+    public String getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
     }
 
     public String getUsername() {

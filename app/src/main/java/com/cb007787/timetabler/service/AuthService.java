@@ -1,6 +1,6 @@
 package com.cb007787.timetabler.service;
 
-import com.cb007787.timetabler.model.AuthReturnDTO;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public interface AuthService {
      * @return The return provided from the API on 200 status code.
      */
     @POST(API_ENDPOINT + "login")
-    Call<AuthReturnDTO> login(@Body HashMap<String, String> theLoginRequest);
+    Call<AuthReturn> login(@Body HashMap<String, String> theLoginRequest);
 
     /**
      * Makes an HTTP call to the <b>/reset</b> endpoint of the Auth API to reset default password
