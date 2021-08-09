@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
@@ -24,10 +25,16 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
 
     private final List<Module> moduleList;
     private final Context theContext;
+    private static AuthReturn loggedInUser;
 
     public ModuleRecycler(List<Module> moduleList, Context theContext) {
         this.moduleList = moduleList;
         this.theContext = theContext;
+        try {
+            loggedInUser = SharedPreferenceService.getLoggedInUser(theContext, PreferenceInformation.PREFERENCE_NAME);
+        } catch (JsonProcessingException e) {
+            Log.e("ModuleRecycler", "Error Parsing JSON");
+        }
     }
 
     @NonNull
@@ -77,6 +84,7 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
         //UI elements and everything for one module to be defined here.
 
         private MaterialTextView moduleName;
+        private MaterialTextView taughtByLabel;
         private MaterialTextView lecturerName;
         private MaterialTextView creditCount;
         private MaterialTextView independentHours;
@@ -91,14 +99,13 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
             contactLearning = itemView.findViewById(R.id.contact_learning);
             moduleName = itemView.findViewById(R.id.module_title);
             contactLecturerButton = itemView.findViewById(R.id.contact_lecturer_button);
+            taughtByLabel = itemView.findViewById(R.id.taught_by_label);
 
-            try {
-                if (!SharedPreferenceService.getLoggedInUser(itemView.getContext(), PreferenceInformation.PREFERENCE_NAME).getRole().equalsIgnoreCase("student")) {
-                    //not a student, do not show contact lecturer
-                    contactLecturerButton.setVisibility(View.GONE);
-                }
-            } catch (JsonProcessingException e) {
-                Log.e(ModuleRecycler.class.getName(), "FAILED PARSING JSON");
+            if (loggedInUser.getRole().equalsIgnoreCase("lecturer")) {
+                //not a student, do not show contact lecturer and taught by
+                contactLecturerButton.setVisibility(View.GONE);
+                lecturerName.setVisibility(View.GONE);
+                taughtByLabel.setVisibility(View.GONE);
             }
         }
 

@@ -90,13 +90,15 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
             finish();
 
             return true;
-
         } else if (item.getItemId() == R.id.lecturer_profile) {
             navigationIntent = new Intent(this, SharedUserProfile.class);
             startActivity(navigationIntent);
             return true;
+        } else if (item.getItemId() == R.id.lecturer_modules) {
+            navigationIntent = new Intent(this, LecturerModules.class);
+            startActivity(navigationIntent);
+            return true;
         }
-
         return false;
     }
 }
