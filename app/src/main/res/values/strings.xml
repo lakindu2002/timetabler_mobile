@@ -59,4 +59,5 @@
     <string name="l4_cr5">L4-CR5</string>
     <string name="no_lecture_scheduled">No Lectures Scheduled For Date</string>
     <string name="my_lectures">My Lectures</string>
+    <string name="my_modules">My Modules</string>
 </resources>

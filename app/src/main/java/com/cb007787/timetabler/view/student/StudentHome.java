@@ -105,7 +105,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
         try {
             loggedInStudent = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
-            assignHeadersInNav();
+            assignHeadersInNav(); //add the nav headers based on logged in user
         } catch (JsonProcessingException e) {
             Log.i(StudentHome.class.getName(), "ERROR PARSING JSON");
         }
@@ -159,7 +159,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         this.batchCodeHeader = theHeader.findViewById(R.id.student_header_batch);
         theCalendar = findViewById(R.id.student_lecture_view);
         progressIndicator = findViewById(R.id.progress_bar);
-        batchCodeHeader.setVisibility(View.VISIBLE);
+        batchCodeHeader.setVisibility(View.VISIBLE); //match batch title visible to user
         lectureService = APIConfigurer.getApiConfigurer().getLectureService();
         todayButton = findViewById(R.id.today_btn);
     }
