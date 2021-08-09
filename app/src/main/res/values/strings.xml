@@ -60,4 +60,5 @@
     <string name="no_lecture_scheduled">No Lectures Scheduled For Date</string>
     <string name="my_lectures">My Lectures</string>
     <string name="my_modules">My Modules</string>
+    <string name="schedule_a_lecture">Schedule a Lecture</string>
 </resources>

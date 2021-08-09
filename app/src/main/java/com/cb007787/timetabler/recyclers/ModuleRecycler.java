@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,7 +58,7 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
         holder.getIndependentHours().setText(String.format("%s Hours", theModuleAtPosition.getIndependentHours()));
         holder.getContactLearning().setText(String.format("%s Hours", theModuleAtPosition.getContactHours()));
 
-        if (holder.getContactLecturerButton() != null) {
+        if (holder.getContactLecturerButton().getVisibility() == View.VISIBLE) {
             holder.getContactLecturerButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -70,6 +71,10 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
                     theContext.startActivity(Intent.createChooser(theEmailIntent, "Contact The Lecturer For This Module"));
                 }
             });
+        }
+
+        if (holder.getScheduleLectureButton().getVisibility() == View.VISIBLE) {
+            Toast.makeText(theContext, "Schedule Clicked", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -89,7 +94,8 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
         private MaterialTextView creditCount;
         private MaterialTextView independentHours;
         private MaterialTextView contactLearning;
-        private Button contactLecturerButton;
+        private Button contactLecturerButton; //used by student
+        private Button scheduleLectureButton; //used by lecturer
 
         public ModuleViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -100,13 +106,22 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
             moduleName = itemView.findViewById(R.id.module_title);
             contactLecturerButton = itemView.findViewById(R.id.contact_lecturer_button);
             taughtByLabel = itemView.findViewById(R.id.taught_by_label);
+            scheduleLectureButton = itemView.findViewById(R.id.schedule_lecture_button);
 
             if (loggedInUser.getRole().equalsIgnoreCase("lecturer")) {
                 //not a student, do not show contact lecturer and taught by
+                //show schedule lecture btn
                 contactLecturerButton.setVisibility(View.GONE);
+                scheduleLectureButton.setVisibility(View.VISIBLE);
                 lecturerName.setVisibility(View.GONE);
                 taughtByLabel.setVisibility(View.GONE);
+            } else if (loggedInUser.getRole().equalsIgnoreCase("student")) {
+                contactLecturerButton.setVisibility(View.VISIBLE);
             }
+        }
+
+        public Button getScheduleLectureButton() {
+            return scheduleLectureButton;
         }
 
         public Button getContactLecturerButton() {

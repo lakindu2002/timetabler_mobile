@@ -150,7 +150,25 @@
             android:fontFamily="@font/poppins_medium"
             android:text="@string/contact_lecturer"
             android:textAllCaps="false"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <!--button visibility depends on user type-->
+        <Button
+            android:id="@+id/schedule_lecture_button"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_below="@id/contact_learning_label"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/btn_primary"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/schedule_a_lecture"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>
