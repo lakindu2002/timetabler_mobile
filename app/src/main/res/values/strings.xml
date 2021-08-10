@@ -63,4 +63,12 @@
     <string name="schedule_header">Schedule a Lecture</string>
     <string name="module_information">Module Name</string>
     <string name="classroom_for_lecture">Classroom for Lecture</string>
+    <string name="lecture_date">Lecture Date</string>
+    <string name="lecture_date_format">mm/dd/yyyy</string>
+    <string name="time_label">--:-- --</string>
+    <string name="lecture_commencing_time">Lecture Commencing Time</string>
+    <string name="lecture_finishing_time">Lecture Finishing Time</string>
+    <string name="select_batches_to_schedule_lecture_for">Select Batches To Schedule Lecture For</string>
+    <string name="module_taught_by">Module Taught By -</string>
+    <string name="schedule_lecture">Schedule Lecture</string>
 </resources>

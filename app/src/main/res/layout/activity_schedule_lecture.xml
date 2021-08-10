@@ -38,45 +38,149 @@
             android:layout_height="match_parent">
 
 
-            <RelativeLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp">
+                android:layout_margin="15dp"
+                app:cardBackgroundColor="@color/background"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="20dp">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/module_label"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="@string/module_information"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    android:padding="20dp">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/module_information"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/module_label"
-                    android:fontFamily="@font/poppins"
-                    android:paddingTop="5dp"
-                    android:text="@string/module_information"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/module_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="@string/module_information"
+                        android:textSize="16sp" />
 
-                <!--classroom-->
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/classroom_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/module_information"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:paddingTop="10dp"
-                    android:text="@string/classroom_for_lecture"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-            </RelativeLayout>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/module_information"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/module_label"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/module_information"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lecturer_name_schedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/module_information"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="5dp"
+                        android:text="@string/module_taught_by"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+
+                    <!--classroom-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/classroom_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/lecturer_name_schedule"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:paddingTop="10dp"
+                        android:text="@string/classroom_for_lecture"
+                        android:textSize="16sp" />
+
+                    <!--classroom list-->
+
+                    <!-- lecture date-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lecture_date_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/classroom_label"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:paddingTop="5dp"
+                        android:text="@string/lecture_date"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lecture_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/lecture_date_label"
+                        android:text="@string/lecture_date_format"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <!-- start time-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/start_time_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/lecture_date"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:paddingTop="5dp"
+                        android:text="@string/lecture_commencing_time"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/start_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/start_time_label"
+                        android:text="@string/time_label"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <!-- end time-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/end_time_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/start_time"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:paddingTop="5dp"
+                        android:text="@string/lecture_finishing_time"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/end_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/end_time_label"
+                        android:text="@string/time_label"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <!-- batch list-->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/batch_list_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/end_time"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:paddingTop="5dp"
+                        android:text="@string/select_batches_to_schedule_lecture_for"
+                        android:textSize="16sp" />
+
+                    <Button
+                        android:id="@+id/schedule_lecture_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_below="@id/batch_list_label"
+                        android:layout_centerHorizontal="true"
+                        android:layout_margin="20dp"
+                        android:backgroundTint="@color/btn_primary"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="@string/schedule_lecture"
+                        android:textAllCaps="false"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
         </ScrollView>
-
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
