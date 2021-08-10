@@ -2,11 +2,13 @@ package com.cb007787.timetabler.service;
 
 
 import com.cb007787.timetabler.model.LectureShow;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 
 import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Path;
@@ -27,4 +29,7 @@ public interface LectureService {
 
     @GET(BASE_ENDPOINT + "findModuleAndClassroomsForLectureSchedule/{moduleId}")
     Call<HashMap<String, Object>> getModuleInformationAndClassroomForSchedule(@Header("Authorization") String token, @Path("moduleId") int moduleIdPassedFromIntent);
+
+    @DELETE(BASE_ENDPOINT + "cancel/{lectureId}")
+    Call<SuccessResponseAPI> cancelLecture(@Header("Authorization") String token, @Path("lectureId") int lectureId);
 }

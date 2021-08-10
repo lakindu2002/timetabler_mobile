@@ -179,6 +179,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
     private void loadMyLectures(Date selectedDate) {
         progressIndicator.setVisibility(View.VISIBLE);
+        theCalendar.setDate(selectedDate.getTime());
 
         Call<List<LectureShow>> myLectureCall = lectureService.getMyLectures(jwtToken, new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(selectedDate));
         myLectureCall.enqueue(new Callback<List<LectureShow>>() {

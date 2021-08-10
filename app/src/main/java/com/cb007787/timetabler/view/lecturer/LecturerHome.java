@@ -37,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,7 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
     private AuthReturn loggedInLecturer;
     private String token;
     private LectureService lectureService;
+    private List<LectureShow> lectureList = new ArrayList<>();
 
     private DrawerLayout lecturerDrawer;
     private NavigationView theLecturerNavigation;
@@ -72,8 +74,6 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
 
         SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME); //if token is valid, else logout
         token = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
-
-        layoutManager = new LinearLayoutManager(this);
 
         try {
             loggedInLecturer = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
@@ -123,6 +123,11 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
 
         theLecturerNavigation.setNavigationItemSelectedListener(this);
 
+        layoutManager = new LinearLayoutManager(this);
+        adapter = new LectureRecycler(this, lectureList);
+        LectureRecycler.setUserRole(loggedInLecturer.getRole()); //set user role to allow for deleting and updating.
+        loadedLectures.setAdapter(adapter); //show the lectures below the calendar.
+        loadedLectures.setLayoutManager(layoutManager); //assign a linear layout for the recycler view.
     }
 
     private void getReferences() {
@@ -150,7 +155,7 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
         if (lecturerDrawer.isDrawerOpen(GravityCompat.START)) {
             lecturerDrawer.closeDrawer(GravityCompat.START);
         }
-        Intent navigationIntent = null;
+        Intent navigationIntent;
 
         if (item.getItemId() == R.id.lecturer_logout) {
             Toast.makeText(this, "You have successfully logged out", Toast.LENGTH_LONG).show();
@@ -179,12 +184,12 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        loadedLectures.setLayoutManager(layoutManager); //assign a linear layout for the recycler view.
         //get lectures for selected date.
         getLecturesForSelectedDate(new Date());
     }
 
-    private void getLecturesForSelectedDate(Date selectedDate) {
+    public void getLecturesForSelectedDate(Date selectedDate) {
+        calendarView.setDate(selectedDate.getTime());
         loadingBar.setVisibility(View.VISIBLE);
         Call<List<LectureShow>> myLectureCall = lectureService.getMyLectures(token, new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(selectedDate));
         myLectureCall.enqueue(new Callback<List<LectureShow>>() {
@@ -209,6 +214,9 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
     }
 
     private void handleOnResponse(Response<List<LectureShow>> response) throws IOException {
+        loadedLectures.setVisibility(View.VISIBLE);
+        noLectureBanner.setVisibility(View.GONE);
+
         if (response.isSuccessful()) {
             if (response.body().size() == 0) {
                 //no lectures
@@ -218,10 +226,7 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
                 //have lectures
                 loadedLectures.setVisibility(View.VISIBLE);
                 noLectureBanner.setVisibility(View.GONE);
-
-                adapter = new LectureRecycler(this, response.body());
-                LectureRecycler.setUserRole(loggedInLecturer.getRole()); //set user role to allow for deleting and updating.
-                loadedLectures.setAdapter(adapter); //show the lectures below the calendar.
+                adapter.setTheLectureList(response.body());
             }
         } else {
             loadedLectures.setVisibility(View.GONE);
