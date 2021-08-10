@@ -201,6 +201,8 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
             @Override
             public void onFailure(@NonNull Call<List<LectureShow>> call, @NonNull Throwable t) {
                 constructError(t.getLocalizedMessage());
+                loadedLectures.setVisibility(View.GONE);
+                noLectureBanner.setVisibility(View.VISIBLE);
                 loadingBar.setVisibility(View.GONE);
             }
         });
@@ -221,6 +223,8 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
                 loadedLectures.setAdapter(adapter); //show the lectures below the calendar.
             }
         } else {
+            loadedLectures.setVisibility(View.GONE);
+            noLectureBanner.setVisibility(View.VISIBLE);
             constructError(APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage());
         }
     }
