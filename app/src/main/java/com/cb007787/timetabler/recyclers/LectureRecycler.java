@@ -51,7 +51,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
 
     public void setTheLectureList(List<LectureShow> theLectureList) {
         this.theLectureList = theLectureList;
-        notifyDataSetChanged();
+        notifyDataSetChanged(); //trigger a notification to the adapter so that it updates the data respectively.
     }
 
     public static String getUserRole() {
@@ -85,9 +85,11 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         }
 
         if (holder.getDeleteButton().getVisibility() == View.VISIBLE) {
+            //when the academic admin or the lecturer clicks cancel lecture
             holder.getDeleteButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //show the popup modal for the delete
                     showDeleteModal(theLectureForView, holder.getBatchLecturerView());
                 }
             });
@@ -110,50 +112,62 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
     }
 
     private void showDeleteModal(LectureShow theLectureForView, View holder) {
+        //construct a material dialog
         MaterialAlertDialogBuilder deleteDialog = new MaterialAlertDialogBuilder(theContext);
         deleteDialog.setTitle("Cancel Session");
         deleteDialog.setMessage("Are you sure that you want to cancel this session?");
         deleteDialog.setNegativeButton("Close", (dialog, which) -> {
+            //user click close.
             //do nothing
         });
         deleteDialog.setPositiveButton("Cancel Lecture", (dialog, which) -> {
-            //cancel the session from the database.
+            //user click cancel, cancel the session from the database.
+            //construct loading spinner to show action occuring
             ProgressDialog theDeleteProgress = new ProgressDialog(theContext);
             theDeleteProgress.setCancelable(false);
             theDeleteProgress.setMessage("Cancelling the lecture...");
             theDeleteProgress.show();
 
+            //execute api call
             deleteLectureFromDB(theDeleteProgress, holder, theLectureForView);
         });
 
-        deleteDialog.show();
+        deleteDialog.show(); //show delete popup
     }
 
     private void deleteLectureFromDB(ProgressDialog theDeleteProgress, View theView, LectureShow theLectureForView) {
         Call<SuccessResponseAPI> deleteCall = lectureService.cancelLecture(SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME), theLectureForView.getLectureId());
-
+        //hit the call asynchronously
         deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
             @Override
             public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                //api sent success or failure
                 theDeleteProgress.hide();
                 if (response.isSuccessful()) {
+                    //cancelled successfully
+
                     //check user role and refresh the page for lectures
                     if (getUserRole().equalsIgnoreCase("lecturer")) {
                         LecturerHome theHomeOfLecturer = (LecturerHome) theContext;
                         theHomeOfLecturer.getLecturesForSelectedDate(new Date()); //load today lectures for lecturer to refresh from DB
+                        //fill lecturer home with today lectures
                     } else {
                         //fill academic admin
                     }
+                    //general success message
                     Snackbar theSnackbar = Snackbar.make(theView, response.body().getMessage(), Snackbar.LENGTH_LONG);
                     theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_success, null));
                     theSnackbar.show();
                 } else {
+                    //response didn't execute successfully
                     theDeleteProgress.hide();
                     try {
+                        //show error message
                         Snackbar theSnackbar = Snackbar.make(theView, APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage(), Snackbar.LENGTH_INDEFINITE);
                         theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_danger, null));
                         theSnackbar.show();
                     } catch (IOException e) {
+                        //failed to obtain pojo from json error
                         Log.e("Error", e.getLocalizedMessage());
                         Snackbar theSnackbar = Snackbar.make(theView, "We ran into an unexpected error. Please try again.", Snackbar.LENGTH_INDEFINITE);
                         theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_danger, null));
@@ -165,6 +179,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
 
             @Override
             public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                //failed to send or parse request
                 theDeleteProgress.hide();
                 Snackbar theSnackbar = Snackbar.make(theView, "We ran into an unexpected error. Please try again.", Snackbar.LENGTH_INDEFINITE);
                 theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_danger, null));
@@ -176,10 +191,6 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
     @Override
     public int getItemCount() {
         return theLectureList.size();
-    }
-
-    public void setLoadedLectures(List<LectureShow> loadedLectures) {
-        this.theLectureList = loadedLectures;
     }
 
     public static class LectureHolder extends RecyclerView.ViewHolder {

@@ -125,8 +125,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         if (loadedLectures.size() > 0) {
             noLecture.setVisibility(View.GONE);
             theRecyclerView.setVisibility(View.VISIBLE);
-            lectureAdapter.setLoadedLectures(loadedLectures);
-            lectureAdapter.notifyDataSetChanged();
+            lectureAdapter.setTheLectureList(loadedLectures);
         } else {
             theRecyclerView.setVisibility(View.GONE);
             noLecture.setVisibility(View.VISIBLE);
