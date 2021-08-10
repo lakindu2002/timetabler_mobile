@@ -15,6 +15,13 @@ import retrofit2.http.Query;
 public interface LectureService {
     String BASE_ENDPOINT = "lectures/";
 
+    /**
+     * Get all lectures for given date
+     *
+     * @param token       JWT Token for authorization
+     * @param requestBody In dd-MM-yyyy format
+     * @return the list of lectures for selected date.
+     */
     @GET(BASE_ENDPOINT + "getMyLectures")
     Call<List<LectureShow>> getMyLectures(@Header("Authorization") String token, @Query("selectedDate") String requestBody);
 

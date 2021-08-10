@@ -23,6 +23,68 @@
                 app:title="@string/welcome_home"
                 app:titleTextColor="@color/white" />
         </com.google.android.material.appbar.AppBarLayout>
+
+
+        <include
+            android:id="@+id/lecturer_loading"
+            layout="@layout/loading_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/app_bar_lecturer"
+            android:visibility="visible" />
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/calendar_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lecturer_loading"
+            android:layout_centerHorizontal="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <CalendarView
+                    android:id="@+id/lecturer_lecture_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/today_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lecturer_lecture_view"
+                    android:layout_centerHorizontal="true"
+                    android:backgroundTint="@color/btn_primary"
+                    android:text="@string/today" />
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/loaded_lectures"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/calendar_card" />
+
+        <TextView
+            android:id="@+id/no_lecture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/calendar_card"
+            android:layout_centerInParent="true"
+            android:background="@color/btn_primary"
+            android:fontFamily="@font/poppins"
+            android:padding="15dp"
+            android:text="@string/no_lecture_scheduled"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

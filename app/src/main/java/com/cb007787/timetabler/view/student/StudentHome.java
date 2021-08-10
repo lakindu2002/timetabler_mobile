@@ -222,6 +222,9 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (studentLayout.isDrawerOpen(GravityCompat.START)) {
+            studentLayout.closeDrawer(GravityCompat.START);
+        }
         Intent navigationIntent = null;
         boolean isSelected = false;
 
