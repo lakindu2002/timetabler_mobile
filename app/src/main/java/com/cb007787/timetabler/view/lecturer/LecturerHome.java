@@ -220,6 +220,7 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
                 noLectureBanner.setVisibility(View.GONE);
 
                 adapter = new LectureRecycler(this, response.body());
+                LectureRecycler.setUserRole(loggedInLecturer.getRole()); //set user role to allow for deleting and updating.
                 loadedLectures.setAdapter(adapter); //show the lectures below the calendar.
             }
         } else {

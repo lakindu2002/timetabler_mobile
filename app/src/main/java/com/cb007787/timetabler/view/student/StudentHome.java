@@ -116,6 +116,8 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         theRecyclerView.setHasFixedSize(true);
         theRecyclerView.setAdapter(lectureAdapter);
         lectureAdapter.notifyDataSetChanged();
+
+        LectureRecycler.setUserRole(loggedInStudent.getRole());
     }
 
     private void loadDataInRecycler(List<LectureShow> loadedLectures) {
