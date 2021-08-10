@@ -7,7 +7,7 @@
                     android:id="@+id/lecturer_modules"
                     android:enabled="true"
                     android:icon="@drawable/ic_enrolments"
-                    android:title="@string/my_modules" />
+                    android:title="@string/my_modules_schedule_lecture" />
             </menu>
         </item>
     </group>

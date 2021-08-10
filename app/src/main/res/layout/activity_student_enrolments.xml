@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".view.common.SharedUserProfile">
+    tools:context=".view.common.shared.SharedUserProfile">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/student_enrolments_app_bar"

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +16,9 @@ import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.lecturer.ScheduleLecture;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
@@ -74,9 +75,22 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
         }
 
         if (holder.getScheduleLectureButton().getVisibility() == View.VISIBLE) {
-            Toast.makeText(theContext, "Schedule Clicked", Toast.LENGTH_SHORT).show();
+            holder.getScheduleLectureButton().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //method to handle click of schedule lecture button
+                    if (theModuleAtPosition.getTheBatchList().size() > 0) {
+                        Intent createModuleIntent = new Intent(theContext, ScheduleLecture.class);
+                        createModuleIntent.putExtra("theModuleId", theModuleAtPosition.getModuleId()); //put the module id as a string to intent so it can be accessed from next activity
+                        theContext.startActivity(createModuleIntent);
+                    } else {
+                        Snackbar theSnackbar = Snackbar.make(v, "This module has no batches enrolled to it. Therefore, you cannot schedule any lectures for it", Snackbar.LENGTH_LONG);
+                        theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_danger, null));
+                        theSnackbar.show();
+                    }
+                }
+            });
         }
-
     }
 
     @Override

@@ -29,7 +29,7 @@ import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.common.CommonContainer;
-import com.cb007787.timetabler.view.common.SharedUserProfile;
+import com.cb007787.timetabler.view.common.shared.SharedUserProfile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;

@@ -1,4 +1,4 @@
-package com.cb007787.timetabler.view.common;
+package com.cb007787.timetabler.view.common.shared;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
