@@ -285,12 +285,15 @@ public class ScheduleLecture extends AppCompatActivity {
         moduleName.setText(loadedModule.getModuleName());
         moduleTaughtBy.setText(String.format("Taught By - %s %s", loadedModule.getTheLecturer().getFirstName(), loadedModule.getTheLecturer().getLastName()));
 
+        //create an array adapter that can be used in the classroom layout containing one single text view
         ArrayAdapter<String> classroomNameList = new ArrayAdapter<String>(this, R.layout.classroom_layout);
         for (Classroom eachClassroomInDb : loadedClassrooms) {
+            //add the classroom information to the array adapter
             classroomNameList.add(String.format(Locale.ENGLISH,
                     "%s \nCapacity - %d \nAC - %s\nSmart Board - %s"
                     , eachClassroomInDb.getClassroomName(), eachClassroomInDb.getMaxCapacity(), eachClassroomInDb.isAcPresent(), eachClassroomInDb.isSmartBoardPresent()));
         }
+        //set the adapter so that for the classroom dropdown the classroom list from the database will be available.
         classroomList.setAdapter(classroomNameList);
     }
 
