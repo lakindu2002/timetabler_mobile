@@ -145,21 +145,33 @@
                         android:text="@string/lecture_finishing_time"
                         android:textSize="16sp" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/end_time"
-                        android:layout_width="wrap_content"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/end_time_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/end_time_label"
-                        android:text="@string/time_label"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:layout_below="@id/end_time_label">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/end_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/end_time_label"
+                            android:enabled="false"
+                            android:inputType="none"
+                            android:text="@string/time_label"
+                            android:textColor="@color/black"
+                            android:textSize="16sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
 
                     <!-- batch list-->
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/batch_list_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/end_time"
+                        android:layout_below="@id/end_time_layout"
                         android:fontFamily="@font/poppins_semibold"
                         android:paddingTop="5dp"
                         android:text="@string/select_batches_to_schedule_lecture_for"

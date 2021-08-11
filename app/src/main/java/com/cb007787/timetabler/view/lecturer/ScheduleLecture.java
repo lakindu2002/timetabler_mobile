@@ -6,11 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.Classroom;
@@ -22,13 +25,26 @@ import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,6 +62,13 @@ public class ScheduleLecture extends AppCompatActivity {
     private LinearProgressIndicator loadingBar;
     private SwipeRefreshLayout swiper;
 
+    //schedule inputs
+    private MaterialTextView moduleName;
+    private MaterialTextView moduleTaughtBy;
+    private MaterialTextView lectureDate;
+    private MaterialTextView lectureCommencingTime;
+    private TextInputEditText lectureFinishingTime;
+    private Button scheduleLectureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +93,105 @@ public class ScheduleLecture extends AppCompatActivity {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        swiper.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getModuleForLectureSchedule();
+        swiper.setOnRefreshListener(this::getModuleForLectureSchedule);
+
+        lectureDate.setOnClickListener(v -> constructDatePickerForLectureDateSelection());
+
+        lectureCommencingTime.setOnClickListener(v -> {
+            //when user click on time input,
+            //open time picker
+            constructTimePickerForLectureTimeSelection("lectureStartTime");
+        });
+
+        lectureFinishingTime.setOnClickListener(v -> {
+            constructTimePickerForLectureTimeSelection("lectureFinishingTime");
+        });
+
+        scheduleLectureButton.setOnClickListener(v -> {
+            //user click schedule button
+            handleScheduleClick();
+        });
+    }
+
+    /**
+     * key - lectureStartTime or lectureEndTime
+     * maximum schedule time - 18:00
+     * minimum schedule time - 8:00
+     *
+     * @param key The mode to determine if start or end time is selected.
+     */
+    private void constructTimePickerForLectureTimeSelection(String key) {
+        String titleText = key.equals("lectureStartTime") ? "Lecture Commencing Time" : "Lecture Finishing Time";
+        Calendar currentTime = Calendar.getInstance();
+        //create a timepicker to initially show current time from system
+        MaterialTimePicker theTimePicker = new MaterialTimePicker.Builder()
+                .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK) //show clock face inputs
+                .setHour(currentTime.get(Calendar.HOUR))
+                .setMinute(currentTime.get(Calendar.MINUTE))
+                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setTitleText(titleText)
+                .build();
+
+        theTimePicker.addOnCancelListener(DialogInterface::cancel);
+        theTimePicker.addOnDismissListener(DialogInterface::dismiss);
+        theTimePicker.addOnPositiveButtonClickListener(v -> {
+            //user submit the time
+            //retrieve the hour and minute the user selected.
+
+            //used to format the time
+            SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+            Calendar formatHelper = Calendar.getInstance();
+
+            int selectedHour = theTimePicker.getHour();
+            int selectedMinute = theTimePicker.getMinute();
+
+            formatHelper.set(Calendar.HOUR, selectedHour);
+            formatHelper.set(Calendar.MINUTE, selectedMinute);
+
+            String formattedTime = timeFormatter.format(formatHelper.getTime());
+
+            if (key.equalsIgnoreCase("lectureStartTime")) {
+                //set time on start time
+                lectureCommencingTime.setText(formattedTime);
+            } else {
+                //set time on end time
+                lectureFinishingTime.setText(formattedTime);
+            }
+        });
+
+
+        theTimePicker.show(getSupportFragmentManager(), "LECTURE_TIME_PICKER");
+    }
+
+    private void constructDatePickerForLectureDateSelection() {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder
+                .datePicker()
+                .setTitleText("Lecture Date")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
+                .build();
+
+        datePicker.show(getSupportFragmentManager(), "LECTURE_DATE_PICKER");
+
+        datePicker.addOnCancelListener(DialogInterface::dismiss); //when user clicks cancel, dismiss dialog
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            //user clicks okay
+            //method input - millisecond of time date
+            //show the selected lecture date.
+            SimpleDateFormat theFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+            Date userSelectedDateInDateFormat = new Date(selection);
+
+            Calendar todayDate = Calendar.getInstance();
+            todayDate.set(Calendar.HOUR, 0);
+            todayDate.set(Calendar.MINUTE, 0);
+            todayDate.set(Calendar.SECOND, 0);
+
+            if (userSelectedDateInDateFormat.getTime() < todayDate.getTimeInMillis()) {
+                //user selected previous date, do not allow
+                constructError("Please select a date that is today or after today", true);
+            } else {
+                String selectedDate = theFormat.format(userSelectedDateInDateFormat);
+                lectureDate.setText(selectedDate);
             }
         });
     }
@@ -83,6 +201,12 @@ public class ScheduleLecture extends AppCompatActivity {
         this.theToolbar = findViewById(R.id.toolbar);
         this.loadingBar = findViewById(R.id.progress_bar);
         this.swiper = findViewById(R.id.swiper);
+        this.moduleName = findViewById(R.id.module_information);
+        this.moduleTaughtBy = findViewById(R.id.lecturer_name_schedule);
+        this.lectureDate = findViewById(R.id.lecture_date);
+        this.lectureCommencingTime = findViewById(R.id.start_time);
+        this.lectureFinishingTime = findViewById(R.id.end_time);
+        this.scheduleLectureButton = findViewById(R.id.schedule_lecture_button);
     }
 
     @Override
@@ -142,6 +266,8 @@ public class ScheduleLecture extends AppCompatActivity {
 
     private void showInView() {
         //show module and classrooms in view and ask to schedule lecture.
+        moduleName.setText(loadedModule.getModuleName());
+        moduleTaughtBy.setText(String.format("Module Taught By - %s %s", loadedModule.getTheLecturer().getFirstName(), loadedModule.getTheLecturer().getLastName()));
     }
 
     private void constructError(String errorMessage, boolean isInfo) {
@@ -152,6 +278,12 @@ public class ScheduleLecture extends AppCompatActivity {
             theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
         }
         theSnackBar.show();
+    }
+
+    /**
+     * Method executed once user clicks schedule lecture.
+     */
+    private void handleScheduleClick() {
     }
 
     @Override
