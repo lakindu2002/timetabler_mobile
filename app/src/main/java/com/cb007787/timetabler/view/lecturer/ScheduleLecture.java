@@ -15,37 +15,35 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.Classroom;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
-import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,11 +57,11 @@ public class ScheduleLecture extends AppCompatActivity {
     private String token;
     private List<Classroom> loadedClassrooms;
     private Module loadedModule;
+    private ArrayList<String> selectedBatches = new ArrayList<>(); //used to hold selected batches in checkbox.
 
     private LectureService lectureService;
     private Toolbar theToolbar;
     private LinearProgressIndicator loadingBar;
-    private SwipeRefreshLayout swiper;
 
     //schedule inputs
     private MaterialTextView moduleName;
@@ -75,6 +73,8 @@ public class ScheduleLecture extends AppCompatActivity {
     private ImageButton lectureDateSelector;
     private ImageButton commencingTimeSelector;
     private ImageButton finishingTimeSelector;
+    private MaterialCheckBox eachBatchCheckbox;
+    private LinearLayout checkboxLayout; //used to hold list of checkboxes.
     private Button scheduleLectureButton;
 
     @Override
@@ -104,8 +104,6 @@ public class ScheduleLecture extends AppCompatActivity {
             supportActionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_baseline_arrow_back_24, null));
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        swiper.setOnRefreshListener(this::getModuleForLectureSchedule);
 
         lectureDateSelector.setOnClickListener(v -> constructDatePickerForLectureDateSelection());
 
@@ -212,7 +210,6 @@ public class ScheduleLecture extends AppCompatActivity {
         this.lectureService = APIConfigurer.getApiConfigurer().getLectureService();
         this.theToolbar = findViewById(R.id.toolbar);
         this.loadingBar = findViewById(R.id.progress_bar);
-        this.swiper = findViewById(R.id.swiper);
         this.moduleName = findViewById(R.id.module_information);
         this.moduleTaughtBy = findViewById(R.id.lecturer_name_schedule);
         this.lectureDate = findViewById(R.id.lecture_date);
@@ -223,6 +220,7 @@ public class ScheduleLecture extends AppCompatActivity {
         this.lectureDateSelector = findViewById(R.id.lecture_date_select_button);
         this.finishingTimeSelector = findViewById(R.id.finish_time_select_button);
         this.classroomList = findViewById(R.id.classroom_list);
+        this.checkboxLayout = findViewById(R.id.checkbox_layout);
     }
 
     @Override
@@ -233,6 +231,7 @@ public class ScheduleLecture extends AppCompatActivity {
     }
 
     private void getModuleForLectureSchedule() {
+        scheduleLectureButton.setEnabled(true);
         loadingBar.setVisibility(View.VISIBLE);
 
         Call<HashMap<String, Object>> classroomAndModuleCall = lectureService.getModuleInformationAndClassroomForSchedule(token, moduleIdPassedFromIntent);
@@ -240,12 +239,10 @@ public class ScheduleLecture extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<HashMap<String, Object>> call, @NonNull Response<HashMap<String, Object>> response) {
                 loadingBar.setVisibility(View.GONE);
-                if (swiper.isRefreshing()) {
-                    swiper.setRefreshing(false);
-                }
                 try {
                     handleOnResponse(response);
                 } catch (IOException e) {
+                    scheduleLectureButton.setEnabled(false);
                     Log.e("onResponse", e.getLocalizedMessage());
                 }
             }
@@ -253,9 +250,7 @@ public class ScheduleLecture extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<HashMap<String, Object>> call, @NonNull Throwable t) {
                 loadingBar.setVisibility(View.GONE);
-                if (swiper.isRefreshing()) {
-                    swiper.setRefreshing(false);
-                }
+                scheduleLectureButton.setEnabled(false);
                 constructError(t.getLocalizedMessage(), false);
             }
         });
@@ -275,8 +270,9 @@ public class ScheduleLecture extends AppCompatActivity {
             showInView();
         } else {
             constructError(
-                    APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage(), true
+                    APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage(), false
             );
+            scheduleLectureButton.setEnabled(false);
         }
     }
 
@@ -295,6 +291,31 @@ public class ScheduleLecture extends AppCompatActivity {
         }
         //set the adapter so that for the classroom dropdown the classroom list from the database will be available.
         classroomList.setAdapter(classroomNameList);
+
+        //create dynamic checkboxes to select the batch
+        for (BatchShow eachBatch : loadedModule.getTheBatchList()) {
+            eachBatchCheckbox = new MaterialCheckBox(this);
+            eachBatchCheckbox.setText(eachBatch.getBatchCode());
+
+            eachBatchCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                //method executed when the checkbox gets checked or unchecked.
+                String batchNameInCheckBox = eachBatchCheckbox.getText().toString();
+                if (isChecked) {
+                    //insert the batch name to the selected batch list
+                    this.selectedBatches.add(batchNameInCheckBox);
+                } else {
+                    //user de-selected the batch, therefore, remove the batch from the list
+                    for (String eachBatchInSelectedList : selectedBatches) {
+                        if (eachBatchInSelectedList.equalsIgnoreCase(batchNameInCheckBox)) {
+                            //remove the string
+                            selectedBatches.remove(eachBatchInSelectedList);
+                            break;
+                        }
+                    }
+                }
+            });
+            checkboxLayout.addView(eachBatchCheckbox);
+        }
     }
 
     private void constructError(String errorMessage, boolean isInfo) {

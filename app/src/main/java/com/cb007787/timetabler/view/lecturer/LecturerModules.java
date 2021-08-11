@@ -95,7 +95,7 @@ public class LecturerModules extends AppCompatActivity {
 
     private void constructError(String errorMessage, boolean isInfo) {
         Snackbar theSnackBar = Snackbar.make(theToolbar, errorMessage, Snackbar.LENGTH_LONG);
-        if (!isInfo) {
+        if (isInfo) {
             theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
         } else {
             theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
