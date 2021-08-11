@@ -71,4 +71,5 @@
     <string name="select_batches_to_schedule_lecture_for">Select Batches To Schedule Lecture For</string>
     <string name="module_taught_by">Module Taught By -</string>
     <string name="schedule_lecture">Schedule Lecture</string>
+    <string name="time_image">Time Image</string>
 </resources>

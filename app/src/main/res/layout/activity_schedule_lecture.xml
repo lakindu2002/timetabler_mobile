@@ -105,65 +105,155 @@
                         android:text="@string/lecture_date"
                         android:textSize="16sp" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/lecture_date"
-                        android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/lecture_date_layout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/lecture_date_label"
-                        android:text="@string/lecture_date_format"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:layout_below="@id/lecture_date_label">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/lecture_date_select_button"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/lecture_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="none"
+                                android:text="@string/lecture_date_format"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageButton
+                            android:id="@+id/lecture_date_select_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="55dp"
+                            android:backgroundTint="@color/btn_info"
+                            android:contentDescription="@string/time_image"
+                            android:src="@drawable/ic_baseline_calendar_today_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                     <!-- start time-->
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/start_time_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/lecture_date"
+                        android:layout_below="@id/lecture_date_layout"
                         android:fontFamily="@font/poppins_semibold"
                         android:paddingTop="5dp"
                         android:text="@string/lecture_commencing_time"
                         android:textSize="16sp" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/start_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/start_time_label"
-                        android:text="@string/time_label"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/start_time_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@id/start_time_label">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/start_time_select_button"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/start_time"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="none"
+                                android:text="@string/time_label"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageButton
+                            android:id="@+id/start_time_select_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="55dp"
+                            android:backgroundTint="@color/btn_info"
+                            android:contentDescription="@string/time_image"
+                            android:src="@drawable/ic_baseline_access_time_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                     <!-- end time-->
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/end_time_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/start_time"
+                        android:layout_below="@id/start_time_layout"
                         android:fontFamily="@font/poppins_semibold"
                         android:paddingTop="5dp"
                         android:text="@string/lecture_finishing_time"
                         android:textSize="16sp" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/end_time_layout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/finish_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_below="@id/end_time_label">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/end_time"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/end_time_label"
-                            android:enabled="false"
-                            android:inputType="none"
-                            android:text="@string/time_label"
-                            android:textColor="@color/black"
-                            android:textSize="16sp" />
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/end_time_layout"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/finish_time_select_button"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
 
-                    </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/end_time"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_below="@id/end_time_label"
+                                android:enabled="false"
+                                android:focusable="false"
+                                android:inputType="none"
+                                android:text="@string/time_label"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageButton
+                            android:id="@+id/finish_time_select_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="55dp"
+                            android:backgroundTint="@color/btn_info"
+                            android:contentDescription="@string/time_image"
+                            android:src="@drawable/ic_baseline_access_time_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                     <!-- batch list-->
@@ -171,7 +261,7 @@
                         android:id="@+id/batch_list_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/end_time_layout"
+                        android:layout_below="@id/finish_layout"
                         android:fontFamily="@font/poppins_semibold"
                         android:paddingTop="5dp"
                         android:text="@string/select_batches_to_schedule_lecture_for"

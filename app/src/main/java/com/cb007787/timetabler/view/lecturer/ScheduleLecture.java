@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
@@ -65,9 +66,12 @@ public class ScheduleLecture extends AppCompatActivity {
     //schedule inputs
     private MaterialTextView moduleName;
     private MaterialTextView moduleTaughtBy;
-    private MaterialTextView lectureDate;
-    private MaterialTextView lectureCommencingTime;
+    private TextInputEditText lectureDate;
+    private TextInputEditText lectureCommencingTime;
     private TextInputEditText lectureFinishingTime;
+    private ImageButton lectureDateSelector;
+    private ImageButton commencingTimeSelector;
+    private ImageButton finishingTimeSelector;
     private Button scheduleLectureButton;
 
     @Override
@@ -75,6 +79,11 @@ public class ScheduleLecture extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_lecture);
         getReferences();
+
+        lectureDate.setEnabled(false);
+        lectureCommencingTime.setEnabled(false);
+        lectureFinishingTime.setEnabled(false);
+
 
         SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
         token = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
@@ -95,15 +104,15 @@ public class ScheduleLecture extends AppCompatActivity {
 
         swiper.setOnRefreshListener(this::getModuleForLectureSchedule);
 
-        lectureDate.setOnClickListener(v -> constructDatePickerForLectureDateSelection());
+        lectureDateSelector.setOnClickListener(v -> constructDatePickerForLectureDateSelection());
 
-        lectureCommencingTime.setOnClickListener(v -> {
+        commencingTimeSelector.setOnClickListener(v -> {
             //when user click on time input,
             //open time picker
             constructTimePickerForLectureTimeSelection("lectureStartTime");
         });
 
-        lectureFinishingTime.setOnClickListener(v -> {
+        finishingTimeSelector.setOnClickListener(v -> {
             constructTimePickerForLectureTimeSelection("lectureFinishingTime");
         });
 
@@ -207,6 +216,9 @@ public class ScheduleLecture extends AppCompatActivity {
         this.lectureCommencingTime = findViewById(R.id.start_time);
         this.lectureFinishingTime = findViewById(R.id.end_time);
         this.scheduleLectureButton = findViewById(R.id.schedule_lecture_button);
+        this.commencingTimeSelector = findViewById(R.id.start_time_select_button);
+        this.lectureDateSelector = findViewById(R.id.lecture_date_select_button);
+        this.finishingTimeSelector = findViewById(R.id.finish_time_select_button);
     }
 
     @Override
