@@ -94,7 +94,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/classroom_label"
-                    android:hint="@string/select_classroom">
+                    android:hint="@string/select_classroom"
+                    app:boxStrokeErrorColor="@color/btn_danger"
+                    app:errorEnabled="true"
+                    app:errorIconTint="@color/btn_danger"
+                    app:errorTextColor="@color/btn_danger">
 
                     <AutoCompleteTextView
                         android:id="@+id/classroom_list"
@@ -124,10 +128,15 @@
                     android:layout_below="@id/lecture_date_label">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/lecture_date_input_layout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
+                        app:boxStrokeErrorColor="@color/btn_danger"
+                        app:errorEnabled="true"
+                        app:errorIconTint="@color/btn_danger"
+                        app:errorTextColor="@color/btn_danger"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/lecture_date_select_button"
                         app:layout_constraintStart_toStartOf="parent"
@@ -147,7 +156,8 @@
                     <ImageButton
                         android:id="@+id/lecture_date_select_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="55dp"
+                        android:layout_height="60dp"
+                        android:layout_marginBottom="15dp"
                         android:backgroundTint="@color/btn_info"
                         android:contentDescription="@string/time_image"
                         android:src="@drawable/ic_baseline_calendar_today_24"
@@ -177,10 +187,15 @@
                     android:layout_below="@id/start_time_label">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/start_time_input_layout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
+                        app:boxStrokeErrorColor="@color/btn_danger"
+                        app:errorEnabled="true"
+                        app:errorIconTint="@color/btn_danger"
+                        app:errorTextColor="@color/btn_danger"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/start_time_select_button"
                         app:layout_constraintStart_toStartOf="parent"
@@ -200,7 +215,8 @@
                     <ImageButton
                         android:id="@+id/start_time_select_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="55dp"
+                        android:layout_height="60dp"
+                        android:layout_marginBottom="15dp"
                         android:backgroundTint="@color/btn_info"
                         android:contentDescription="@string/time_image"
                         android:src="@drawable/ic_baseline_access_time_24"
@@ -234,6 +250,10 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
+                        app:boxStrokeErrorColor="@color/btn_danger"
+                        app:errorEnabled="true"
+                        app:errorIconTint="@color/btn_danger"
+                        app:errorTextColor="@color/btn_danger"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/finish_time_select_button"
                         app:layout_constraintStart_toStartOf="parent"
@@ -256,7 +276,8 @@
                     <ImageButton
                         android:id="@+id/finish_time_select_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="55dp"
+                        android:layout_height="60dp"
+                        android:layout_marginBottom="15dp"
                         android:backgroundTint="@color/btn_info"
                         android:contentDescription="@string/time_image"
                         android:src="@drawable/ic_baseline_access_time_24"
@@ -289,7 +310,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/schedule_lecture_button"
+                    android:id="@+id/confirm_lecture_button"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_below="@id/checkbox_layout"

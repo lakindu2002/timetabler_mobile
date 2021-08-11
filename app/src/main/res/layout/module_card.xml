@@ -155,7 +155,7 @@
 
         <!--button visibility depends on user type-->
         <Button
-            android:id="@+id/schedule_lecture_button"
+            android:id="@+id/confirm_lecture_button"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:layout_below="@id/contact_learning_label"

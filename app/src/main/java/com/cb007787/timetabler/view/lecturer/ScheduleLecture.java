@@ -4,20 +4,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.BatchShow;
@@ -34,13 +34,18 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -75,7 +80,13 @@ public class ScheduleLecture extends AppCompatActivity {
     private ImageButton finishingTimeSelector;
     private MaterialCheckBox eachBatchCheckbox;
     private LinearLayout checkboxLayout; //used to hold list of checkboxes.
-    private Button scheduleLectureButton;
+    private Button confirmLectureButton;
+
+    //layouts to handle errors
+    private TextInputLayout endTimeLayout;
+    private TextInputLayout startTimeLayout;
+    private TextInputLayout lectureDateLayout;
+    private TextInputLayout classroomLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,9 +128,9 @@ public class ScheduleLecture extends AppCompatActivity {
             constructTimePickerForLectureTimeSelection("lectureFinishingTime");
         });
 
-        scheduleLectureButton.setOnClickListener(v -> {
-            //user click schedule button
-            handleScheduleClick();
+        confirmLectureButton.setOnClickListener(v -> {
+            //user click confirm button
+            handleLectureUiClick();
         });
     }
 
@@ -155,7 +166,7 @@ public class ScheduleLecture extends AppCompatActivity {
             int selectedHour = theTimePicker.getHour();
             int selectedMinute = theTimePicker.getMinute();
 
-            formatHelper.set(Calendar.HOUR, selectedHour);
+            formatHelper.set(Calendar.HOUR_OF_DAY, selectedHour);
             formatHelper.set(Calendar.MINUTE, selectedMinute);
 
             String formattedTime = timeFormatter.format(formatHelper.getTime());
@@ -192,9 +203,11 @@ public class ScheduleLecture extends AppCompatActivity {
             Date userSelectedDateInDateFormat = new Date(selection);
 
             Calendar todayDate = Calendar.getInstance();
-            todayDate.set(Calendar.HOUR, 0);
-            todayDate.set(Calendar.MINUTE, 0);
+            //user picked time gets set to the locale of gmt +5:30
+            todayDate.set(Calendar.HOUR_OF_DAY, 5);
+            todayDate.set(Calendar.MINUTE, 30);
             todayDate.set(Calendar.SECOND, 0);
+            todayDate.set(Calendar.MILLISECOND, 0);
 
             if (userSelectedDateInDateFormat.getTime() < todayDate.getTimeInMillis()) {
                 //user selected previous date, do not allow
@@ -215,12 +228,16 @@ public class ScheduleLecture extends AppCompatActivity {
         this.lectureDate = findViewById(R.id.lecture_date);
         this.lectureCommencingTime = findViewById(R.id.start_time);
         this.lectureFinishingTime = findViewById(R.id.end_time);
-        this.scheduleLectureButton = findViewById(R.id.schedule_lecture_button);
+        this.confirmLectureButton = findViewById(R.id.confirm_lecture_button);
         this.commencingTimeSelector = findViewById(R.id.start_time_select_button);
         this.lectureDateSelector = findViewById(R.id.lecture_date_select_button);
         this.finishingTimeSelector = findViewById(R.id.finish_time_select_button);
         this.classroomList = findViewById(R.id.classroom_list);
         this.checkboxLayout = findViewById(R.id.checkbox_layout);
+        this.endTimeLayout = findViewById(R.id.end_time_layout);
+        this.startTimeLayout = findViewById(R.id.start_time_input_layout);
+        this.lectureDateLayout = findViewById(R.id.lecture_date_input_layout);
+        this.classroomLayout = findViewById(R.id.classroom_list_layout);
     }
 
     @Override
@@ -231,7 +248,7 @@ public class ScheduleLecture extends AppCompatActivity {
     }
 
     private void getModuleForLectureSchedule() {
-        scheduleLectureButton.setEnabled(true);
+        confirmLectureButton.setEnabled(true);
         loadingBar.setVisibility(View.VISIBLE);
 
         Call<HashMap<String, Object>> classroomAndModuleCall = lectureService.getModuleInformationAndClassroomForSchedule(token, moduleIdPassedFromIntent);
@@ -242,7 +259,7 @@ public class ScheduleLecture extends AppCompatActivity {
                 try {
                     handleOnResponse(response);
                 } catch (IOException e) {
-                    scheduleLectureButton.setEnabled(false);
+                    confirmLectureButton.setEnabled(false);
                     Log.e("onResponse", e.getLocalizedMessage());
                 }
             }
@@ -250,7 +267,7 @@ public class ScheduleLecture extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<HashMap<String, Object>> call, @NonNull Throwable t) {
                 loadingBar.setVisibility(View.GONE);
-                scheduleLectureButton.setEnabled(false);
+                confirmLectureButton.setEnabled(false);
                 constructError(t.getLocalizedMessage(), false);
             }
         });
@@ -272,7 +289,7 @@ public class ScheduleLecture extends AppCompatActivity {
             constructError(
                     APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage(), false
             );
-            scheduleLectureButton.setEnabled(false);
+            confirmLectureButton.setEnabled(false);
         }
     }
 
@@ -329,9 +346,128 @@ public class ScheduleLecture extends AppCompatActivity {
     }
 
     /**
-     * Method executed once user clicks schedule lecture.
+     * Method executed once user clicks confirm lecture button
      */
-    private void handleScheduleClick() {
+    private void handleLectureUiClick() {
+        //retrieve inputs
+        String selectedClassroomName = classroomList.getText().toString();
+        String selectedDate = lectureDate.getText().toString();
+        String startTime = lectureCommencingTime.getText().toString();
+        String endTime = lectureFinishingTime.getText().toString();
+        String[] selectedBatchCodes = selectedBatches.toArray(new String[selectedBatches.size()]);
+
+        //perform validations on the front end before sending to server.
+        boolean isValid = validateLectureInputs(selectedClassroomName, selectedDate, startTime, endTime, selectedBatchCodes);
+
+        if (isValid) {
+            Toast.makeText(this, "Schedule Lecture", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private boolean validateLectureInputs(String selectedClassroomName, String selectedDate, String startTime, String endTime, String[] selectedBatchCodes) {
+        boolean isValid = false;
+        boolean areTimesPresent = false;
+        boolean isStartValid = false; //check if start time is valid.
+        boolean isEndValid = false; //check if end time is valid.
+
+        if (TextUtils.isEmpty(selectedClassroomName)) {
+            isValid = false;
+            classroomLayout.setError("Please select a classroom to proceed");
+        } else {
+            isValid = true;
+            classroomLayout.setError(null);
+        }
+
+        if (selectedDate.trim().equalsIgnoreCase("mm/dd/yyyy")) {
+            isValid = false;
+            areTimesPresent = false;
+            lectureDateLayout.setError("Please provide a date to proceed");
+        } else {
+            areTimesPresent = true;
+            isValid = true;
+            lectureDateLayout.setError(null);
+        }
+
+        if (startTime.trim().equalsIgnoreCase("--:--")) {
+            isValid = false;
+            areTimesPresent = false;
+            startTimeLayout.setError("Please provide a commencing time to proceed");
+        } else {
+            isValid = true;
+            areTimesPresent = true;
+            startTimeLayout.setError(null);
+        }
+
+        if (endTime.trim().equalsIgnoreCase("--:--")) {
+            isValid = false;
+            areTimesPresent = false;
+            endTimeLayout.setError("Please provide a finishing time to proceed");
+        } else {
+            isValid = true;
+            areTimesPresent = true;
+            endTimeLayout.setError(null);
+        }
+
+        if (selectedBatchCodes.length == 0) {
+            isValid = false;
+            constructError("Please select a batch to proceed", false);
+        } else {
+            isValid = true;
+        }
+
+        if (areTimesPresent) {
+            //validate the times.
+            //check if start time == end time
+            //check if end time before start time
+            //check if start time before min and after max time
+            //check if end time before min and after max time
+            SimpleDateFormat theDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+            try {
+                //format the start and end time to the defined format in the simple date format
+                java.util.Date enteredStartTime = theDateFormat.parse(String.format("%s %s", selectedDate, startTime));
+                java.util.Date enteredEndTime = theDateFormat.parse(String.format("%s %s", selectedDate, endTime));
+
+                if (enteredEndTime.equals(enteredStartTime)) {
+                    //if lecture ends at start
+                    isValid = false;
+                    endTimeLayout.setError("The finishing time cannot be the start time");
+                } else {
+                    if (enteredEndTime.before(enteredStartTime)) {
+                        //if lecture ends before start time.
+                        isValid = false;
+                        endTimeLayout.setError("Please ensure finishing time is after start time");
+                    } else {
+                        java.util.Date minTime = theDateFormat.parse(String.format("%s %s", selectedDate, "08:00"));
+                        java.util.Date maxTime = theDateFormat.parse(String.format("%s %s", selectedDate, "18:00"));
+
+                        if (enteredStartTime.before(minTime) || enteredStartTime.after(maxTime)) {
+                            //start time falls before 8 or after 18
+                            startTimeLayout.setError("Commencing time must be between 08:00 and 18:00");
+                            isStartValid = false; //start time invalid.
+                        } else {
+                            startTimeLayout.setError(null);
+                            isStartValid = true; //start time valid.
+                        }
+
+                        if (enteredEndTime.before(minTime) || enteredEndTime.after(maxTime)) {
+                            //end time falls before 8 or after 18
+                            endTimeLayout.setError("Finishing time must be between 08:00 and 18:00");
+                            isEndValid = false; //end time not valid
+                        } else {
+                            endTimeLayout.setError(null);
+                            isEndValid = true; //end time not valid
+                        }
+                    }
+                }
+            } catch (ParseException e) {
+                isValid = false;
+                Log.e("Validating Inputs", e.getLocalizedMessage());
+            }
+        } else {
+            isValid = false;
+        }
+        return isValid && isStartValid && isEndValid;
     }
 
     @Override

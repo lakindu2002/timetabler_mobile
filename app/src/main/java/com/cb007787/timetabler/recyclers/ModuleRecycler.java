@@ -120,7 +120,7 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
             moduleName = itemView.findViewById(R.id.module_title);
             contactLecturerButton = itemView.findViewById(R.id.contact_lecturer_button);
             taughtByLabel = itemView.findViewById(R.id.taught_by_label);
-            scheduleLectureButton = itemView.findViewById(R.id.schedule_lecture_button);
+            scheduleLectureButton = itemView.findViewById(R.id.confirm_lecture_button);
 
             if (loggedInUser.getRole().equalsIgnoreCase("lecturer")) {
                 //not a student, do not show contact lecturer and taught by
