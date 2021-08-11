@@ -52,23 +52,14 @@
                     android:padding="20dp">
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/module_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_semibold"
-                        android:text="@string/module_information"
-                        android:textSize="16sp" />
-
-                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/module_information"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/module_label"
-                        android:fontFamily="@font/poppins"
+                        android:fontFamily="@font/poppins_semibold"
                         android:paddingTop="5dp"
                         android:text="@string/module_information"
                         android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:textSize="20sp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/lecturer_name_schedule"
@@ -77,29 +68,54 @@
                         android:layout_below="@+id/module_information"
                         android:fontFamily="@font/poppins"
                         android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
                         android:text="@string/module_taught_by"
                         android:textColor="@color/black"
-                        android:textSize="14sp" />
+                        android:textSize="16sp" />
+
+                    <View
+                        android:id="@+id/ruler"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_below="@+id/lecturer_name_schedule"
+                        android:background="#f7fafc" />
 
                     <!--classroom-->
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/classroom_label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/lecturer_name_schedule"
+                        android:layout_below="@id/ruler"
                         android:fontFamily="@font/poppins_semibold"
                         android:paddingTop="10dp"
                         android:text="@string/classroom_for_lecture"
                         android:textSize="16sp" />
 
                     <!--classroom list-->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/classroom_list_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/classroom_label"
+                        android:hint="@string/select_classroom">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/classroom_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:focusableInTouchMode="true"
+                            android:inputType="none">
+
+                        </AutoCompleteTextView>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- lecture date-->
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/lecture_date_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/classroom_label"
+                        android:layout_below="@id/classroom_list_layout"
                         android:fontFamily="@font/poppins_semibold"
                         android:paddingTop="5dp"
                         android:text="@string/lecture_date"

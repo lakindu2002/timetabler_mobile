@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -66,6 +68,7 @@ public class ScheduleLecture extends AppCompatActivity {
     //schedule inputs
     private MaterialTextView moduleName;
     private MaterialTextView moduleTaughtBy;
+    private AutoCompleteTextView classroomList;
     private TextInputEditText lectureDate;
     private TextInputEditText lectureCommencingTime;
     private TextInputEditText lectureFinishingTime;
@@ -219,6 +222,7 @@ public class ScheduleLecture extends AppCompatActivity {
         this.commencingTimeSelector = findViewById(R.id.start_time_select_button);
         this.lectureDateSelector = findViewById(R.id.lecture_date_select_button);
         this.finishingTimeSelector = findViewById(R.id.finish_time_select_button);
+        this.classroomList = findViewById(R.id.classroom_list);
     }
 
     @Override
@@ -279,7 +283,15 @@ public class ScheduleLecture extends AppCompatActivity {
     private void showInView() {
         //show module and classrooms in view and ask to schedule lecture.
         moduleName.setText(loadedModule.getModuleName());
-        moduleTaughtBy.setText(String.format("Module Taught By - %s %s", loadedModule.getTheLecturer().getFirstName(), loadedModule.getTheLecturer().getLastName()));
+        moduleTaughtBy.setText(String.format("Taught By - %s %s", loadedModule.getTheLecturer().getFirstName(), loadedModule.getTheLecturer().getLastName()));
+
+        ArrayAdapter<String> classroomNameList = new ArrayAdapter<String>(this, R.layout.classroom_layout);
+        for (Classroom eachClassroomInDb : loadedClassrooms) {
+            classroomNameList.add(String.format(Locale.ENGLISH,
+                    "%s \nCapacity - %d \nAC - %s\nSmart Board - %s"
+                    , eachClassroomInDb.getClassroomName(), eachClassroomInDb.getMaxCapacity(), eachClassroomInDb.isAcPresent(), eachClassroomInDb.isSmartBoardPresent()));
+        }
+        classroomList.setAdapter(classroomNameList);
     }
 
     private void constructError(String errorMessage, boolean isInfo) {

@@ -72,4 +72,5 @@
     <string name="module_taught_by">Module Taught By -</string>
     <string name="schedule_lecture">Schedule Lecture</string>
     <string name="time_image">Time Image</string>
+    <string name="select_classroom">Select Classroom</string>
 </resources>
