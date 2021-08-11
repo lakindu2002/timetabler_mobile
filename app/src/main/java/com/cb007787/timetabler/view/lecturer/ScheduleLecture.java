@@ -365,6 +365,16 @@ public class ScheduleLecture extends AppCompatActivity {
 
     }
 
+    /**
+     * Validate inputs before proceeding with API Call
+     *
+     * @param selectedClassroomName The selected classroom
+     * @param selectedDate          The entered date
+     * @param startTime             The entered start time
+     * @param endTime               The entered end time
+     * @param selectedBatchCodes    The selected batch codes
+     * @return The boolean to indicate if validation pass or fail
+     */
     private boolean validateLectureInputs(String selectedClassroomName, String selectedDate, String startTime, String endTime, String[] selectedBatchCodes) {
         boolean isValid = false;
         boolean areTimesPresent = false;
@@ -467,6 +477,7 @@ public class ScheduleLecture extends AppCompatActivity {
         } else {
             isValid = false;
         }
+        //return the absolute boolean end of validation
         return isValid && isStartValid && isEndValid;
     }
 
