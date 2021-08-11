@@ -22,7 +22,10 @@ import android.widget.Toast;
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.Classroom;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.LectureCreate;
 import com.cb007787.timetabler.model.Module;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -62,6 +65,7 @@ public class ScheduleLecture extends AppCompatActivity {
     private String token;
     private List<Classroom> loadedClassrooms;
     private Module loadedModule;
+    private String selectedDateInUi;//to be formatted in "yyyy-mm-dd
     private ArrayList<String> selectedBatches = new ArrayList<>(); //used to hold selected batches in checkbox.
 
     private LectureService lectureService;
@@ -200,7 +204,9 @@ public class ScheduleLecture extends AppCompatActivity {
             //method input - millisecond of time date
             //show the selected lecture date.
             SimpleDateFormat theFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+            SimpleDateFormat theServerFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             Date userSelectedDateInDateFormat = new Date(selection);
+            selectedDateInUi = theServerFormat.format(userSelectedDateInDateFormat);
 
             Calendar todayDate = Calendar.getInstance();
             //user picked time gets set to the locale of gmt +5:30
@@ -303,7 +309,7 @@ public class ScheduleLecture extends AppCompatActivity {
         for (Classroom eachClassroomInDb : loadedClassrooms) {
             //add the classroom information to the array adapter
             classroomNameList.add(String.format(Locale.ENGLISH,
-                    "%s \nCapacity - %d \nAC - %s\nSmart Board - %s"
+                    "%s\nCapacity - %d \nAC - %s\nSmart Board - %s"
                     , eachClassroomInDb.getClassroomName(), eachClassroomInDb.getMaxCapacity(), eachClassroomInDb.isAcPresent(), eachClassroomInDb.isSmartBoardPresent()));
         }
         //set the adapter so that for the classroom dropdown the classroom list from the database will be available.
@@ -319,11 +325,11 @@ public class ScheduleLecture extends AppCompatActivity {
                 String batchNameInCheckBox = eachBatchCheckbox.getText().toString();
                 if (isChecked) {
                     //insert the batch name to the selected batch list
-                    this.selectedBatches.add(batchNameInCheckBox);
+                    this.selectedBatches.add(buttonView.getText().toString());
                 } else {
                     //user de-selected the batch, therefore, remove the batch from the list
                     for (String eachBatchInSelectedList : selectedBatches) {
-                        if (eachBatchInSelectedList.equalsIgnoreCase(batchNameInCheckBox)) {
+                        if (eachBatchInSelectedList.equalsIgnoreCase(buttonView.getText().toString())) {
                             //remove the string
                             selectedBatches.remove(eachBatchInSelectedList);
                             break;
@@ -349,6 +355,7 @@ public class ScheduleLecture extends AppCompatActivity {
      * Method executed once user clicks confirm lecture button
      */
     private void handleLectureUiClick() {
+        loadingBar.setVisibility(View.VISIBLE);
         //retrieve inputs
         String selectedClassroomName = classroomList.getText().toString();
         String selectedDate = lectureDate.getText().toString();
@@ -359,10 +366,78 @@ public class ScheduleLecture extends AppCompatActivity {
         //perform validations on the front end before sending to server.
         boolean isValid = validateLectureInputs(selectedClassroomName, selectedDate, startTime, endTime, selectedBatchCodes);
 
+        //create date formatters
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
         if (isValid) {
-            Toast.makeText(this, "Schedule Lecture", Toast.LENGTH_LONG).show();
+            //format parsed date from initially set in date picker
+            try {
+                java.util.Date passingDateToServer = dateFormat.parse(selectedDateInUi);
+                int classroomId = getClassroomId(selectedClassroomName);
+
+                //create a DTO POJO used to transmit data to server
+                LectureCreate lectureCreate = new LectureCreate();
+                lectureCreate.setBatchList(selectedBatchCodes);
+                lectureCreate.setEndTime(endTime);
+                lectureCreate.setStartTime(startTime);
+                lectureCreate.setLectureDate(passingDateToServer);
+                lectureCreate.setClassroomID(classroomId);
+                lectureCreate.setModuleId(loadedModule.getModuleId());
+
+                manageLectureInDB(lectureCreate);
+            } catch (ParseException e) {
+                Log.e("scheduleLecture", e.getLocalizedMessage());
+            }
+        } else {
+            loadingBar.setVisibility(View.GONE);
         }
 
+    }
+
+    private void manageLectureInDB(LectureCreate lectureToBeManaged) {
+        //if lecture is being created by user execute the create lecture api call
+        Call<SuccessResponseAPI> createLectureApiCall = lectureService.createLecture(lectureToBeManaged, token);
+        createLectureApiCall.enqueue(new Callback<SuccessResponseAPI>() {
+            @Override
+            public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                loadingBar.setVisibility(View.GONE);
+                handleLectureManagedResponse(response);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                loadingBar.setVisibility(View.GONE);
+                constructError("We ran into an unknown error while scheduling the lecture", false);
+            }
+        });
+    }
+
+    private void handleLectureManagedResponse(Response<SuccessResponseAPI> response) {
+        if (response.isSuccessful()) {
+            //lecture created successfully
+            Toast.makeText(getApplicationContext(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+            //navigate to lecturer modules
+            startActivity(new Intent(this, LecturerModules.class));
+            finish(); //remove activity from back trace so that when user clicks back, it doesn't navigate to this
+        } else {
+            try {
+                ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                constructError(theErrorReturned.getErrorMessage(), false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private int getClassroomId(String selectedClassroomName) {
+        String[] classroomSplit = selectedClassroomName.split("\n");
+        String classroomName = classroomSplit[0];
+        for (Classroom eachClassroom : loadedClassrooms) {
+            if (eachClassroom.getClassroomName().trim().equalsIgnoreCase(classroomName)) {
+                return eachClassroom.getClassroomId();
+            }
+        }
+        return 0;
     }
 
     /**

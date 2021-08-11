@@ -1,6 +1,7 @@
 package com.cb007787.timetabler.service;
 
 
+import com.cb007787.timetabler.model.LectureCreate;
 import com.cb007787.timetabler.model.LectureShow;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 
@@ -8,9 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -32,4 +35,7 @@ public interface LectureService {
 
     @DELETE(BASE_ENDPOINT + "cancel/{lectureId}")
     Call<SuccessResponseAPI> cancelLecture(@Header("Authorization") String token, @Path("lectureId") int lectureId);
+
+    @POST(BASE_ENDPOINT + "create")
+    Call<SuccessResponseAPI> createLecture(@Body LectureCreate lectureToBeManaged, @Header("Authorization") String token);
 }
