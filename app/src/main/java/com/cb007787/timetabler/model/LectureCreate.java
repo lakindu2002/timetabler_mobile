@@ -3,6 +3,7 @@ package com.cb007787.timetabler.model;
 import java.util.Date;
 
 public class LectureCreate {
+    private int lectureId;
     private Date lectureDate;
     private String startTime;
     private String endTime;
@@ -11,6 +12,14 @@ public class LectureCreate {
     private int classroomID;
 
     public LectureCreate() {
+    }
+
+    public int getLectureId() {
+        return lectureId;
+    }
+
+    public void setLectureId(int lectureId) {
+        this.lectureId = lectureId;
     }
 
     public Date getLectureDate() {

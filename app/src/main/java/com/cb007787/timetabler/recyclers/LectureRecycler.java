@@ -3,6 +3,7 @@ package com.cb007787.timetabler.recyclers;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -201,7 +202,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
 
     private void showEditModal(LectureShow theLectureForView, ImageView editButton) {
         //fragment to be inflated full screen.
-        UpdateLecture updateLectureDialog = new UpdateLecture();
+        UpdateLecture updateLectureDialog = UpdateLecture.newInstance(theLectureForView.getLectureId());
         FragmentTransaction fragmentTransaction = null;
         if (userRole.equalsIgnoreCase("lecturer")) {
             //lecturer clicked edit
@@ -210,8 +211,16 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         } else {
             //academic admin clicked the edit.
         }
+        //show the dialog.
+        updateLectureDialog.setActionListener(() -> {
+            if (userRole.equalsIgnoreCase("lecturer")) {
+                //refresh lecturer section
+                LecturerHome theHomePageOfLecturer = (LecturerHome) theContext;
+                theHomePageOfLecturer.getLecturesForSelectedDate(new Date()); //load today lectures.
+            }
+
+        });
         updateLectureDialog.show(fragmentTransaction, "updateLecture");
-        //committing to content as root view enables fragment to be loaded as full screen.
     }
 
 

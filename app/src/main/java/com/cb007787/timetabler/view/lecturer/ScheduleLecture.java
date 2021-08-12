@@ -323,7 +323,6 @@ public class ScheduleLecture extends AppCompatActivity {
 
             eachBatchCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 //method executed when the checkbox gets checked or unchecked.
-                String batchNameInCheckBox = eachBatchCheckbox.getText().toString();
                 if (isChecked) {
                     //insert the batch name to the selected batch list
                     this.selectedBatches.add(buttonView.getText().toString());
@@ -458,17 +457,17 @@ public class ScheduleLecture extends AppCompatActivity {
         boolean isEndValid = false; //check if end time is valid.
 
         if (TextUtils.isEmpty(selectedClassroomName)) {
-            isValid = false;
             classroomLayout.setError("Please select a classroom to proceed");
+            return false;
         } else {
             isValid = true;
             classroomLayout.setError(null);
         }
 
         if (selectedDate.trim().equalsIgnoreCase("mm/dd/yyyy")) {
-            isValid = false;
             areTimesPresent = false;
             lectureDateLayout.setError("Please provide a date to proceed");
+            return false;
         } else {
             areTimesPresent = true;
             isValid = true;
@@ -476,9 +475,9 @@ public class ScheduleLecture extends AppCompatActivity {
         }
 
         if (startTime.trim().equalsIgnoreCase("--:--")) {
-            isValid = false;
             areTimesPresent = false;
             startTimeLayout.setError("Please provide a commencing time to proceed");
+            return false;
         } else {
             isValid = true;
             areTimesPresent = true;
@@ -486,72 +485,64 @@ public class ScheduleLecture extends AppCompatActivity {
         }
 
         if (endTime.trim().equalsIgnoreCase("--:--")) {
-            isValid = false;
             areTimesPresent = false;
             endTimeLayout.setError("Please provide a finishing time to proceed");
+            return false;
         } else {
-            isValid = true;
-            areTimesPresent = true;
             endTimeLayout.setError(null);
         }
 
         if (selectedBatchCodes.length == 0) {
-            isValid = false;
             constructError("Please select a batch to proceed", false);
-        } else {
-            isValid = true;
+            return false;
         }
 
-        if (areTimesPresent) {
-            //validate the times.
-            //check if start time == end time
-            //check if end time before start time
-            //check if start time before min and after max time
-            //check if end time before min and after max time
-            SimpleDateFormat theDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
-            try {
-                //format the start and end time to the defined format in the simple date format
-                java.util.Date enteredStartTime = theDateFormat.parse(String.format("%s %s", selectedDate, startTime));
-                java.util.Date enteredEndTime = theDateFormat.parse(String.format("%s %s", selectedDate, endTime));
+        //validate the times.
+        //check if start time == end time
+        //check if end time before start time
+        //check if start time before min and after max time
+        //check if end time before min and after max time
+        SimpleDateFormat theDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+        try {
+            //format the start and end time to the defined format in the simple date format
+            java.util.Date enteredStartTime = theDateFormat.parse(String.format("%s %s", selectedDate, startTime));
+            java.util.Date enteredEndTime = theDateFormat.parse(String.format("%s %s", selectedDate, endTime));
 
-                if (enteredEndTime.equals(enteredStartTime)) {
-                    //if lecture ends at start
-                    isValid = false;
-                    endTimeLayout.setError("The finishing time cannot be the start time");
+            if (enteredEndTime.equals(enteredStartTime)) {
+                //if lecture ends at start
+                endTimeLayout.setError("The finishing time cannot be the start time");
+                return false;
+            } else {
+                if (enteredEndTime.before(enteredStartTime)) {
+                    //if lecture ends before start time.
+                    endTimeLayout.setError("Please ensure finishing time is after start time");
+                    return false;
                 } else {
-                    if (enteredEndTime.before(enteredStartTime)) {
-                        //if lecture ends before start time.
-                        isValid = false;
-                        endTimeLayout.setError("Please ensure finishing time is after start time");
+                    java.util.Date minTime = theDateFormat.parse(String.format("%s %s", selectedDate, "08:00"));
+                    java.util.Date maxTime = theDateFormat.parse(String.format("%s %s", selectedDate, "18:00"));
+
+                    if (enteredStartTime.before(minTime) || enteredStartTime.after(maxTime)) {
+                        //start time falls before 8 or after 18
+                        startTimeLayout.setError("Commencing time must be between 08:00 and 18:00");
+                        isStartValid = false; //start time invalid.
                     } else {
-                        java.util.Date minTime = theDateFormat.parse(String.format("%s %s", selectedDate, "08:00"));
-                        java.util.Date maxTime = theDateFormat.parse(String.format("%s %s", selectedDate, "18:00"));
+                        startTimeLayout.setError(null);
+                        isStartValid = true; //start time valid.
+                    }
 
-                        if (enteredStartTime.before(minTime) || enteredStartTime.after(maxTime)) {
-                            //start time falls before 8 or after 18
-                            startTimeLayout.setError("Commencing time must be between 08:00 and 18:00");
-                            isStartValid = false; //start time invalid.
-                        } else {
-                            startTimeLayout.setError(null);
-                            isStartValid = true; //start time valid.
-                        }
-
-                        if (enteredEndTime.before(minTime) || enteredEndTime.after(maxTime)) {
-                            //end time falls before 8 or after 18
-                            endTimeLayout.setError("Finishing time must be between 08:00 and 18:00");
-                            isEndValid = false; //end time not valid
-                        } else {
-                            endTimeLayout.setError(null);
-                            isEndValid = true; //end time not valid
-                        }
+                    if (enteredEndTime.before(minTime) || enteredEndTime.after(maxTime)) {
+                        //end time falls before 8 or after 18
+                        endTimeLayout.setError("Finishing time must be between 08:00 and 18:00");
+                        isEndValid = false; //end time not valid
+                    } else {
+                        endTimeLayout.setError(null);
+                        isEndValid = true; //end time not valid
                     }
                 }
-            } catch (ParseException e) {
-                isValid = false;
-                Log.e("Validating Inputs", e.getLocalizedMessage());
             }
-        } else {
+        } catch (ParseException e) {
             isValid = false;
+            Log.e("Validating Inputs", e.getLocalizedMessage());
         }
         //return the absolute boolean end of validation
         return isValid && isStartValid && isEndValid;
