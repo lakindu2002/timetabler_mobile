@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
@@ -36,7 +38,6 @@ public class SystemAdminHome extends AppCompatActivity implements NavigationView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_admin_home);
-        getReferences();
 
         SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
 
@@ -45,6 +46,8 @@ public class SystemAdminHome extends AppCompatActivity implements NavigationView
         } catch (JsonProcessingException e) {
             Log.i(SystemAdminHome.class.getName(), "ERROR PARSING JSON");
         }
+
+        getReferences();
 
         ActionBarDrawerToggle theToggle = new ActionBarDrawerToggle(this, systemAdminDrawer, theToolbar, R.string.openDrawer, R.string.closeDrawer);
         DrawerArrowDrawable theDrawerArrowDrawable = new DrawerArrowDrawable(this);
@@ -60,6 +63,9 @@ public class SystemAdminHome extends AppCompatActivity implements NavigationView
         this.systemAdminDrawer = findViewById(R.id.systemAdminLayout);
         this.theToolbar = findViewById(R.id.system_admin_toolbar);
         this.navigationView = findViewById(R.id.navigation_view_system_admin);
+        View headerView = navigationView.getHeaderView(0);//retrieve header view
+        TextView fullNameHeader = headerView.findViewById(R.id.fullName_header); //configure the full name on nav
+        fullNameHeader.setText(String.format("Welcome, %s %s", loggedInSystemAdmin.getFirstName(), loggedInSystemAdmin.getLastName()));
     }
 
     @Override

@@ -89,7 +89,7 @@
     <string name="email_address">Email Address</string>
     <string name="enter_the_email_address">Enter The Email Address</string>
     <string name="contact_number">Contact Number</string>
-    <string name="enter_contact_number">Enter Contact Number</string>
+    <string name="enter_contact_number">Contact Number (0771234567)</string>
     <string name="date_of_birth">Date of Birth</string>
     <string name="user_type">User Type</string>
     <string name="provide_user_type">Provide User Type</string>

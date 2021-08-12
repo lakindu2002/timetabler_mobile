@@ -57,17 +57,22 @@ public class APIConfigurer {
     }
 
     public UserService getUserService() {
-        //generate an instance of the UserService interface using retrofit. Retrofit adds the required underlying HTTP implementationl
+        //generate an instance of the UserService interface using retrofit. Retrofit adds the required underlying HTTP implementation
         return getTheAPI().create(UserService.class);
     }
 
     public ModuleService getModuleService() {
-        //generate an instance of the ModuleService interface using retrofit. Retrofit adds the required underlying HTTP implementationl
+        //generate an instance of the ModuleService interface using retrofit. Retrofit adds the required underlying HTTP implementation
         return getTheAPI().create(ModuleService.class);
     }
 
     public LectureService getLectureService() {
-        //generate an instance of the LectureService interface using retrofit. Retrofit adds the required underlying HTTP implementationl
+        //generate an instance of the LectureService interface using retrofit. Retrofit adds the required underlying HTTP implementation
         return getTheAPI().create(LectureService.class);
+    }
+
+    public UserRoleService getUserRoleService() {
+        //generate an instance of the UserRoleService interface using retrofit. Retrofit adds the required underlying HTTP implementation
+        return getTheAPI().create(UserRoleService.class);
     }
 }
