@@ -12,10 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.lecturer.ScheduleLecture;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
@@ -24,10 +27,16 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
 
     private final List<Module> moduleList;
     private final Context theContext;
+    private static AuthReturn loggedInUser;
 
     public ModuleRecycler(List<Module> moduleList, Context theContext) {
         this.moduleList = moduleList;
         this.theContext = theContext;
+        try {
+            loggedInUser = SharedPreferenceService.getLoggedInUser(theContext, PreferenceInformation.PREFERENCE_NAME);
+        } catch (JsonProcessingException e) {
+            Log.e("ModuleRecycler", "Error Parsing JSON");
+        }
     }
 
     @NonNull
@@ -50,7 +59,7 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
         holder.getIndependentHours().setText(String.format("%s Hours", theModuleAtPosition.getIndependentHours()));
         holder.getContactLearning().setText(String.format("%s Hours", theModuleAtPosition.getContactHours()));
 
-        if (holder.getContactLecturerButton() != null) {
+        if (holder.getContactLecturerButton().getVisibility() == View.VISIBLE) {
             holder.getContactLecturerButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -65,6 +74,23 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
             });
         }
 
+        if (holder.getScheduleLectureButton().getVisibility() == View.VISIBLE) {
+            holder.getScheduleLectureButton().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //method to handle click of schedule lecture button
+                    if (theModuleAtPosition.getTheBatchList().size() > 0) {
+                        Intent createModuleIntent = new Intent(theContext, ScheduleLecture.class);
+                        createModuleIntent.putExtra("theModuleId", theModuleAtPosition.getModuleId()); //put the module id as a string to intent so it can be accessed from next activity
+                        theContext.startActivity(createModuleIntent);
+                    } else {
+                        Snackbar theSnackbar = Snackbar.make(v, "This module has no batches enrolled to it. Therefore, you cannot schedule any lectures for it", Snackbar.LENGTH_LONG);
+                        theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_danger, null));
+                        theSnackbar.show();
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -77,11 +103,13 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
         //UI elements and everything for one module to be defined here.
 
         private MaterialTextView moduleName;
+        private MaterialTextView taughtByLabel;
         private MaterialTextView lecturerName;
         private MaterialTextView creditCount;
         private MaterialTextView independentHours;
         private MaterialTextView contactLearning;
-        private Button contactLecturerButton;
+        private Button contactLecturerButton; //used by student
+        private Button scheduleLectureButton; //used by lecturer
 
         public ModuleViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -91,15 +119,23 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
             contactLearning = itemView.findViewById(R.id.contact_learning);
             moduleName = itemView.findViewById(R.id.module_title);
             contactLecturerButton = itemView.findViewById(R.id.contact_lecturer_button);
+            taughtByLabel = itemView.findViewById(R.id.taught_by_label);
+            scheduleLectureButton = itemView.findViewById(R.id.confirm_lecture_button);
 
-            try {
-                if (!SharedPreferenceService.getLoggedInUser(itemView.getContext(), PreferenceInformation.PREFERENCE_NAME).getRole().equalsIgnoreCase("student")) {
-                    //not a student, do not show contact lecturer
-                    contactLecturerButton.setVisibility(View.GONE);
-                }
-            } catch (JsonProcessingException e) {
-                Log.e(ModuleRecycler.class.getName(), "FAILED PARSING JSON");
+            if (loggedInUser.getRole().equalsIgnoreCase("lecturer")) {
+                //not a student, do not show contact lecturer and taught by
+                //show schedule lecture btn
+                contactLecturerButton.setVisibility(View.GONE);
+                scheduleLectureButton.setVisibility(View.VISIBLE);
+                lecturerName.setVisibility(View.GONE);
+                taughtByLabel.setVisibility(View.GONE);
+            } else if (loggedInUser.getRole().equalsIgnoreCase("student")) {
+                contactLecturerButton.setVisibility(View.VISIBLE);
             }
+        }
+
+        public Button getScheduleLectureButton() {
+            return scheduleLectureButton;
         }
 
         public Button getContactLecturerButton() {

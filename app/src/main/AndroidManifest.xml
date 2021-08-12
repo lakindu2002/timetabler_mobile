@@ -12,8 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
+        <activity android:name=".view.lecturer.ScheduleLecture" />
         <activity
-            android:name=".view.common.SharedUserProfile"
+            android:name=".view.lecturer.LecturerModules"
+            android:parentActivityName=".view.lecturer.LecturerHome"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.common.shared.SharedUserProfile"
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.student.StudentEnrolments"

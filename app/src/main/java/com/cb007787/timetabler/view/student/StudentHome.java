@@ -29,7 +29,7 @@ import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.common.CommonContainer;
-import com.cb007787.timetabler.view.common.SharedUserProfile;
+import com.cb007787.timetabler.view.common.shared.SharedUserProfile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -105,7 +105,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
         try {
             loggedInStudent = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
-            assignHeadersInNav();
+            assignHeadersInNav(); //add the nav headers based on logged in user
         } catch (JsonProcessingException e) {
             Log.i(StudentHome.class.getName(), "ERROR PARSING JSON");
         }
@@ -116,6 +116,8 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         theRecyclerView.setHasFixedSize(true);
         theRecyclerView.setAdapter(lectureAdapter);
         lectureAdapter.notifyDataSetChanged();
+
+        LectureRecycler.setUserRole(loggedInStudent.getRole());
     }
 
     private void loadDataInRecycler(List<LectureShow> loadedLectures) {
@@ -123,8 +125,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         if (loadedLectures.size() > 0) {
             noLecture.setVisibility(View.GONE);
             theRecyclerView.setVisibility(View.VISIBLE);
-            lectureAdapter.setLoadedLectures(loadedLectures);
-            lectureAdapter.notifyDataSetChanged();
+            lectureAdapter.setTheLectureList(loadedLectures);
         } else {
             theRecyclerView.setVisibility(View.GONE);
             noLecture.setVisibility(View.VISIBLE);
@@ -159,7 +160,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         this.batchCodeHeader = theHeader.findViewById(R.id.student_header_batch);
         theCalendar = findViewById(R.id.student_lecture_view);
         progressIndicator = findViewById(R.id.progress_bar);
-        batchCodeHeader.setVisibility(View.VISIBLE);
+        batchCodeHeader.setVisibility(View.VISIBLE); //match batch title visible to user
         lectureService = APIConfigurer.getApiConfigurer().getLectureService();
         todayButton = findViewById(R.id.today_btn);
     }
@@ -177,6 +178,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
     private void loadMyLectures(Date selectedDate) {
         progressIndicator.setVisibility(View.VISIBLE);
+        theCalendar.setDate(selectedDate.getTime());
 
         Call<List<LectureShow>> myLectureCall = lectureService.getMyLectures(jwtToken, new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(selectedDate));
         myLectureCall.enqueue(new Callback<List<LectureShow>>() {
@@ -222,6 +224,9 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (studentLayout.isDrawerOpen(GravityCompat.START)) {
+            studentLayout.closeDrawer(GravityCompat.START);
+        }
         Intent navigationIntent = null;
         boolean isSelected = false;
 

@@ -1,4 +1,4 @@
-package com.cb007787.timetabler.view.common;
+package com.cb007787.timetabler.view.common.shared;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -74,7 +74,7 @@ public class SharedUserProfile extends AppCompatActivity {
             Log.i(SharedUserProfile.class.getName(), "Failed Parsing JSON");
         }
 
-        if (loggedInUser.getRole().toLowerCase().equals("student")) {
+        if (loggedInUser.getRole().toLowerCase().equals("student") || loggedInUser.getRole().toLowerCase().equals("lecturer")) {
             setContentView(R.layout.activity_shared_profile);
         }
 

@@ -5,48 +5,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".view.common.shared.SharedUserProfile">
+    tools:context=".view.lecturer.LecturerModules">
+
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/student_enrolments_app_bar"
+        android:id="@+id/lecturer_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/student_toolbar_enrolment"
+            android:id="@+id/lecturer_module_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/welcome_enrolment"
+            app:title="@string/my_modules"
             app:titleTextColor="@color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
+        android:id="@+id/lecturer_module_loading"
         layout="@layout/loading_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/student_enrolments_app_bar" />
+        android:layout_below="@id/lecturer_app_bar" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/enrolment_swiper"
+        android:id="@+id/lecturer_module_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/student_enrolments_app_bar">
+        android:layout_below="@id/lecturer_module_loading">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/module_recycler"
+                android:id="@+id/lecturer_module_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </androidx.recyclerview.widget.RecyclerView>
-
+                android:layout_height="match_parent" />
 
         </RelativeLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
 </RelativeLayout>

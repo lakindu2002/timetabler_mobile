@@ -53,10 +53,30 @@
     <string name="_50_hours">50 Hours</string>
     <string name="contact_lecturer">Contact Lecturer</string>
     <string name="today">Today</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="start_time_end_time">Start Time - End Time</string>
     <string name="l4_cr5">L4-CR5</string>
     <string name="no_lecture_scheduled">No Lectures Scheduled For Date</string>
     <string name="my_lectures">My Lectures</string>
+    <string name="my_modules">My Modules</string>
+    <string name="schedule_a_lecture">Schedule a Lecture</string>
+    <string name="my_modules_schedule_lecture">My Modules (Schedule)</string>
+    <string name="schedule_header">Schedule a Lecture</string>
+    <string name="module_information">Module Name</string>
+    <string name="classroom_for_lecture">Classroom for Lecture</string>
+    <string name="lecture_date">Lecture Date</string>
+    <string name="lecture_date_format">mm/dd/yyyy</string>
+    <string name="time_label">--:--</string>
+    <string name="lecture_commencing_time">Lecture Commencing Time</string>
+    <string name="lecture_finishing_time">Lecture Finishing Time</string>
+    <string name="select_batches_to_schedule_lecture_for">Select Batches To Schedule Lecture For</string>
+    <string name="module_taught_by">Module Taught By -</string>
+    <string name="schedule_lecture">Schedule Lecture</string>
+    <string name="time_image">Time Image</string>
+    <string name="select_classroom">Select Classroom</string>
+    <string name="re_schedule_lecture">Re-Schedule Lecture</string>
+    <string name="select_new_classroom">Select New Classroom</string>
+    <string name="new_classroom_for_lecture">New Classroom For Lecture</string>
+    <string name="current_classroom">Current Classroom</string>
+    <string name="batches">Batches -</string>
+    <string name="update_lecture">Update Lecture</string>
 </resources>
