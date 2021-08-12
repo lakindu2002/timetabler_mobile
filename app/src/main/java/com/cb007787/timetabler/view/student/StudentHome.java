@@ -224,9 +224,6 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if (studentLayout.isDrawerOpen(GravityCompat.START)) {
-            studentLayout.closeDrawer(GravityCompat.START);
-        }
         Intent navigationIntent = null;
         boolean isSelected = false;
 
@@ -237,8 +234,9 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
             Toast.makeText(this, "You have successfully logged out", Toast.LENGTH_LONG).show();
             SharedPreferenceService.clearSharedPreferences(this, PreferenceInformation.PREFERENCE_NAME);
 
-            isSelected = true;
-
+            startActivity(navigationIntent);
+            finish();
+            return true;
         } else if (item.getItemId() == R.id.student_profile) {
             navigationIntent = new Intent(this, SharedUserProfile.class);
             isSelected = true;

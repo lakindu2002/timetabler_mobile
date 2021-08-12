@@ -3,6 +3,7 @@ package com.cb007787.timetabler.view.common.shared;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -60,6 +61,8 @@ public class SharedUserProfile extends AppCompatActivity {
     private EditText firstPassword;
     private EditText secondPassword;
     private MaterialTextView memberSince;
+    private MaterialTextView firstPasswordLabel;
+    private MaterialTextView secondPasswordLabel;
 
     private Button updateBtn;
 
@@ -74,9 +77,7 @@ public class SharedUserProfile extends AppCompatActivity {
             Log.i(SharedUserProfile.class.getName(), "Failed Parsing JSON");
         }
 
-        if (loggedInUser.getRole().toLowerCase().equals("student") || loggedInUser.getRole().toLowerCase().equals("lecturer")) {
-            setContentView(R.layout.activity_shared_profile);
-        }
+        setContentView(R.layout.activity_shared_profile);
 
         //if token expired, will navigate to login
         SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
@@ -103,6 +104,19 @@ public class SharedUserProfile extends AppCompatActivity {
                 updateUserAccount(v);
             }
         });
+
+        //if user is system admin, hide the password fields and update buttons
+        if (loggedInUser.getRole().equalsIgnoreCase("system administrator")) {
+            firstPassword.setVisibility(View.GONE);
+            secondPassword.setVisibility(View.GONE);
+            updateBtn.setVisibility(View.GONE);
+            firstPasswordLabel.setVisibility(View.GONE);
+            secondPasswordLabel.setVisibility(View.GONE);
+            memberSince.setPadding(0, 0, 0, 50); //add bottom padding to the member since text field
+            contact.setEnabled(false); //disable contact number
+            //assign a material text view look to the non-editable contact number
+            contact.setBackground(AppCompatResources.getDrawable(this, R.drawable.system_admin_edit_text));
+        }
     }
 
     /**
@@ -211,6 +225,10 @@ public class SharedUserProfile extends AppCompatActivity {
                 secondPassword.setError("Passwords must be between 8 and 30 characters");
                 passwordValid = false;
             }
+        } else {
+            passwordValid = false;
+            firstPassword.setError("Please enter a password");
+            secondPassword.setError("Please enter a password");
         }
 
         return contactValid && passwordValid;
@@ -316,7 +334,8 @@ public class SharedUserProfile extends AppCompatActivity {
         memberSince = findViewById(R.id.membersince_profile_label);
         firstPassword = findViewById(R.id.password_01_label);
         secondPassword = findViewById(R.id.password_02_label);
-
+        firstPasswordLabel = findViewById(R.id.password_01);
+        secondPasswordLabel = findViewById(R.id.password_02);
         updateBtn = findViewById(R.id.update_account);
 
     }

@@ -79,4 +79,7 @@
     <string name="current_classroom">Current Classroom</string>
     <string name="batches">Batches -</string>
     <string name="update_lecture">Update Lecture</string>
+    <string name="user_management">User Management</string>
+    <string name="classroom_management">Classroom Management</string>
+    <string name="my_dashboard">My Dashboard</string>
 </resources>

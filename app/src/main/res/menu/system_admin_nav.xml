@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:title="@string/operation">
+            <menu>
+                <item
+                    android:id="@+id/menu_user_management"
+                    android:icon="@drawable/ic_users"
+                    android:title="@string/user_management" />
+
+                <item
+                    android:id="@+id/menu_classroom_management"
+                    android:icon="@drawable/ic_room"
+                    android:title="@string/classroom_management" />
+            </menu>
+        </item>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item android:title="@string/profile">
+            <menu>
+                <item
+                    android:id="@+id/menu_my_account"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_profile"
+                    android:title="@string/user_profile" />
+
+                <item
+                    android:id="@+id/menu_logout"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_logout"
+                    android:title="@string/logout" />
+            </menu>
+        </item>
+    </group>
+</menu>
