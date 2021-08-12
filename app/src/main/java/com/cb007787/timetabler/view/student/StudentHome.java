@@ -190,7 +190,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
                 } catch (IOException e) {
                     Log.e("loadMyLectures", "FAILED PARSING ERROR BODY");
                     progressIndicator.setVisibility(View.GONE);
-
+                    constructError("An unexpected error occurred while fetching the lectures.");
                 }
             }
 
@@ -213,7 +213,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void handleError(Throwable t) {
-        constructError("An unexpected error occurred while processing your request.");
+        constructError("An unexpected error occurred while fetching the lectures.");
     }
 
     private void constructError(String errorMessage) {

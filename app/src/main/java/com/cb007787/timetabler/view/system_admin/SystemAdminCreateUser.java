@@ -158,7 +158,7 @@ public class SystemAdminCreateUser extends AppCompatActivity {
                         ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
                         constructError(theErrorReturned.getErrorMessage());
                     } catch (IOException e) {
-                        constructError("We ran into an unexpected error while processing your request.");
+                        constructError("We ran into an unexpected error while fetching user roles.");
                     }
                 }
             }
@@ -166,7 +166,7 @@ public class SystemAdminCreateUser extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<List<Role>> call, @NonNull Throwable t) {
                 loadingBar.setVisibility(View.GONE);
-                constructError("We ran into an unexpected error while processing your request.");
+                constructError("We ran into an unexpected error while fetching user roles.");
             }
         });
     }

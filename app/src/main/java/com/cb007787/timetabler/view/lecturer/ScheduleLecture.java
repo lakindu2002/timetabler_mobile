@@ -425,6 +425,7 @@ public class ScheduleLecture extends AppCompatActivity {
                 constructError(theErrorReturned.getErrorMessage(), false);
             } catch (IOException e) {
                 e.printStackTrace();
+                constructError("We ran into an unknown error while scheduling the lecture", false);
             }
         }
     }

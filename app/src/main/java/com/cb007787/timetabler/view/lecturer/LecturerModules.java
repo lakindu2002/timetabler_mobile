@@ -90,7 +90,7 @@ public class LecturerModules extends AppCompatActivity {
     }
 
     private void handleOnFailure(Throwable t) {
-        constructError("An unexpected error occurred while processing your request.", false);
+        constructError("An unexpected error occurred while fetching your modules.", false);
     }
 
     private void constructError(String errorMessage, boolean isInfo) {
@@ -119,6 +119,7 @@ public class LecturerModules extends AppCompatActivity {
                 );
             } catch (IOException e) {
                 Log.e("handleOnResponse", "ERROR PARSING JSON");
+                constructError("An unexpected error occurred while fetching your modules.", false);
             }
         }
 

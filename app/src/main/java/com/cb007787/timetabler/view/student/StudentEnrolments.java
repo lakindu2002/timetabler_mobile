@@ -52,12 +52,9 @@ public class StudentEnrolments extends AppCompatActivity {
 
         this.token = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
 
-        swiper.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                //when swipe is done
-                getStudentModulesInBatch();
-            }
+        swiper.setOnRefreshListener(() -> {
+            //when swipe is done
+            getStudentModulesInBatch();
         });
 
         setSupportActionBar(toolbar);
@@ -91,6 +88,7 @@ public class StudentEnrolments extends AppCompatActivity {
                 } catch (IOException e) {
                     Log.e(StudentEnrolments.class.getName(), "FAILED PARSING JSON ERROR");
                     progressIndicator.setVisibility(View.GONE);
+                    constructError("An unexpected error occurred while fetching modules your batch has.");
                     if (swiper.isRefreshing()) {
                         swiper.setRefreshing(false);
                     }
@@ -110,7 +108,7 @@ public class StudentEnrolments extends AppCompatActivity {
     }
 
     private void handleError(Throwable t) {
-        constructError("An unexpected error occurred while processing your request.");
+        constructError("An unexpected error occurred while fetching modules your batch has.");
     }
 
     private void constructError(String errorMessage) {

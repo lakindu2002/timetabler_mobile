@@ -200,6 +200,7 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
                     handleOnResponse(response);
                 } catch (IOException e) {
                     Log.e("onResponse", e.getLocalizedMessage());
+                    constructError("We ran into an error while fetching your lectures");
                 }
             }
 

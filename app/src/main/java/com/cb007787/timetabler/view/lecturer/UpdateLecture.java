@@ -236,7 +236,7 @@ public class UpdateLecture extends DialogFragment {
             @Override
             public void onFailure(@NonNull Call<HashMap<String, Object>> call, @NonNull Throwable t) {
                 progressIndicator.setVisibility(View.GONE);
-                constructMessage("We ran into an unexpected error while processing your request", false);
+                constructMessage("We ran into an unexpected error while fetching lecture information", false);
             }
         });
     }
@@ -261,7 +261,7 @@ public class UpdateLecture extends DialogFragment {
                 constructMessage(theErrorReturned.getErrorMessage(), false);
             } catch (IOException e) {
                 e.printStackTrace();
-                constructMessage("We ran into an unexpected error while processing your request", false);
+                constructMessage("We ran into an unexpected error while fetching lecture information", false);
             }
         }
     }
@@ -532,7 +532,7 @@ public class UpdateLecture extends DialogFragment {
                                 APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage(), false
                         );
                     } catch (IOException e) {
-                        constructMessage("We ran into an unexpected error. Please try again", false);
+                        constructMessage("We ran into an unexpected error while updating the lecture", false);
                     }
                 }
             }
@@ -540,7 +540,7 @@ public class UpdateLecture extends DialogFragment {
             @Override
             public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
                 progressIndicator.setVisibility(View.GONE);
-                constructMessage("We ran into an unexpected error. Please try again", false);
+                constructMessage("We ran into an unexpected error while updating the lecture", false);
             }
         });
     }
