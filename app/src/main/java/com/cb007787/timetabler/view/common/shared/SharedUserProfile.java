@@ -204,6 +204,7 @@ public class SharedUserProfile extends AppCompatActivity {
         }
 
         //validate password
+        //if user has not provided a password, do not validate as assuming only contact is being validated.
         if (!TextUtils.isEmpty(firstPassword.getText().toString()) || !TextUtils.isEmpty(secondPassword.getText().toString())) {
             //user provided a password since either field is not empty, validate it
 
@@ -225,10 +226,6 @@ public class SharedUserProfile extends AppCompatActivity {
                 secondPassword.setError("Passwords must be between 8 and 30 characters");
                 passwordValid = false;
             }
-        } else {
-            passwordValid = false;
-            firstPassword.setError("Please enter a password");
-            secondPassword.setError("Please enter a password");
         }
 
         return contactValid && passwordValid;
