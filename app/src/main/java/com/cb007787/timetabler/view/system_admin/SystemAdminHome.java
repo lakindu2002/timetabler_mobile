@@ -83,6 +83,10 @@ public class SystemAdminHome extends AppCompatActivity implements NavigationView
             //system clicked view account details.
             navigationIntent = new Intent(this, SharedUserProfile.class);
             startActivity(navigationIntent);
+        } else if (item.getItemId() == R.id.menu_user_management) {
+            //system admin clicked user management
+            navigationIntent = new Intent(this, SystemAdminUserManagement.class);
+            startActivity(navigationIntent);
         }
 
         //if drawer is open, close it

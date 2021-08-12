@@ -12,6 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".view.system_admin.SystemAdminCreateUser"
+            android:parentActivityName=".view.system_admin.SystemAdminUserManagement"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.system_admin.SystemAdminUserManagement"
+            android:parentActivityName=".view.system_admin.SystemAdminHome"
+            android:screenOrientation="portrait" />
         <activity android:name=".view.lecturer.ScheduleLecture" />
         <activity
             android:name=".view.lecturer.LecturerModules"

@@ -16,4 +16,5 @@
     <color name="btn_secondary">#6C757D</color>
     <color name="btn_warning">#FFC107</color>
     <color name="snackbar_action">#99000000</color>
+    <color name="hint_color">#656060</color>
 </resources>
