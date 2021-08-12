@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.lecturer.ScheduleLecture"></activity>
+        <activity android:name=".view.lecturer.ScheduleLecture" />
         <activity
             android:name=".view.lecturer.LecturerModules"
             android:parentActivityName=".view.lecturer.LecturerHome"

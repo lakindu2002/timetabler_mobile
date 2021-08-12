@@ -38,4 +38,7 @@ public interface LectureService {
 
     @POST(BASE_ENDPOINT + "create")
     Call<SuccessResponseAPI> createLecture(@Body LectureCreate lectureToBeManaged, @Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "getUpdateInformation/{lectureId}")
+    Call<HashMap<String, Object>> getTheUpdateInformationForLecture(@Header("Authorization") String token, @Path("lectureId") int lectureId);
 }

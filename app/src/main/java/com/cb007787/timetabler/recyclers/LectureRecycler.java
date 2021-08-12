@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
@@ -25,6 +26,7 @@ import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.lecturer.LecturerHome;
+import com.cb007787.timetabler.view.lecturer.UpdateLecture;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -86,26 +88,35 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
 
         if (holder.getDeleteButton().getVisibility() == View.VISIBLE) {
             //when the academic admin or the lecturer clicks cancel lecture
-            holder.getDeleteButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //show the popup modal for the delete
-                    showDeleteModal(theLectureForView, holder.getBatchLecturerView());
-                }
+            holder.getDeleteButton().setOnClickListener(v -> {
+                //show the popup modal for the delete
+                //view used as a reference for the snackbar
+                showDeleteModal(theLectureForView, holder.getBatchLecturerView());
+            });
+        }
+
+        if (holder.getEditButton().getVisibility() == View.VISIBLE) {
+            //academic admin or lecturer clicks the edit button
+            holder.getEditButton().setOnClickListener(v -> {
+                //show the edit dialog
+                //view used as a reference for the snackbar
+                showEditModal(theLectureForView, holder.getEditButton());
             });
         }
 
         if (userRole.equalsIgnoreCase("lecturer")) {
+            //user is a lecturer, show the batches the lecture has been scheduled for.
             StringBuilder batchList = new StringBuilder();
             batchList.append("Batches: ");
 
             for (BatchShow eachBatch : theLectureForView.getBatchesLectureConducedTo()) {
                 batchList.append(String.format("%s, ", eachBatch.getBatchCode()));
             }
-            holder.getBatchLecturerView().setText(batchList.toString());
+            holder.getBatchLecturerView().setText(batchList.toString()); //show the text in the lecturer, batch name view holder
         } else {
-            holder.getBatchLecturerView().setText(lecturerName);
+            holder.getBatchLecturerView().setText(lecturerName); //show lecturer name since user role is not a lecturer.
         }
+        //assign the remaining module, time, venue to the view.
         holder.getModuleName().setText(theLectureForView.getTheModule().getModuleName());
         holder.getTimeDuration().setText(String.format("%s - %s", theLectureForView.getStartTime(), theLectureForView.getEndTime()));
         holder.getVenue().setText(String.format("at %s", classroomName));
@@ -188,6 +199,22 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         });
     }
 
+    private void showEditModal(LectureShow theLectureForView, ImageView editButton) {
+        //fragment to be inflated full screen.
+        UpdateLecture updateLectureDialog = new UpdateLecture();
+        FragmentTransaction fragmentTransaction = null;
+        if (userRole.equalsIgnoreCase("lecturer")) {
+            //lecturer clicked edit
+            LecturerHome theHomePageOfLecturer = (LecturerHome) theContext;
+            fragmentTransaction = theHomePageOfLecturer.getSupportFragmentManager().beginTransaction();
+        } else {
+            //academic admin clicked the edit.
+        }
+        updateLectureDialog.show(fragmentTransaction, "updateLecture");
+        //committing to content as root view enables fragment to be loaded as full screen.
+    }
+
+
     @Override
     public int getItemCount() {
         return theLectureList.size();
@@ -199,7 +226,9 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         private final TextView batchLecturerView;
         private final TextView timeDuration;
         private final TextView venue;
+        //used by staff only.
         private ImageView deleteButton;
+        private ImageView editButton;
 
         public LectureHolder(@NonNull View itemView) {
             super(itemView);
@@ -208,12 +237,20 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             timeDuration = itemView.findViewById(R.id.duration);
             venue = itemView.findViewById(R.id.venue);
             deleteButton = itemView.findViewById(R.id.cancel_lecture);
+            editButton = itemView.findViewById(R.id.edit_lecture);
 
             if (userRole.equalsIgnoreCase("student")) {
+                //for students, they can only view lecture.
                 deleteButton.setVisibility(View.GONE);
+                editButton.setVisibility(View.GONE);
             } else {
+                editButton.setVisibility(View.VISIBLE);
                 deleteButton.setVisibility(View.VISIBLE);
             }
+        }
+
+        public ImageView getEditButton() {
+            return editButton;
         }
 
         public TextView getModuleName() {

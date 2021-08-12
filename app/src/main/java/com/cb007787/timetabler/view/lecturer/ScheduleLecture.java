@@ -30,6 +30,7 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.lecturer.LecturerModules;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -65,8 +66,8 @@ public class ScheduleLecture extends AppCompatActivity {
     private String token;
     private List<Classroom> loadedClassrooms;
     private Module loadedModule;
-    private String selectedDateInUi;//to be formatted in "yyyy-mm-dd
-    private ArrayList<String> selectedBatches = new ArrayList<>(); //used to hold selected batches in checkbox.
+    private String selectedDateInUi;//to be formatted in "yyyy-mm-dd"
+    private final ArrayList<String> selectedBatches = new ArrayList<>(); //used to hold selected batches in checkbox.
 
     private LectureService lectureService;
     private Toolbar theToolbar;

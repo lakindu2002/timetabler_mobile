@@ -73,4 +73,5 @@
     <string name="schedule_lecture">Schedule Lecture</string>
     <string name="time_image">Time Image</string>
     <string name="select_classroom">Select Classroom</string>
+    <string name="re_schedule_lecture">Re-Schedule Lecture</string>
 </resources>

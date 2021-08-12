@@ -51,9 +51,18 @@
             android:textSize="14sp" />
 
         <ImageView
+            android:id="@+id/edit_lecture"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/module_name"
+            android:layout_toStartOf="@id/cancel_lecture"
+            android:src="@drawable/ic_baseline_edit_24"
+            android:visibility="visible" />
+
+        <ImageView
             android:id="@+id/cancel_lecture"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_below="@id/module_name"
             android:layout_alignParentEnd="true"
             android:src="@drawable/ic_baseline_delete_forever_24"
