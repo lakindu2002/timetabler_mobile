@@ -11,10 +11,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.recyclers.UserRecycler;
 import com.cb007787.timetabler.service.APIConfigurer;
@@ -97,6 +99,35 @@ public class UserLoadingFragment extends Fragment {
 
         //swiped
         swipeRefreshLayout.setOnRefreshListener(this::loadUsers);
+
+        //assign the callback events to the adapter
+        adapter.setOnDeleteCallbacks(new UserRecycler.DeleteCallbacks() {
+            @Override
+            public void onDeleteSuccessResponse(SuccessResponseAPI theSuccessObject) {
+                //user has been deleted successfully
+                Snackbar theSnackBar = Snackbar.make(requireView(), theSuccessObject.getMessage(), Snackbar.LENGTH_LONG);
+                theSnackBar.setAnchorView(recyclerView);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                theSnackBar.show();
+                progressIndicator.setVisibility(View.GONE); //hide the progress bar
+
+                loadUsers(); //load the users for the inflated user type in the bundle to refresh the list.
+            }
+
+            @Override
+            public void onDeleteFailure(String message) {
+                //user has not been deleted
+                constructError(message);
+                progressIndicator.setVisibility(View.GONE); //hide the progress bar
+            }
+
+            @Override
+            public void onDeleteCalled() {
+                //the user has click "Delete"
+                //display the loading bar when user clicks delete.
+                progressIndicator.setVisibility(View.VISIBLE);
+            }
+        });
 
         return inflatedView; //return the view that can be hosted on the fragment container
     }
@@ -228,6 +259,10 @@ public class UserLoadingFragment extends Fragment {
         Snackbar theSnackBar = Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_LONG);
         theSnackBar.setAnchorView(recyclerView);
         theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
         theSnackBar.show();
     }
 }

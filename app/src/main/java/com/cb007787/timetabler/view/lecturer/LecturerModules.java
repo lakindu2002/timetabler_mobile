@@ -10,6 +10,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.Module;
@@ -100,6 +101,10 @@ public class LecturerModules extends AppCompatActivity {
         } else {
             theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
         }
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
         theSnackBar.show();
     }
 

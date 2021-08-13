@@ -17,6 +17,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
@@ -348,6 +349,10 @@ public class ScheduleLecture extends AppCompatActivity {
         } else {
             theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
         }
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
         theSnackBar.show();
     }
 

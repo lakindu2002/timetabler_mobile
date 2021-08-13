@@ -3,10 +3,12 @@ package com.cb007787.timetabler.service;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -43,4 +45,7 @@ public interface UserService {
 
     @GET(BASE_ENDPOINT + "allLecturers")
     Call<List<User>> getAllLecturers(@Header("Authorization") String token);
+
+    @DELETE(BASE_ENDPOINT + "delete/{username}")
+    Call<SuccessResponseAPI> deleteUser(@Header("Authorization") String token, @Path("username") String username);
 }

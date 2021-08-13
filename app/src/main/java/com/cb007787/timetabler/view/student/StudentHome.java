@@ -219,6 +219,10 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
     private void constructError(String errorMessage) {
         Snackbar theSnackBar = Snackbar.make(theNavigation, errorMessage, Snackbar.LENGTH_LONG);
         theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
         theSnackBar.show();
     }
 

@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.service.APIConfigurer;
@@ -29,10 +30,15 @@ import com.cb007787.timetabler.service.UserService;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> {
     private final Context theContext;
@@ -40,6 +46,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
     private SimpleDateFormat dateFormat;
     private String userRole;
     private UserService userService;
+    private DeleteCallbacks onDeleteCallbacks; //implementation will be provided by fragments calling adapter.
 
     public UserRecycler(Context theContext, String userRole) {
         this.theContext = theContext;
@@ -51,6 +58,10 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
     public void setUserList(List<User> userList) {
         this.userList = userList;
         notifyDataSetChanged();
+    }
+
+    public void setOnDeleteCallbacks(DeleteCallbacks onDeleteCallbacks) {
+        this.onDeleteCallbacks = onDeleteCallbacks;
     }
 
     @NonNull
@@ -140,13 +151,61 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
 
     private void deleteUserInDb(User theUser) {
         //delete the user by making the api call.
-        HashMap<String, String> deleteBody = new HashMap<>();
-        deleteBody.put("username", theUser.getUsername());
+        //triggered when user clicks "Delete"
+        onDeleteCallbacks.onDeleteCalled(); //trigger the delete called callback function
+
+        Call<SuccessResponseAPI> deleteCall = userService.deleteUser(SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME), theUser.getUsername());
+        deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
+            @Override
+            public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                if (response.isSuccessful()) {
+                    //trigger success callback
+                    onDeleteCallbacks.onDeleteSuccessResponse(response.body());
+                } else {
+                    //trigger error callbacks
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        onDeleteCallbacks.onDeleteFailure(theErrorReturned.getErrorMessage());
+                    } catch (IOException e) {
+                        onDeleteCallbacks.onDeleteFailure("We ran into an error while deleting the user");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                onDeleteCallbacks.onDeleteFailure("We ran into an error while deleting the user");
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return userList.size();
+    }
+
+    /**
+     * Callbacks to be executed on API
+     */
+    public interface DeleteCallbacks {
+        /**
+         * To be executed when API returns 200
+         *
+         * @param theSuccessObject The success object returned from API
+         */
+        void onDeleteSuccessResponse(SuccessResponseAPI theSuccessObject);
+
+        /**
+         * To be executed "onFailure" or on isSuccessful == false
+         *
+         * @param message The message to be displayed to the user as error.
+         */
+        void onDeleteFailure(String message);
+
+        /**
+         * Executed when the user clicks on "Delete" on the modal
+         */
+        void onDeleteCalled();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
