@@ -111,10 +111,6 @@ public class AllAcademicAdministrators extends Fragment {
                 }
                 if (response.isSuccessful()) {
                     loadedUsers = response.body();
-                    for (int i = 0; i < 100; i++) {
-                        User user = loadedUsers.get(0);
-                        loadedUsers.add(user);
-                    }
                     adapter.setUserList(loadedUsers); //trigger notify data set changed to update recycler.
                     headerTitle.setText(String.format(Locale.ENGLISH, "Academic Administrators (%d)", adapter.getItemCount()));
                 } else {

@@ -52,6 +52,8 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
                 .beginTransaction()
                 .replace(R.id.fragment_container_view, new AllAcademicAdministrators())
                 .commit();
+
+        navigationView.setSelectedItemId(R.id.user_admin);
     }
 
     private void getReferences() {
