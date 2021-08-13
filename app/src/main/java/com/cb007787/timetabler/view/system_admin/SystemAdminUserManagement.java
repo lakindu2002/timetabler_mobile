@@ -3,12 +3,17 @@ package com.cb007787.timetabler.view.system_admin;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -19,6 +24,32 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
 
     private Toolbar theToolbar;
     private BottomNavigationView navigationView;
+    private UserLoadingFragment theLoadedFragment;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.user_management_search, menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.search); //the search menu item will be instantiated as a SearchView as defined in menu file
+        SearchView actionView = (SearchView) searchMenuItem.getActionView(); //retrieve the underlying SearchView for the menu item.
+        actionView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set background to white.
+        actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //text input submitted
+                theLoadedFragment.search(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //keyboard click detected
+                theLoadedFragment.search(newText);
+                return true;
+            }
+        });
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,18 +92,21 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
             startActivity(new Intent(this, SystemAdminCreateUser.class));
             return true;
         } else if (item.getItemId() == R.id.user_lecturer) {
+            theLoadedFragment = UserLoadingFragment.newInstance("lecturer");
             fragmentTransaction
-                    .replace(R.id.fragment_container_view, UserLoadingFragment.newInstance("lecturer"))
+                    .replace(R.id.fragment_container_view, theLoadedFragment)
                     .commit();
             return true;
         } else if (item.getItemId() == R.id.user_student) {
+            theLoadedFragment = UserLoadingFragment.newInstance("student");
             fragmentTransaction
-                    .replace(R.id.fragment_container_view, UserLoadingFragment.newInstance("student"))
+                    .replace(R.id.fragment_container_view, theLoadedFragment)
                     .commit();
             return true;
         } else if (item.getItemId() == R.id.user_admin) {
+            theLoadedFragment = UserLoadingFragment.newInstance("academic_administrator");
             fragmentTransaction
-                    .replace(R.id.fragment_container_view, UserLoadingFragment.newInstance("academic_administrator"))
+                    .replace(R.id.fragment_container_view, theLoadedFragment)
                     .commit();
             return true;
         }

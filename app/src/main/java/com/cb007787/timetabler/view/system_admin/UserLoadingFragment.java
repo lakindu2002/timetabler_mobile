@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,6 +56,20 @@ public class UserLoadingFragment extends Fragment {
     private String userListToLoad;
 
     public UserLoadingFragment() {
+    }
+
+    public void search(String input) {
+        //method executed to search the data.
+        if (adapter != null) {
+            input = input.trim();
+            if (input.length() != 0) {
+                String finalInput = input;
+                List<User> filteredList = loadedUsers.stream().filter((eachUser) -> eachUser.getUsername().toLowerCase().contains(finalInput.toLowerCase())).collect(Collectors.toList());
+                adapter.setUserList(filteredList);
+            } else {
+                adapter.setUserList(loadedUsers); //notify data set changed
+            }
+        }
     }
 
 
@@ -256,13 +272,15 @@ public class UserLoadingFragment extends Fragment {
 
 
     private void constructError(String errorMessage) {
-        Snackbar theSnackBar = Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_LONG);
-        theSnackBar.setAnchorView(recyclerView);
-        theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
-        View view = theSnackBar.getView();
-        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
-        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
-        snackBarText.setMaxLines(5);
-        theSnackBar.show();
+        if (getView() != null) {
+            Snackbar theSnackBar = Snackbar.make(getView(), errorMessage, Snackbar.LENGTH_LONG);
+            theSnackBar.setAnchorView(recyclerView);
+            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+            View view = theSnackBar.getView();
+            //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+            TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+            snackBarText.setMaxLines(5);
+            theSnackBar.show();
+        }
     }
 }
