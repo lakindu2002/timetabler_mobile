@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
@@ -28,4 +29,7 @@ public interface UserService {
 
     @PUT(BASE_ENDPOINT + "account/update")
     Call<SuccessResponseAPI> updateUserAccount(@Header("Authorization") String token, @Body User updateUserRequest);
+
+    @POST(BASE_ENDPOINT + "createUser")
+    Call<SuccessResponseAPI> createNewUser(@Body User theNewUser, @Header("Authorization") String token);
 }

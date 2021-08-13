@@ -101,6 +101,8 @@
                     android:layout_below="@+id/first_name_label"
                     android:layout_marginTop="5dp"
                     app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="75"
                     app:endIconMode="clear_text"
                     app:errorEnabled="true"
                     app:errorIconTint="@color/btn_danger"
@@ -114,7 +116,7 @@
                         android:layout_height="match_parent"
                         android:hint="@string/enter_the_first_name"
                         android:inputType="textPersonName"
-                        android:maxLength="255"
+                        android:maxLength="75"
                         android:textColor="@color/black"
                         android:textColorHint="@color/hint_color" />
 
@@ -137,6 +139,8 @@
                     android:layout_below="@+id/last_name_label"
                     android:layout_marginTop="5dp"
                     app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="75"
                     app:endIconMode="clear_text"
                     app:errorEnabled="true"
                     app:errorIconTint="@color/btn_danger"
@@ -150,7 +154,7 @@
                         android:layout_height="match_parent"
                         android:hint="@string/enter_the_last_name"
                         android:inputType="textPersonName"
-                        android:maxLength="255"
+                        android:maxLength="75"
                         android:textColor="@color/black"
                         android:textColorHint="@color/hint_color" />
 
@@ -174,6 +178,8 @@
                     android:layout_below="@+id/email_address_label"
                     android:layout_marginTop="5dp"
                     app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="255"
                     app:endIconMode="clear_text"
                     app:errorEnabled="true"
                     app:errorIconTint="@color/btn_danger"

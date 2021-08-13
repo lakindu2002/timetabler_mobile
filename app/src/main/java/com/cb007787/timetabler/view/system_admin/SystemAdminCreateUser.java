@@ -1,12 +1,16 @@
 package com.cb007787.timetabler.view.system_admin;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +21,8 @@ import androidx.appcompat.widget.Toolbar;
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.Role;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
+import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
@@ -31,6 +37,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -65,6 +72,7 @@ public class SystemAdminCreateUser extends AppCompatActivity {
     private String token;
     private UserRoleService userRoleService;
     private UserService userService;
+    private List<Role> roleListFromDB;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,6 +95,11 @@ public class SystemAdminCreateUser extends AppCompatActivity {
         datePicker.setOnClickListener(v -> {
             //open date picker
             openDatePicker();
+        });
+
+        createUserBtn.setOnClickListener(v -> {
+            //triggered when system admin clicks "Create User".
+            handleCreateBtnClick();
         });
     }
 
@@ -127,10 +140,21 @@ public class SystemAdminCreateUser extends AppCompatActivity {
             //when user confirms the date selected
             Calendar selectedTime = Calendar.getInstance(); //get a calendar instance
             selectedTime.setTimeInMillis(selectedTimeInMs); //set the selected millisecond time as calendar time
-            selectedDate = selectedTime; //set the selected time to global time
 
-            //format the time into Month/Date/Year and display on input box
-            dateOfBirthField.setText(new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).format(selectedTime.getTime()));
+            //check if date of birth greater than today.
+            Calendar currentTime = Calendar.getInstance();
+            //uses by default GMT 17:30 time zone
+            currentTime.set(Calendar.HOUR_OF_DAY, 17);
+            currentTime.set(Calendar.MINUTE, 30);
+            currentTime.set(Calendar.MILLISECOND, 0);
+
+            if (selectedTime.after(currentTime)) {
+                constructError("Date of Birth Cannot Be After Today");
+            } else {
+                //format the time into Month/Date/Year and display on input box
+                dateOfBirthField.setText(new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).format(selectedTime.getTime()));
+                selectedDate = selectedTime; //set the selected time to global time
+            }
         });
 
         dateOfBirthPicker.show(getSupportFragmentManager(), "Date_Of_Birth_Picker");
@@ -152,7 +176,8 @@ public class SystemAdminCreateUser extends AppCompatActivity {
                 loadingBar.setVisibility(View.GONE);
                 if (response.isSuccessful()) {
                     List<Role> roleList = response.body();
-                    assignRolesToAdapter(roleList);
+                    roleListFromDB = roleList;
+                    assignRolesToAdapter(roleListFromDB);
                 } else {
                     try {
                         ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
@@ -179,6 +204,147 @@ public class SystemAdminCreateUser extends AppCompatActivity {
         }
         userRoleField.setAdapter(roleAdapter); //ensure that the role list will create the drop down on autocomplete view.
     }
+
+    private void handleCreateBtnClick() {
+        loadingBar.setVisibility(View.VISIBLE);
+        //retrieve the user inputs
+        String username = usernameField.getText().toString();
+        String firstName = firstNameField.getText().toString();
+        String lastName = lastNameField.getText().toString();
+        String emailAddress = emailAddressField.getText().toString();
+        String contactNumber = contactNumberField.getText().toString();
+        Date selectedDateInPicker = selectedDate == null ? null : selectedDate.getTime();
+        Role userType = getUserRole(userRoleField.getText().toString());
+
+        //construct a POJO for validation.
+        User theNewUser = new User();
+        theNewUser.setUsername(username);
+        theNewUser.setFirstName(firstName);
+        theNewUser.setLastName(lastName);
+        theNewUser.setEmailAddress(emailAddress);
+        theNewUser.setContactNumber(contactNumber);
+        theNewUser.setDateOfBirth(selectedDateInPicker);
+        theNewUser.setUserRole(userType);
+
+        boolean isValid = validateUserCreate(theNewUser); //validate the input fields
+
+        if (isValid) {
+            //hit the endpoint and create the user
+            createNewUser(theNewUser);
+        } else {
+            constructError("There are validation errors");
+            loadingBar.setVisibility(View.GONE);
+        }
+
+    }
+
+    private boolean validateUserCreate(User theNewUser) {
+        boolean isUsernameValid = true;
+        boolean isFirstNameValid = true;
+        boolean isLastNameValid = true;
+        boolean isEmailAddressValid = true;
+        boolean isContactNumberValid = true;
+        boolean isDateOfBirthValid = true;
+        boolean isUserRoleValid = true;
+
+
+        if (TextUtils.isEmpty(theNewUser.getUsername())) {
+            usernameLayout.setError("Provide a Valid Username");
+            isUsernameValid = false;
+        } else if (theNewUser.getUsername().length() < 8) {
+            usernameLayout.setError("Must be minimum 8 characters");
+            isUsernameValid = false;
+        } else {
+            usernameLayout.setError(null);
+        }
+
+        if (TextUtils.isEmpty(theNewUser.getFirstName())) {
+            firstNameLayout.setError("Provide a First Name");
+            isFirstNameValid = false;
+        } else {
+            firstNameLayout.setError(null);
+        }
+
+        if (TextUtils.isEmpty(theNewUser.getLastName())) {
+            lastNameLayout.setError("Provide a Last Name");
+            isLastNameValid = false;
+        } else {
+            lastNameLayout.setError(null);
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(theNewUser.getEmailAddress()).matches()) {
+            emailAddressLayout.setError("Provide a Valid Email Address");
+            isEmailAddressValid = false;
+        } else {
+            emailAddressLayout.setError(null);
+        }
+
+        if (TextUtils.isEmpty(theNewUser.getContactNumber())) {
+            contactNumberLayout.setError("Provide a Valid Contact Number");
+            isContactNumberValid = false;
+        } else if (!TextUtils.isDigitsOnly(theNewUser.getContactNumber())) {
+            contactNumberLayout.setError("Contact Number Must Be Digits Only");
+            isContactNumberValid = false;
+        } else {
+            contactNumberLayout.setError(null);
+        }
+
+        if (theNewUser.getDateOfBirth() == null) {
+            dateOfBirthLayout.setError("Provide a Valid Date of Birth");
+            isDateOfBirthValid = false;
+        } else {
+            dateOfBirthLayout.setError(null);
+        }
+
+        if (theNewUser.getUserRole() == null) {
+            userRoleLayout.setError("Provide a Valid User Role");
+            isUserRoleValid = false;
+        } else {
+            userRoleLayout.setError(null);
+        }
+
+        return isUsernameValid && isFirstNameValid && isLastNameValid && isEmailAddressValid && isContactNumberValid && isDateOfBirthValid && isUserRoleValid;
+    }
+
+    private void createNewUser(User theNewUser) {
+        Call<SuccessResponseAPI> createUserCall = userService.createNewUser(theNewUser, token);
+
+        createUserCall.enqueue(new Callback<SuccessResponseAPI>() {
+            @Override
+            public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                loadingBar.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(getApplicationContext(), SystemAdminUserManagement.class));
+                    finish();
+                } else {
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        constructError(theErrorReturned.getErrorMessage());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        constructError("We ran into an error while creating the user");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                loadingBar.setVisibility(View.GONE);
+                constructError("We ran into an error while creating the user");
+            }
+        });
+    }
+
+    private Role getUserRole(String selectedRole) {
+        for (Role role : roleListFromDB) {
+            if (selectedRole.toLowerCase().trim().equalsIgnoreCase(role.getRoleName())) {
+                return role;
+            }
+        }
+        return null;
+    }
+
 
     private void constructError(String errorMessage) {
         Snackbar theSnackBar = Snackbar.make(theToolbar, errorMessage, Snackbar.LENGTH_LONG);
