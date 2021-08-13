@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/user_admin"
+        android:icon="@drawable/ic_admins"
+        android:title="@string/academic_administrators"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/user_lecturer"
+        android:icon="@drawable/ic_lecturer"
+        android:title="@string/lecturers"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/user_student"
+        android:icon="@drawable/ic_student"
+        android:title="@string/students"
+        app:showAsAction="always" />
+
+</menu>

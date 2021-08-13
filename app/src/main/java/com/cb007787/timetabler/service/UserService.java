@@ -3,6 +3,8 @@ package com.cb007787.timetabler.service;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -32,4 +34,7 @@ public interface UserService {
 
     @POST(BASE_ENDPOINT + "createUser")
     Call<SuccessResponseAPI> createNewUser(@Body User theNewUser, @Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "allAcademicAdministrators")
+    Call<List<User>> getAcademicAdmins(@Header("Authorization") String token);
 }
