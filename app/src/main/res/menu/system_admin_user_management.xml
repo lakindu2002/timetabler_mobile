@@ -4,7 +4,7 @@
     <item
         android:id="@+id/user_admin"
         android:icon="@drawable/ic_admins"
-        android:title="@string/academic_administrators"
+        android:title="@string/academic_admins"
         app:showAsAction="ifRoom" />
 
     <item
@@ -17,6 +17,12 @@
         android:id="@+id/user_student"
         android:icon="@drawable/ic_student"
         android:title="@string/students"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/new_user"
+        android:icon="@drawable/ic_baseline_add_24"
+        android:title="Create User"
         app:showAsAction="always" />
 
 </menu>

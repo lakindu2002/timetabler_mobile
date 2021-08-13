@@ -7,7 +7,6 @@
     android:background="@color/background"
     tools:context=".view.system_admin.AllAcademicAdministrators">
 
-
     <include
         android:id="@+id/loading"
         layout="@layout/loading_bar"
@@ -49,22 +48,18 @@
         android:background="#f7fafc"
         android:padding="10dp" />
 
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/ruler">
 
-        <RelativeLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </RelativeLayout>
+            android:layout_height="match_parent" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </RelativeLayout>
