@@ -3,26 +3,21 @@ package com.cb007787.timetabler.view.system_admin;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 public class SystemAdminUserManagement extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar theToolbar;
-    private FragmentContainerView fragmentContainerView;
     private BottomNavigationView navigationView;
 
     @Override
@@ -48,24 +43,37 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
     protected void onStart() {
         super.onStart();
         //once view renders, initially show all academic admins.
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container_view, new AllAcademicAdministrators())
-                .commit();
-
         navigationView.setSelectedItemId(R.id.user_admin);
     }
 
     private void getReferences() {
         this.theToolbar = findViewById(R.id.the_toolbar);
-        fragmentContainerView = findViewById(R.id.fragment_container_view);
         navigationView = findViewById(R.id.bottom_navigation);
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        //in the newInstance method, it will create a bundle and set the arguments that can be retrieve in the fragment;
+        //arguments passed are the user type that needs to be retrieved from the api call.
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction();
         if (item.getItemId() == R.id.new_user) {
             startActivity(new Intent(this, SystemAdminCreateUser.class));
+            return true;
+        } else if (item.getItemId() == R.id.user_lecturer) {
+            fragmentTransaction
+                    .replace(R.id.fragment_container_view, UserLoadingFragment.newInstance("lecturer"))
+                    .commit();
+            return true;
+        } else if (item.getItemId() == R.id.user_student) {
+            fragmentTransaction
+                    .replace(R.id.fragment_container_view, UserLoadingFragment.newInstance("student"))
+                    .commit();
+            return true;
+        } else if (item.getItemId() == R.id.user_admin) {
+            fragmentTransaction
+                    .replace(R.id.fragment_container_view, UserLoadingFragment.newInstance("academic_administrator"))
+                    .commit();
             return true;
         }
         return false;

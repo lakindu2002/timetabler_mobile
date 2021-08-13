@@ -35,7 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AllAcademicAdministrators extends Fragment {
+public class UserLoadingFragment extends Fragment {
 
 
     private LinearProgressIndicator progressIndicator;
@@ -49,20 +49,39 @@ public class AllAcademicAdministrators extends Fragment {
     private MaterialTextView headerTitle;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    public AllAcademicAdministrators() {
+    private String userListToLoad;
+
+    public UserLoadingFragment() {
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    public static UserLoadingFragment newInstance(String loadingType) {
+
+        Bundle args = new Bundle();
+
+        UserLoadingFragment fragment = new UserLoadingFragment();
+        args.putString("loadingType", loadingType.toUpperCase());
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View inflatedView = inflater.inflate(R.layout.fragment_all_academic_administrators, container, false);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            //retrieve the user type to be loaded that was passed from the SystemAdminUserManagement activity.
+            userListToLoad = arguments.getString("loadingType", "academic_administrator");
+        }
+
+        //inflate the layout for the fragment
+        View inflatedView = inflater.inflate(R.layout.fragment_user_loading, container, false);
         try {
             getReferences(inflatedView);
         } catch (JsonProcessingException e) {
@@ -92,6 +111,7 @@ public class AllAcademicAdministrators extends Fragment {
         swipeRefreshLayout = inflatedView.findViewById(R.id.swiper);
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -101,27 +121,27 @@ public class AllAcademicAdministrators extends Fragment {
     private void loadUsers() {
         //api call
         progressIndicator.setVisibility(View.VISIBLE);
+        //load the users based on the type selected from the bottom navigation view.
+        if (userListToLoad.equalsIgnoreCase("ACADEMIC_ADMINISTRATOR")) {
+            headerTitle.setText("Academic Administrators");
+            loadAcademicAdminList();
+        } else if (userListToLoad.equalsIgnoreCase("STUDENT")) {
+            headerTitle.setText("Students");
+            loadStudentList();
+        } else if (userListToLoad.equalsIgnoreCase("LECTURER")) {
+            headerTitle.setText("Lecturers");
+            loadLecturers();
+        }
+    }
+
+
+    private void loadAcademicAdminList() {
         Call<List<User>> getAdminCall = userService.getAcademicAdmins(token);
         getAdminCall.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
-                progressIndicator.setVisibility(View.GONE);
-                if (swipeRefreshLayout.isRefreshing()) {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-                if (response.isSuccessful()) {
-                    loadedUsers = response.body();
-                    adapter.setUserList(loadedUsers); //trigger notify data set changed to update recycler.
-                    headerTitle.setText(String.format(Locale.ENGLISH, "Academic Administrators (%d)", adapter.getItemCount()));
-                } else {
-                    try {
-                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
-                        constructError(theErrorReturned.getErrorMessage());
-
-                    } catch (IOException e) {
-                        constructError("We ran into an error while loading the academic administrators");
-                    }
-                }
+                handleOnResponse(response);
+                headerTitle.setText(String.format(Locale.ENGLISH, "Academic Administrators (%d)", adapter.getItemCount()));
             }
 
             @Override
@@ -133,6 +153,74 @@ public class AllAcademicAdministrators extends Fragment {
                 constructError("We ran into an error while loading the academic administrators");
             }
         });
+    }
+
+
+    private void loadStudentList() {
+        Call<List<User>> allStudents = userService.getAllStudents(token);
+        allStudents.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
+                handleOnResponse(response);
+                headerTitle.setText(String.format(Locale.ENGLISH, "Students (%d)", adapter.getItemCount()));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<User>> call, @NonNull Throwable t) {
+                progressIndicator.setVisibility(View.GONE);
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                constructError("We ran into an error while loading the students");
+            }
+        });
+    }
+
+    private void loadLecturers() {
+        Call<List<User>> allLecturers = userService.getAllLecturers(token);
+        allLecturers.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
+                handleOnResponse(response);
+                headerTitle.setText(String.format(Locale.ENGLISH, "Lecturers (%d)", adapter.getItemCount()));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<User>> call, @NonNull Throwable t) {
+                progressIndicator.setVisibility(View.GONE);
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                constructError("We ran into an error while loading the lecturers");
+            }
+        });
+    }
+
+    private void handleOnResponse(Response<List<User>> response) {
+        progressIndicator.setVisibility(View.GONE);
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+        if (response.isSuccessful()) {
+            loadedUsers = response.body();
+            adapter.setUserList(loadedUsers); //trigger notify data set changed to update recycler.
+        } else {
+            try {
+                ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                constructError(theErrorReturned.getErrorMessage());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                //construct error messages based on the role needed to be loaded.
+                if (userListToLoad.equalsIgnoreCase("ACADEMIC_ADMINISTRATOR")) {
+                    constructError("We ran into an error while loading the academic administrators");
+                } else if (userListToLoad.equalsIgnoreCase("STUDENT")) {
+                    constructError("We ran into an error while loading the students");
+                } else if (userListToLoad.equalsIgnoreCase("LECTURER")) {
+                    constructError("We ran into an error while loading the lecturers");
+                }
+            }
+        }
     }
 
 

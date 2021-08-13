@@ -73,11 +73,12 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         holder.getDateOfBirth().setText(dateFormat.format(theUser.getDateOfBirth()));
         holder.getMemberSince().setText(String.format("Member Since: %s", dateFormat.format(theUser.getMemberSince())));
 
-        //anchor the popup menu to the card itself
+        //anchor the popup menu to the more button
         PopupMenu theMoreOption = new PopupMenu(theContext, holder.getMore());
-        theMoreOption.inflate(R.menu.user_popup);
+        theMoreOption.inflate(R.menu.user_popup); //inflate the menu resource file for the popup
 
         Menu theInflatedMenu = theMoreOption.getMenu();
+        //disable certain actions on the menu based on requirements done below.
         if (userRole.equalsIgnoreCase("academic administrator")) {
             //do not show the delete button to the academic administrator as they cannot delete the user information
             theInflatedMenu.removeItem(R.id.delete_click);
