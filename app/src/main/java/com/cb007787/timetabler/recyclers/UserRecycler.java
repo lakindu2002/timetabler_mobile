@@ -1,7 +1,9 @@
 package com.cb007787.timetabler.recyclers;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
@@ -77,6 +82,10 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             //do not show the delete button to the academic administrator as they cannot delete the user information
             theInflatedMenu.removeItem(R.id.delete_click);
         }
+        if (theUser.getUserRole().getRoleName().equalsIgnoreCase("academic administrator")) {
+            //prevent deleting academic admin
+            theInflatedMenu.removeItem(R.id.delete_click);
+        }
 
         theMoreOption.setOnMenuItemClickListener(item -> {
             //handle item clicks
@@ -84,7 +93,15 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
                 //user click call
                 Intent theCallIntent = new Intent(Intent.ACTION_CALL);
                 theCallIntent.setData(Uri.parse("tel:" + theUser.getContactNumber())); //parse the telephone number as URI
-                theContext.startActivity(theCallIntent); //open the call intent
+
+                //check if user has given permission to take the phone call
+                if (ContextCompat.checkSelfPermission(theContext, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    //can make phone call
+                    theContext.startActivity(theCallIntent); //open the call intent
+                } else {
+                    Toast.makeText(theContext, "Enable Phone Call Permission To Execute This Feature", Toast.LENGTH_LONG).show();
+                }
+
                 return true;
             } else if (item.getItemId() == R.id.delete_click) {
                 //user click delete
@@ -104,7 +121,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             } else if (item.getItemId() == R.id.email_click) {
                 //user clicks email
                 //construct a app chooser that is capable of sending emails.
-                Intent theEmailIntent = new Intent(Intent.ACTION_SENDTO);
+                Intent theEmailIntent = new Intent(Intent.ACTION_SEND);
                 theEmailIntent.setType("text/plain");
                 theEmailIntent.putExtra(Intent.EXTRA_EMAIL, theUser.getEmailAddress());
                 theContext.startActivity(Intent.createChooser(theEmailIntent, "Contact User"));
