@@ -37,4 +37,10 @@ public interface UserService {
 
     @GET(BASE_ENDPOINT + "allAcademicAdministrators")
     Call<List<User>> getAcademicAdmins(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "allStudents")
+    Call<List<User>> getAllStudents(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "allLecturers")
+    Call<List<User>> getAllLecturers(@Header("Authorization") String token);
 }
