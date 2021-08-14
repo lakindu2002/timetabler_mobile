@@ -104,6 +104,7 @@
                         android:id="@+id/classroom_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:textColor="@color/black"
                         android:focusableInTouchMode="true"
                         android:inputType="none">
 

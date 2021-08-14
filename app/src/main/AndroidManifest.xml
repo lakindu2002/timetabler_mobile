@@ -3,6 +3,7 @@
     package="com.cb007787.timetabler">
     <!-- add the internet permissions to communicate to the API -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".view.system_admin.SystemAdminCreateManageClassroom"
+            android:parentActivityName=".view.system_admin.SystemAdminClassroomManagement"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.system_admin.SystemAdminClassroomManagement"
+            android:parentActivityName=".view.system_admin.SystemAdminHome"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.system_admin.SystemAdminCreateUser"
+            android:parentActivityName=".view.system_admin.SystemAdminUserManagement"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.system_admin.SystemAdminUserManagement"
+            android:parentActivityName=".view.system_admin.SystemAdminHome"
+            android:screenOrientation="portrait" />
         <activity android:name=".view.lecturer.ScheduleLecture" />
         <activity
             android:name=".view.lecturer.LecturerModules"

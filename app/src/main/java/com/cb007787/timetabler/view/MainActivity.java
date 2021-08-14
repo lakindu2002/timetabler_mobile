@@ -1,11 +1,15 @@
 package com.cb007787.timetabler.view;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
@@ -25,10 +29,65 @@ public class MainActivity extends AppCompatActivity {
 
     //validate the shared preferences.
     //if user is logged in, send to their respected activity, else load the login page.
+    private final String[] permissionNeeded = new String[1];
 
     @Override
     protected void onStart() {
         super.onStart();
+        //check for permission for phone call.
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            //need permission for phone call.
+            ActivityCompat.requestPermissions(MainActivity.this, permissionNeeded, 0);
+        } else {
+            //permissions granted, launch the app
+            launchApp();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 0) {
+            //request code is the code passed to request permissions method.
+            launchApp(); //user has responded to my permission request, launch the app.
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        permissionNeeded[0] = "android.permission.CALL_PHONE"; //phone call permission
+    }
+
+    private void navigateToHome(String role) {
+        Intent theRoleIntent = null;
+
+        switch (role.toLowerCase().trim()) {
+            case "academic administrator": {
+                theRoleIntent = new Intent(this, AcademicAdminHome.class);
+                break;
+            }
+            case "system administrator": {
+                theRoleIntent = new Intent(this, SystemAdminHome.class);
+                break;
+            }
+            case "lecturer": {
+                theRoleIntent = new Intent(this, LecturerHome.class);
+                break;
+            }
+            case "student": {
+                theRoleIntent = new Intent(this, StudentHome.class);
+                break;
+            }
+        }
+        startActivity(theRoleIntent);
+        finish(); //remove the splash screen from activity back trace.
+    }
+
+    public void launchApp() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -86,37 +145,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }, 1000);
-
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
-
-    private void navigateToHome(String role) {
-        Intent theRoleIntent = null;
-
-        switch (role.toLowerCase().trim()) {
-            case "academic administrator": {
-                theRoleIntent = new Intent(this, AcademicAdminHome.class);
-                break;
-            }
-            case "system administrator": {
-                theRoleIntent = new Intent(this, SystemAdminHome.class);
-                break;
-            }
-            case "lecturer": {
-                theRoleIntent = new Intent(this, LecturerHome.class);
-                break;
-            }
-            case "student": {
-                theRoleIntent = new Intent(this, StudentHome.class);
-                break;
-            }
-        }
-        startActivity(theRoleIntent);
-        finish(); //remove the splash screen from activity back trace.
     }
 }

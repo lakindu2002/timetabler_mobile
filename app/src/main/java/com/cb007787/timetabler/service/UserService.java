@@ -3,10 +3,15 @@ package com.cb007787.timetabler.service;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 
+import java.util.HashMap;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
@@ -28,4 +33,19 @@ public interface UserService {
 
     @PUT(BASE_ENDPOINT + "account/update")
     Call<SuccessResponseAPI> updateUserAccount(@Header("Authorization") String token, @Body User updateUserRequest);
+
+    @POST(BASE_ENDPOINT + "createUser")
+    Call<SuccessResponseAPI> createNewUser(@Body User theNewUser, @Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "allAcademicAdministrators")
+    Call<List<User>> getAcademicAdmins(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "allStudents")
+    Call<List<User>> getAllStudents(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "allLecturers")
+    Call<List<User>> getAllLecturers(@Header("Authorization") String token);
+
+    @DELETE(BASE_ENDPOINT + "delete/{username}")
+    Call<SuccessResponseAPI> deleteUser(@Header("Authorization") String token, @Path("username") String username);
 }

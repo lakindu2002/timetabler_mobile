@@ -190,7 +190,7 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
                 } catch (IOException e) {
                     Log.e("loadMyLectures", "FAILED PARSING ERROR BODY");
                     progressIndicator.setVisibility(View.GONE);
-
+                    constructError("An unexpected error occurred while fetching the lectures.");
                 }
             }
 
@@ -213,20 +213,21 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void handleError(Throwable t) {
-        constructError("An unexpected error occurred while processing your request.");
+        constructError("An unexpected error occurred while fetching the lectures.");
     }
 
     private void constructError(String errorMessage) {
         Snackbar theSnackBar = Snackbar.make(theNavigation, errorMessage, Snackbar.LENGTH_LONG);
         theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
         theSnackBar.show();
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if (studentLayout.isDrawerOpen(GravityCompat.START)) {
-            studentLayout.closeDrawer(GravityCompat.START);
-        }
         Intent navigationIntent = null;
         boolean isSelected = false;
 
@@ -237,8 +238,9 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
             Toast.makeText(this, "You have successfully logged out", Toast.LENGTH_LONG).show();
             SharedPreferenceService.clearSharedPreferences(this, PreferenceInformation.PREFERENCE_NAME);
 
-            isSelected = true;
-
+            startActivity(navigationIntent);
+            finish();
+            return true;
         } else if (item.getItemId() == R.id.student_profile) {
             navigationIntent = new Intent(this, SharedUserProfile.class);
             isSelected = true;

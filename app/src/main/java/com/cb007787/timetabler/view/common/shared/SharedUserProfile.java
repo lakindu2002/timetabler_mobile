@@ -3,6 +3,7 @@ package com.cb007787.timetabler.view.common.shared;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
@@ -60,6 +62,8 @@ public class SharedUserProfile extends AppCompatActivity {
     private EditText firstPassword;
     private EditText secondPassword;
     private MaterialTextView memberSince;
+    private MaterialTextView firstPasswordLabel;
+    private MaterialTextView secondPasswordLabel;
 
     private Button updateBtn;
 
@@ -74,9 +78,7 @@ public class SharedUserProfile extends AppCompatActivity {
             Log.i(SharedUserProfile.class.getName(), "Failed Parsing JSON");
         }
 
-        if (loggedInUser.getRole().toLowerCase().equals("student") || loggedInUser.getRole().toLowerCase().equals("lecturer")) {
-            setContentView(R.layout.activity_shared_profile);
-        }
+        setContentView(R.layout.activity_shared_profile);
 
         //if token expired, will navigate to login
         SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
@@ -103,6 +105,19 @@ public class SharedUserProfile extends AppCompatActivity {
                 updateUserAccount(v);
             }
         });
+
+        //if user is system admin, hide the password fields and update buttons
+        if (loggedInUser.getRole().equalsIgnoreCase("system administrator")) {
+            firstPassword.setVisibility(View.GONE);
+            secondPassword.setVisibility(View.GONE);
+            updateBtn.setVisibility(View.GONE);
+            firstPasswordLabel.setVisibility(View.GONE);
+            secondPasswordLabel.setVisibility(View.GONE);
+            memberSince.setPadding(0, 0, 0, 50); //add bottom padding to the member since text field
+            contact.setEnabled(false); //disable contact number
+            //assign a material text view look to the non-editable contact number
+            contact.setBackground(AppCompatResources.getDrawable(this, R.drawable.system_admin_edit_text));
+        }
     }
 
     /**
@@ -190,6 +205,7 @@ public class SharedUserProfile extends AppCompatActivity {
         }
 
         //validate password
+        //if user has not provided a password, do not validate as assuming only contact is being validated.
         if (!TextUtils.isEmpty(firstPassword.getText().toString()) || !TextUtils.isEmpty(secondPassword.getText().toString())) {
             //user provided a password since either field is not empty, validate it
 
@@ -289,6 +305,10 @@ public class SharedUserProfile extends AppCompatActivity {
     private void constructError(String errorMessage) {
         Snackbar theSnackBar = Snackbar.make(toolbar, errorMessage, Snackbar.LENGTH_LONG);
         theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
         theSnackBar.show();
     }
 
@@ -316,7 +336,8 @@ public class SharedUserProfile extends AppCompatActivity {
         memberSince = findViewById(R.id.membersince_profile_label);
         firstPassword = findViewById(R.id.password_01_label);
         secondPassword = findViewById(R.id.password_02_label);
-
+        firstPasswordLabel = findViewById(R.id.password_01);
+        secondPasswordLabel = findViewById(R.id.password_02);
         updateBtn = findViewById(R.id.update_account);
 
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/call_click"
+        android:icon="@drawable/ic_baseline_call_24"
+        android:title="@string/call_user" />
+
+    <item
+        android:id="@+id/email_click"
+        android:icon="@drawable/ic_baseline_alternate_email_24"
+        android:title="@string/email_user" />
+
+    <item
+        android:id="@+id/delete_click"
+        android:icon="@drawable/ic_baseline_delete_forever_24_black"
+        android:title="@string/delete_user" />
+</menu>
