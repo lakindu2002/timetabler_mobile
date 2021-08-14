@@ -12,9 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
@@ -117,7 +117,7 @@ public class UserLoadingFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(this::loadUsers);
 
         //assign the callback events to the adapter
-        adapter.setOnDeleteCallbacks(new UserRecycler.DeleteCallbacks() {
+        adapter.setOnDeleteCallbacks(new DeleteCallbacks() {
             @Override
             public void onDeleteSuccessResponse(SuccessResponseAPI theSuccessObject) {
                 //user has been deleted successfully

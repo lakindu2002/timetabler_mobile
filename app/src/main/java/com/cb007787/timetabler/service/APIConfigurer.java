@@ -75,4 +75,9 @@ public class APIConfigurer {
         //generate an instance of the UserRoleService interface using retrofit. Retrofit adds the required underlying HTTP implementation
         return getTheAPI().create(UserRoleService.class);
     }
+
+    public ClassroomService getTheClassroomService() {
+        //generate an instance of the ClassroomService interface using retrofit. Retrofit adds the required underlying HTTP implementation
+        return getTheAPI().create(ClassroomService.class);
+    }
 }

@@ -75,6 +75,7 @@ public class SystemAdminHome extends AppCompatActivity implements NavigationView
         if (item.getItemId() == R.id.menu_logout) {
             //system admin clicked logout
             //clear all logged in user information.
+            closeDrawer();
             SharedPreferenceService.clearSharedPreferences(this, PreferenceInformation.PREFERENCE_NAME);
 
             //navigate to login page.
@@ -87,18 +88,30 @@ public class SystemAdminHome extends AppCompatActivity implements NavigationView
             return true;
         } else if (item.getItemId() == R.id.menu_my_account) {
             //system clicked view account details.
+            closeDrawer();
             navigationIntent = new Intent(this, SharedUserProfile.class);
             startActivity(navigationIntent);
+            return true;
         } else if (item.getItemId() == R.id.menu_user_management) {
             //system admin clicked user management
+            closeDrawer();
             navigationIntent = new Intent(this, SystemAdminUserManagement.class);
             startActivity(navigationIntent);
+            return true;
+        } else if (item.getItemId() == R.id.menu_classroom_management) {
+            //system admin has clicked on classroom management
+            closeDrawer();
+            navigationIntent = new Intent(this, SystemAdminClassroomManagement.class);
+            startActivity(navigationIntent);
+            return true;
         }
+        return false;
+    }
 
+    private void closeDrawer() {
         //if drawer is open, close it
         if (systemAdminDrawer.isDrawerOpen(GravityCompat.START)) {
             systemAdminDrawer.closeDrawer(GravityCompat.START);
         }
-        return false;
     }
 }
