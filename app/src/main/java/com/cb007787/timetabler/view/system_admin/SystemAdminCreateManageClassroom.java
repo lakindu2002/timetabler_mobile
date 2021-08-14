@@ -183,7 +183,77 @@ public class SystemAdminCreateManageClassroom extends AppCompatActivity {
     }
 
     private void handleCreateClassroomClick() {
+        //validate only classroom name and max capacity as radio boxes have defaults assigned.
         progressIndicator.setVisibility(View.VISIBLE);
+        int checkedSmartBoardRadioButton = smartBoardRadioGroup.getCheckedRadioButtonId();
+        int checkedAcRadioButton = acRadioGroup.getCheckedRadioButtonId();
+        String enteredClassroomName = classroomName.getText().toString().trim();
+        String enteredCapacity = capacity.getText().toString().trim();
+
+        if (!enteredClassroomName.matches("^([A-Za-z][1-9]-[A-Za-z]{2}[1-9]{1,2})|([A-Za-z]{1,50})$")) {
+            classroomNameLayout.setError("Please Provide a Valid Classroom Name (eg: L4-CR5/L4-CR99/Auditorium)");
+        } else {
+            classroomNameLayout.setError(null);
+        }
+
+        if (enteredCapacity.length() == 0) {
+            capacityLayout.setError("Please provide at least a three digit number for the capacity");
+        } else {
+            capacityLayout.setError(null);
+        }
+
+        if (capacityLayout.getError() == null && classroomNameLayout.getError() == null) {
+            //inputs valid
+            Classroom createClassroom = new Classroom();
+
+            if (checkedAcRadioButton == R.id.ac_no) {
+                //selected no ac
+                createClassroom.setAcPresent(false);
+            } else if (checkedAcRadioButton == R.id.ac_yes) {
+                createClassroom.setAcPresent(true);
+            }
+
+            if (checkedSmartBoardRadioButton == R.id.smart_board_yes) {
+                //selected smart board available
+                createClassroom.setSmartBoardPresent(true);
+            } else if (checkedSmartBoardRadioButton == R.id.smart_board_no) {
+                //no smart board
+                createClassroom.setSmartBoardPresent(false);
+            }
+
+            createClassroom.setClassroomName(classroomName.getText().toString());
+            createClassroom.setMaxCapacity(Integer.parseInt(capacity.getText().toString()));
+
+            Call<SuccessResponseAPI> createCall = classroomService.createClassroom(createClassroom, token);
+            createCall.enqueue(new Callback<SuccessResponseAPI>() {
+                @Override
+                public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                    progressIndicator.setVisibility(View.GONE);
+                    if (response.isSuccessful()) {
+                        //classroom created successfully
+                        Intent navigateBackToAllClassrooms = new Intent(getApplicationContext(), SystemAdminClassroomManagement.class);
+                        startActivity(navigateBackToAllClassrooms);
+                        Toast.makeText(getApplicationContext(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    } else {
+                        //ran into an error
+                        try {
+                            ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                            constructError(theErrorReturned.getErrorMessage(), false);
+                        } catch (IOException e) {
+                            constructError("We ran into an unexpected error while creating the classroom", false);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                    progressIndicator.setVisibility(View.GONE);
+                    constructError("We ran into an unexpected error while creating the classroom", false);
+                }
+            });
+        } else {
+            progressIndicator.setVisibility(View.GONE);
+        }
     }
 
     private void loadClassroomInformationFromDB() {

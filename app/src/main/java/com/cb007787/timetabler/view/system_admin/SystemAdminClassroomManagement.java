@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ClassroomService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -44,6 +46,7 @@ public class SystemAdminClassroomManagement extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private LinearProgressIndicator progressIndicator;
+    private FloatingActionButton floatingActionButton;
 
     private String token;
     private ClassroomService classroomService;
@@ -110,6 +113,13 @@ public class SystemAdminClassroomManagement extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             getAllClassrooms();
         });
+
+        floatingActionButton.setOnClickListener(v -> {
+            //launch create classroom
+            Intent createClassroomIntent = new Intent(getApplicationContext(), SystemAdminCreateManageClassroom.class);
+            createClassroomIntent.putExtra("editMode", false); //set in non editing to open in create mode
+            startActivity(createClassroomIntent);
+        });
     }
 
     private void getReferences() {
@@ -119,6 +129,7 @@ public class SystemAdminClassroomManagement extends AppCompatActivity {
         progressIndicator = findViewById(R.id.progress_bar);
         token = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
         classroomService = APIConfigurer.getApiConfigurer().getTheClassroomService();
+        floatingActionButton = findViewById(R.id.create_user_floating_button);
     }
 
     @Override
