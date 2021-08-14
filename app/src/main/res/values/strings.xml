@@ -100,7 +100,7 @@
     <string name="email_user">Email User</string>
     <string name="call_user">Call User</string>
     <string name="academic_admins">Admin</string>
-    <string name="search_user">Search User</string>
+    <string name="search">Search</string>
     <string name="edit_classroom">Edit Classroom</string>
     <string name="delete_classroom">Delete Classroom</string>
 </resources>

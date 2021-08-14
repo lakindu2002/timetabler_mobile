@@ -12,8 +12,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -29,7 +27,7 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.user_management_search, menu);
+        menuInflater.inflate(R.menu.search, menu);
         MenuItem searchMenuItem = menu.findItem(R.id.search); //the search menu item will be instantiated as a SearchView as defined in menu file
         SearchView actionView = (SearchView) searchMenuItem.getActionView(); //retrieve the underlying SearchView for the menu item.
         actionView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set background to white.

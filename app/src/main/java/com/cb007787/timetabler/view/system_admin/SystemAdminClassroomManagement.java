@@ -3,13 +3,15 @@ package com.cb007787.timetabler.view.system_admin;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -121,7 +124,56 @@ public class SystemAdminClassroomManagement extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        getAllClassrooms();
+        getAllClassrooms(); //on start get all classrooms.
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //method will be used to inflate the search view for the toolbar
+        getMenuInflater().inflate(R.menu.search, menu); //inflate search menu
+        MenuItem theSearchMenuItem = menu.findItem(R.id.search);
+        //retrieve the underlying inflated search view for the menu item
+        SearchView theSearchView = (SearchView) theSearchMenuItem.getActionView();
+        theSearchView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set white background for search
+
+        theSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //user click submit search
+                doSearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //user type stuff on search
+                doSearch(newText);
+                return false;
+            }
+        });
+
+        return true;
+    }
+
+    private void doSearch(String enteredQuery) {
+        if (enteredQuery.trim().length() == 0) {
+            //blank string: show all data
+            adapter.setClassroomList(loadedClassrooms);
+        } else {
+            //have typed something, filter the arraylist for data that contains entered input via classroom name
+            List<Classroom> filteredList = this.loadedClassrooms.stream().filter(
+                    (eachClassroom) ->
+                            eachClassroom.getClassroomName().toLowerCase().trim().contains(enteredQuery.trim().toLowerCase())
+
+            ).collect(Collectors.toList());
+
+            //set the new filtered list as adapters dataset
+            adapter.setClassroomList(filteredList); //triggers notify data set changed and updates recycler view.
+
+            if (filteredList.size() == 0) {
+                constructError("There are no classrooms matching the name that you provided", true);
+            }
+        }
     }
 
     private void getAllClassrooms() {
