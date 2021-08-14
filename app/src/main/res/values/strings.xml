@@ -103,4 +103,14 @@
     <string name="search">Search</string>
     <string name="edit_classroom">Edit Classroom</string>
     <string name="delete_classroom">Delete Classroom</string>
+    <string name="general_classroom_information">General Classroom Information</string>
+    <string name="name_of_classroom">Name of Classroom</string>
+    <string name="classroom_name_l4_cr5_auditorium">Classroom Name (L4-CR5/Auditorium)</string>
+    <string name="maximum_capacity_of_classroom">Maximum Capacity of Classroom</string>
+    <string name="maximum_capacity_1_999">Maximum Capacity (1-999)</string>
+    <string name="facilities_of_classroom">Facilities of Classroom</string>
+    <string name="air_conditioner">Air Conditioner</string>
+    <string name="smart_board">Smart Board</string>
+    <string name="no">Not Available</string>
+    <string name="yes">Available</string>
 </resources>

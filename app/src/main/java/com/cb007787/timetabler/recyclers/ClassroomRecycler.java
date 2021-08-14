@@ -1,6 +1,7 @@
 package com.cb007787.timetabler.recyclers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ClassroomService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.system_admin.SystemAdminCreateManageClassroom;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -94,7 +96,7 @@ public class ClassroomRecycler extends RecyclerView.Adapter<ClassroomRecycler.Cl
             //react to the buttons clicked by the system administrator
             if (item.getItemId() == R.id.edit_classroom) {
                 //open the edit dialog
-                showEditDialogForClassroom();
+                showEditDialogForClassroom(theClassroom);
                 return true;
             } else if (item.getItemId() == R.id.delete_classroom) {
                 //show the delete dialog.
@@ -107,7 +109,15 @@ public class ClassroomRecycler extends RecyclerView.Adapter<ClassroomRecycler.Cl
         thePopupMenu.show(); //show the popup menu
     }
 
-    private void showEditDialogForClassroom() {
+    private void showEditDialogForClassroom(Classroom theClassroom) {
+        //create an intent to navigate to the classroom edit page
+        Intent navigationToEdit = new Intent(theContext, SystemAdminCreateManageClassroom.class);
+        //set edit mode to true so ui will be changed for editing purposes.
+        //handled in onCreate of SystemAdminCreateManageClassroom Activity.
+        navigationToEdit.putExtra("editMode", true);
+        navigationToEdit.putExtra("classroomId", theClassroom.getClassroomId());
+
+        theContext.startActivity(navigationToEdit); //launch edit page.
     }
 
     private void showDeleteBox(Classroom theClassroom) {
