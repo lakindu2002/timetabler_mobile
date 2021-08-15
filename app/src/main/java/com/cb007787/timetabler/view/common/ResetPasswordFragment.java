@@ -130,6 +130,9 @@ public class ResetPasswordFragment extends Fragment {
                         handleOnResponse(response);
                     } catch (IOException e) {
                         Log.i(ResetPasswordFragment.class.getName(), "ERROR PARSING JSON");
+                        Snackbar theSnackbar = Snackbar.make(requireView(), "We ran into an error while resetting your password.", Snackbar.LENGTH_LONG);
+                        theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+                        theSnackbar.show();
                     }
                 }
 

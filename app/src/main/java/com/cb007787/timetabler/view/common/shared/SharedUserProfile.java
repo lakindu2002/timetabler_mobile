@@ -139,18 +139,20 @@ public class SharedUserProfile extends AppCompatActivity {
             Call<SuccessResponseAPI> updateAPICall = theUserService.updateUserAccount(jwtToken, apiUser);
             updateAPICall.enqueue(new Callback<SuccessResponseAPI>() {
                 @Override
-                public void onResponse(Call<SuccessResponseAPI> call, Response<SuccessResponseAPI> response) {
+                public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
                     try {
                         handleOnUserUpdate(response);
                     } catch (IOException e) {
                         Log.i(SharedUserProfile.class.getName(), "Failed Parsing JSON");
                         loadingBar.setVisibility(View.GONE);
+                        constructError("We ran into an error while updating your profile");
                     }
                 }
 
                 @Override
-                public void onFailure(Call<SuccessResponseAPI> call, Throwable t) {
-                    handleOnFailure(t);
+                public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                    loadingBar.setVisibility(View.GONE);
+                    constructError("We ran into an error while updating your profile");
                 }
             });
         }
@@ -162,13 +164,13 @@ public class SharedUserProfile extends AppCompatActivity {
      * @param response The response sent from the API
      */
     private void handleOnUserUpdate(Response<SuccessResponseAPI> response) throws IOException {
-        Snackbar theSnackBar = null;
         if (response.isSuccessful()) {
             //update occurred successfully
             loadingBar.setVisibility(View.GONE);
             SuccessResponseAPI theSuccess = response.body();
-            theSnackBar = Snackbar.make(loadingBar, theSuccess.getMessage(), Snackbar.LENGTH_LONG);
+            Snackbar theSnackBar = Snackbar.make(loadingBar, theSuccess.getMessage(), Snackbar.LENGTH_LONG);
             theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+            theSnackBar.show();
             //clear inputs after success password update
             firstPassword.setText("");
             secondPassword.setText("");
@@ -178,10 +180,8 @@ public class SharedUserProfile extends AppCompatActivity {
             //error occurred
             loadingBar.setVisibility(View.GONE);
             ErrorResponseAPI theError = APIConfigurer.getTheErrorReturned(response.errorBody());
-            theSnackBar = Snackbar.make(loadingBar, theError.getErrorMessage(), Snackbar.LENGTH_LONG);
-            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+            constructError(theError.getErrorMessage());
         }
-        theSnackBar.show();
     }
 
     /**
@@ -253,22 +253,18 @@ public class SharedUserProfile extends AppCompatActivity {
                     Log.e(SharedUserProfile.class.getName(), "FAILED PARSING JSON ON API CALL BACK");
                     stopRefreshing();
                     loadingBar.setVisibility(View.GONE);
+                    constructError("We ran into an error while retrieving your profile information");
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                handleOnFailure(t);
+                loadingBar.setVisibility(View.GONE);
+                constructError("We ran into an error while retrieving your profile information");
                 stopRefreshing();
                 //in case of network error or response processing error
             }
         }); //execute the operation asynchronously because http methods needs to occur on secondary thread
-    }
-
-    private void handleOnFailure(Throwable t) {
-        constructError("An unexpected error occurred while processing your request.");
-        Log.e(SharedUserProfile.class.getName(), t.getLocalizedMessage());
-        loadingBar.setVisibility(View.GONE);
     }
 
     private void handleOnResponse(Response<User> response) throws IOException {

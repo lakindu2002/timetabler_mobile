@@ -105,6 +105,9 @@ public class LoginFragment extends Fragment {
                         handleOnResponse(response);
                     } catch (IOException e) {
                         LOGGER.warning("FAILURE DURING ERROR PARSING ON LOGIN");
+                        Snackbar theSnackbar = Snackbar.make(requireView(), "We ran into an error while logging you in.", Snackbar.LENGTH_LONG);
+                        theSnackbar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+                        theSnackbar.show();
                     }
                 }
 

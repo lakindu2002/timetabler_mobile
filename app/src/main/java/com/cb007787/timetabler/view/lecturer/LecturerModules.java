@@ -1,5 +1,6 @@
 package com.cb007787.timetabler.view.lecturer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -71,7 +72,7 @@ public class LecturerModules extends AppCompatActivity {
 
         moduleCall.enqueue(new Callback<List<Module>>() {
             @Override
-            public void onResponse(Call<List<Module>> call, Response<List<Module>> response) {
+            public void onResponse(@NonNull Call<List<Module>> call, @NonNull Response<List<Module>> response) {
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
@@ -80,7 +81,7 @@ public class LecturerModules extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Module>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Module>> call, @NonNull Throwable t) {
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }

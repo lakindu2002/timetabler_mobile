@@ -268,6 +268,7 @@ public class ScheduleLecture extends AppCompatActivity {
                     handleOnResponse(response);
                 } catch (IOException e) {
                     confirmLectureButton.setEnabled(false);
+                    constructError("We ran into an error while fetching the required information", false);
                     Log.e("onResponse", e.getLocalizedMessage());
                 }
             }
