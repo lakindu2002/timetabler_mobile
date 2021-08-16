@@ -121,4 +121,11 @@
     <string name="batches_enrolled_to_module">Batches Enrolled To Module - </string>
     <string name="all_modules">All Modules</string>
     <string name="create_module">Create Module</string>
+    <string name="provide_module_name">Provide Module Name</string>
+    <string name="credit_count_create_module">Credit Count</string>
+    <string name="select_credit_count">Select Credit Count</string>
+    <string name="independent_learning_module_create">Independent Learning</string>
+    <string name="provide_independent_learning_hours">Provide Independent Learning Hours</string>
+    <string name="contact_lecture_hours">Contact Lecture Hours</string>
+    <string name="provide_contact_lecture_hours">Provide Contact Lecture Hours</string>
 </resources>

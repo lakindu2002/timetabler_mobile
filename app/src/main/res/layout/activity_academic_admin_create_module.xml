@@ -23,4 +23,187 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <include
+        android:id="@id/loading"
+        layout="@layout/loading_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/app_bar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/loading">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            app:cardBackgroundColor="@color/background"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="20dp">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/module_name_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/module_name"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/module_name_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/module_name_label"
+                    android:paddingTop="5dp"
+                    app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="255"
+                    app:errorEnabled="true"
+                    app:errorIconTint="@color/btn_danger"
+                    app:errorTextColor="@color/btn_danger"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/module_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/provide_module_name"
+                        android:inputType="text"
+                        android:maxLength="255" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/credit_count_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/module_name_layout"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/credit_count_create_module"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/credit_count_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/credit_count_label"
+                    android:paddingTop="5dp"
+                    app:boxStrokeErrorColor="@color/btn_danger"
+                    app:errorEnabled="true"
+                    app:errorIconTint="@color/btn_danger"
+                    app:errorTextColor="@color/btn_danger"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/credit_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/select_credit_count"
+                        android:inputType="none" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/independent_learning_hours_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/credit_count_layout"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/independent_learning_module_create"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/independent_learning_hours_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/independent_learning_hours_label"
+                    android:paddingTop="5dp"
+                    app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="7"
+                    app:errorEnabled="true"
+                    app:errorIconTint="@color/btn_danger"
+                    app:errorTextColor="@color/btn_danger"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/independent_learning_hours"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/provide_independent_learning_hours"
+                        android:inputType="numberDecimal"
+                        android:maxLength="7" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/contact_hours_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/independent_learning_hours_layout"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/contact_lecture_hours"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/contact_hours_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/contact_hours_label"
+                    android:paddingTop="5dp"
+                    app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="7"
+                    app:errorEnabled="true"
+                    app:errorIconTint="@color/btn_danger"
+                    app:errorTextColor="@color/btn_danger"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/contact_hours"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/provide_contact_lecture_hours"
+                        android:inputType="numberDecimal"
+                        android:maxLength="7" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/module_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_below="@id/contact_hours_layout"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:backgroundTint="@color/btn_primary"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/create_module"
+                    android:textAllCaps="false"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+    </ScrollView>
+
 </RelativeLayout>
