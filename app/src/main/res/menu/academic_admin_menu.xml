@@ -26,13 +26,13 @@
         <item android:title="@string/profile">
             <menu>
                 <item
-                    android:id="@+id/menu_my_account"
+                    android:id="@+id/my_account_academic"
                     android:enabled="true"
                     android:icon="@drawable/ic_profile"
                     android:title="@string/user_profile" />
 
                 <item
-                    android:id="@+id/menu_logout"
+                    android:id="@+id/logout_academic"
                     android:enabled="true"
                     android:icon="@drawable/ic_logout"
                     android:title="@string/logout" />

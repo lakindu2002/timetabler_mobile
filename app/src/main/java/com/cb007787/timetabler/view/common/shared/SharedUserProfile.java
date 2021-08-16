@@ -366,7 +366,7 @@ public class SharedUserProfile extends AppCompatActivity {
                     startActivity(homeIntent);
                     break;
                 }
-                case "academic admin": {
+                case "academic administrator": {
                     homeIntent = new Intent(this, AcademicAdminHome.class);
                     startActivity(homeIntent);
                     break;
@@ -396,7 +396,7 @@ public class SharedUserProfile extends AppCompatActivity {
                 startActivity(homeIntent);
                 break;
             }
-            case "academic admin": {
+            case "academic administrator": {
                 homeIntent = new Intent(this, AcademicAdminHome.class);
                 startActivity(homeIntent);
                 break;
