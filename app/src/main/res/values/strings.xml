@@ -113,4 +113,8 @@
     <string name="smart_board">Smart Board</string>
     <string name="no">Not Available</string>
     <string name="yes">Available</string>
+    <string name="user_directory">User Directory</string>
+    <string name="timetable_management">Timetable Management</string>
+    <string name="module_management">Module Management</string>
+    <string name="batch_management">Batch Management</string>
 </resources>
