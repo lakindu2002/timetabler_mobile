@@ -1,29 +1,45 @@
 package com.cb007787.timetabler.recyclers;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.interfaces.DeleteCallbacks;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.Module;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
+import com.cb007787.timetabler.service.PreferenceInformation;
+import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecyclerAcademicAdmin.ViewHolder> {
     private final Context theContext;
     private final ModuleService moduleService;
     private List<Module> modulesList;
+    private DeleteCallbacks callbacks;
 
     public ModuleRecyclerAcademicAdmin(Context theContext) {
         this.theContext = theContext;
@@ -34,6 +50,10 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
     public void setModulesList(List<Module> modulesList) {
         this.modulesList = modulesList;
         notifyDataSetChanged();
+    }
+
+    public void setCallbacks(DeleteCallbacks callbacks) {
+        this.callbacks = callbacks;
     }
 
     @NonNull
@@ -71,6 +91,51 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         holder.getIndependentHours().setText(module.getIndependentHours());
         holder.getContactHours().setText(module.getContactHours());
         holder.getBatchCount().setText(batchCount);
+        holder.getMoreButton().setOnClickListener(v -> {
+            PopupMenu thePopupMenu = new PopupMenu(theContext, holder.getMoreButton());
+            thePopupMenu.inflate(R.menu.academic_admin_module_menu);
+            thePopupMenu.setOnDismissListener(PopupMenu::dismiss);
+            thePopupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.delete_module) {
+                    //create a popup to denote whether to delete the module.
+                    new MaterialAlertDialogBuilder(theContext)
+                            .setTitle("Are you sure you want to delete this module?")
+                            .setNegativeButton("Cancel", (dialog, which) -> {
+                                dialog.cancel();
+                            })
+                            .setPositiveButton("Delete", (dialog, which) -> {
+                                callbacks.onDeleteCalled();
+                                Call<SuccessResponseAPI> deleteCall = moduleService.deleteModule(module.getModuleId(), SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
+
+                                deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
+                                    @Override
+                                    public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                                        if (response.isSuccessful()) {
+                                            //deleted successfully
+                                            callbacks.onDeleteSuccessResponse(response.body());
+                                        } else {
+                                            //failed
+                                            try {
+                                                ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                                                callbacks.onDeleteFailure(theErrorReturned.getErrorMessage());
+                                            } catch (IOException e) {
+                                                callbacks.onDeleteFailure("We ran into an error while deleting the module");
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                                        callbacks.onDeleteFailure("We ran into an error while deleting the module");
+                                    }
+                                });
+                            })
+                            .show();
+                }
+                return true;
+            });
+            thePopupMenu.show(); //show popup box
+        });
     }
 
     @Override

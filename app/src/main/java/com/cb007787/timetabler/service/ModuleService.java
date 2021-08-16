@@ -8,6 +8,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -24,4 +25,7 @@ public interface ModuleService {
 
     @POST(BASE_ENDPOINT + "create")
     Call<SuccessResponseAPI> createModule(@Body Module theModule, @Header("Authorization") String token);
+
+    @DELETE(BASE_ENDPOINT + "delete/{moduleId}")
+    Call<SuccessResponseAPI> deleteModule(@Path("moduleId") int moduleId, @Header("Authorization") String token);
 }

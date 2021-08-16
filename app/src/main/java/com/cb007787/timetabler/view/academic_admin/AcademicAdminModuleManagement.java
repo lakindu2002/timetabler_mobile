@@ -19,8 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.Module;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.recyclers.ModuleRecyclerAcademicAdmin;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
@@ -82,6 +84,33 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
 
         floatingActionButton.setOnClickListener(v -> {
             startActivity(new Intent(this, AcademicAdminCreateModule.class));
+        });
+
+        adapter.setCallbacks(new DeleteCallbacks() {
+            @Override
+            public void onDeleteSuccessResponse(SuccessResponseAPI theSuccessObject) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                Snackbar theSnackBar = Snackbar.make(theToolbar, theSuccessObject.getMessage(), Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                View view = theSnackBar.getView();
+                //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+                TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                snackBarText.setMaxLines(5);
+                theSnackBar.show();
+
+                getAllModules(); //refresh after successful deleting.
+            }
+
+            @Override
+            public void onDeleteFailure(String message) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                constructError(message, false);
+            }
+
+            @Override
+            public void onDeleteCalled() {
+                linearProgressIndicator.setVisibility(View.VISIBLE);
+            }
         });
     }
 
