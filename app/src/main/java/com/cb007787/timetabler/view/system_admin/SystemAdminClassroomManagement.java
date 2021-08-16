@@ -146,6 +146,7 @@ public class SystemAdminClassroomManagement extends AppCompatActivity {
         //retrieve the underlying inflated search view for the menu item
         SearchView theSearchView = (SearchView) theSearchMenuItem.getActionView();
         theSearchView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set white background for search
+        theSearchView.setQueryHint("Provide Classroom Name");
 
         theSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
