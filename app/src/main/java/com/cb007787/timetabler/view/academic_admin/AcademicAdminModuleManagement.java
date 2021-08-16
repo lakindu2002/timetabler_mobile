@@ -1,0 +1,143 @@
+package com.cb007787.timetabler.view.academic_admin;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.Module;
+import com.cb007787.timetabler.recyclers.ModuleRecyclerAcademicAdmin;
+import com.cb007787.timetabler.service.APIConfigurer;
+import com.cb007787.timetabler.service.ModuleService;
+import com.cb007787.timetabler.service.PreferenceInformation;
+import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class AcademicAdminModuleManagement extends AppCompatActivity {
+
+    private Toolbar theToolbar;
+    private LinearProgressIndicator linearProgressIndicator;
+    private RecyclerView recyclerView;
+    private ModuleRecyclerAcademicAdmin adapter; //adapter for modules for academic admin
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    private String token;
+    private ModuleService moduleService;
+    private List<Module> loadedModules = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_academic_admin_module_management);
+        getReferences();
+        //validate jwt validity
+        SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
+        token = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
+
+        setSupportActionBar(theToolbar);
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            //add navigate to home
+            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_home_24);
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        //assign a layout manager and the initial adapter state for the recycler
+        adapter = new ModuleRecyclerAcademicAdmin(this);
+        adapter.setModulesList(loadedModules);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //add refresh listener to swipe refresh layout
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            getAllModules();
+        });
+    }
+
+    private void getReferences() {
+        theToolbar = findViewById(R.id.tool_bar);
+        moduleService = APIConfigurer.getApiConfigurer().getModuleService();
+        linearProgressIndicator = findViewById(R.id.progress_bar);
+        recyclerView = findViewById(R.id.recycler);
+        swipeRefreshLayout = findViewById(R.id.swiper);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getAllModules();
+    }
+
+    private void getAllModules() {
+        //fetch all modules of timetabler.
+        linearProgressIndicator.setVisibility(View.VISIBLE);
+        Call<List<Module>> apiCall = moduleService.getAllModulesAtTimetabler(token);
+
+        apiCall.enqueue(new Callback<List<Module>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Module>> call, @NonNull Response<List<Module>> response) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                if (response.isSuccessful()) {
+                    adapter.setModulesList(response.body()); ///will trigger update on the dataset of the recycler
+                    //due to notify data set change
+                    if (response.body().size() == 0) {
+                        constructError("There are no modules available at TimeTabler", true);
+                    }
+                } else {
+                    //failed to get all modules
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        constructError(theErrorReturned.getErrorMessage(), false);
+                    } catch (IOException e) {
+                        constructError("We ran into an error while fetching all modules at TimeTabler", false);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Module>> call, @NonNull Throwable t) {
+                //call did not go or failed to parse response
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                linearProgressIndicator.setVisibility(View.GONE);
+                constructError("We ran into an error while fetching all modules at TimeTabler", false);
+            }
+        });
+    }
+
+    private void constructError(String errorMessage, boolean isInfo) {
+        Snackbar theSnackBar = Snackbar.make(theToolbar, errorMessage, Snackbar.LENGTH_LONG);
+        if (isInfo) {
+            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
+        } else {
+            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        }
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
+        theSnackBar.show();
+    }
+}

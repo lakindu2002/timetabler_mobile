@@ -15,4 +15,7 @@ public interface ModuleService {
 
     @GET(BASE_ENDPOINT + "getAll")
     Call<List<Module>> getAllModulesForUser(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "find/all")
+    Call<List<Module>> getAllModulesAtTimetabler(@Header("Authorization") String token);
 }

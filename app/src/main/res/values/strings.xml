@@ -117,4 +117,7 @@
     <string name="timetable_management">Timetable Management</string>
     <string name="module_management">Module Management</string>
     <string name="batch_management">Batch Management</string>
+    <string name="lecturer_allocated">Lecturer Allocated - </string>
+    <string name="batches_enrolled_to_module">Batches Enrolled To Module - </string>
+    <string name="all_modules">All Modules</string>
 </resources>

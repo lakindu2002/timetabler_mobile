@@ -90,6 +90,8 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
             //click timetable management
         } else if (item.getItemId() == R.id.module_management) {
             //clicked module management
+            navigationIntent = new Intent(this, AcademicAdminModuleManagement.class);
+            startActivity(navigationIntent);
         } else if (item.getItemId() == R.id.batch_management) {
             //clicked batch management
         } else if (item.getItemId() == R.id.my_account_academic) {
