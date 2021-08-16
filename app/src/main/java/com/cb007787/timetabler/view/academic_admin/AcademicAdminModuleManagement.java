@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
@@ -24,6 +25,7 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -43,6 +45,7 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ModuleRecyclerAcademicAdmin adapter; //adapter for modules for academic admin
     private SwipeRefreshLayout swipeRefreshLayout;
+    private FloatingActionButton floatingActionButton;
 
     private String token;
     private ModuleService moduleService;
@@ -74,6 +77,10 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
         //add refresh listener to swipe refresh layout
         swipeRefreshLayout.setOnRefreshListener(() -> {
             getAllModules();
+        });
+
+        floatingActionButton.setOnClickListener(v -> {
+            launchCreateModule();
         });
     }
 
@@ -113,6 +120,7 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
         linearProgressIndicator = findViewById(R.id.progress_bar);
         recyclerView = findViewById(R.id.recycler);
         swipeRefreshLayout = findViewById(R.id.swiper);
+        floatingActionButton = findViewById(R.id.floating_action_button);
     }
 
     @Override
@@ -196,5 +204,9 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
                 constructError("There are no modules available for your search with that name", true);
             }
         }
+    }
+
+    private void launchCreateModule() {
+        Toast.makeText(getApplicationContext(), "Create Clicked", Toast.LENGTH_LONG).show();
     }
 }
