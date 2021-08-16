@@ -3,12 +3,16 @@ package com.cb007787.timetabler.view.academic_admin;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,6 +30,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -72,6 +77,36 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //inflate a search menu on the toolbar.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search, menu); //inflate a search menu to the options menu
+
+        MenuItem theSearchMenuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) theSearchMenuItem.getActionView();//retrieve the underlying created search view for this ID (located in search.xml in menu)
+        searchView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set white background for search
+        searchView.setQueryHint("Provide Module Name");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //user input new text
+                doSearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //user submit search query
+                doSearch(newText);
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
     private void getReferences() {
         theToolbar = findViewById(R.id.tool_bar);
         moduleService = APIConfigurer.getApiConfigurer().getModuleService();
@@ -99,7 +134,8 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 if (response.isSuccessful()) {
-                    adapter.setModulesList(response.body()); ///will trigger update on the dataset of the recycler
+                    loadedModules = response.body();
+                    adapter.setModulesList(loadedModules); ///will trigger update on the dataset of the recycler
                     //due to notify data set change
                     if (response.body().size() == 0) {
                         constructError("There are no modules available at TimeTabler", true);
@@ -139,5 +175,26 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
         TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
         snackBarText.setMaxLines(5);
         theSnackBar.show();
+    }
+
+    private void doSearch(String key) {
+        key = key.trim().toLowerCase();
+        if (key.length() == 0) {
+            //user deleted text
+            adapter.setModulesList(loadedModules); //load all modules
+        } else {
+            //user has text, filter it
+            String finalKey = key;
+            List<Module> filteredList = loadedModules
+                    .stream()
+                    .filter((eachModule) -> eachModule.getModuleName().trim().toLowerCase().contains(finalKey))
+                    .collect(Collectors.toList());
+
+            adapter.setModulesList(filteredList); //refresh adapter after search.
+
+            if (filteredList.size() == 0) {
+                constructError("There are no modules available for your search with that name", true);
+            }
+        }
     }
 }
