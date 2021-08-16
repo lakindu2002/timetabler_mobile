@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,7 +81,7 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
         });
 
         floatingActionButton.setOnClickListener(v -> {
-            launchCreateModule();
+            startActivity(new Intent(this, AcademicAdminCreateModule.class));
         });
     }
 
@@ -204,9 +205,5 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
                 constructError("There are no modules available for your search with that name", true);
             }
         }
-    }
-
-    private void launchCreateModule() {
-        Toast.makeText(getApplicationContext(), "Create Clicked", Toast.LENGTH_LONG).show();
     }
 }

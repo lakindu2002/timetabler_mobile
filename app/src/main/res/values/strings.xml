@@ -120,4 +120,5 @@
     <string name="lecturer_allocated">Lecturer Allocated - </string>
     <string name="batches_enrolled_to_module">Batches Enrolled To Module - </string>
     <string name="all_modules">All Modules</string>
+    <string name="create_module">Create Module</string>
 </resources>

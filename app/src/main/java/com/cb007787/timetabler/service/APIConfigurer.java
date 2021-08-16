@@ -80,4 +80,9 @@ public class APIConfigurer {
         //generate an instance of the ClassroomService interface using retrofit. Retrofit adds the required underlying HTTP implementation
         return getTheAPI().create(ClassroomService.class);
     }
+
+    public BatchService getBatchService() {
+        //generate an instance of the BatchService interface using retrofit. Retrofit adds the required underlying HTTP implementation
+        return getTheAPI().create(BatchService.class);
+    }
 }
