@@ -35,4 +35,7 @@ public interface ModuleService {
 
     @PUT(BASE_ENDPOINT + "update/{moduleId}")
     Call<SuccessResponseAPI> updateModule(@Body() Module moduleBeingEdited, @Header("Authorization") String token, @Path("moduleId") int moduleId);
+
+    @GET(BASE_ENDPOINT + "modulesAssignedToBatch")
+    Call<List<Module>> getModulesThatCanBeAssignedToBatch(@Header("Authorization") String token);
 }

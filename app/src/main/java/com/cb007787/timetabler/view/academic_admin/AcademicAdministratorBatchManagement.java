@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -42,6 +44,7 @@ public class AcademicAdministratorBatchManagement extends AppCompatActivity {
     private SwipeRefreshLayout swiper;
     private Toolbar toolbar;
     private LinearProgressIndicator progressIndicator;
+    private FloatingActionButton floatingActionButton;
 
     private BatchRecycler adapter;
     private String token;
@@ -130,6 +133,12 @@ public class AcademicAdministratorBatchManagement extends AppCompatActivity {
                 constructError(errorMessage, false);
             }
         });
+
+        floatingActionButton.setOnClickListener(v -> {
+            Intent theNewIntent = new Intent(this, AcademicAdminCreateBatch.class);
+            //launch create new batch page
+            startActivity(theNewIntent);
+        });
     }
 
     private void getReferences() {
@@ -138,6 +147,7 @@ public class AcademicAdministratorBatchManagement extends AppCompatActivity {
         toolbar = findViewById(R.id.tool_bar);
         batchService = APIConfigurer.getApiConfigurer().getBatchService();
         progressIndicator = findViewById(R.id.progress_bar);
+        floatingActionButton = findViewById(R.id.floating_action_button);
     }
 
     @Override
