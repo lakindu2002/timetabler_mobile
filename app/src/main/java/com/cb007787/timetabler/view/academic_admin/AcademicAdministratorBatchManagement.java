@@ -102,6 +102,34 @@ public class AcademicAdministratorBatchManagement extends AppCompatActivity {
                 progressIndicator.setVisibility(View.VISIBLE);
             }
         });
+
+        //attach update callback
+        adapter.setUpdateCallback(new BatchRecycler.UpdateCallback() {
+            @Override
+            public void onUpdate() {
+                progressIndicator.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onUpdateCompleted(SuccessResponseAPI theResponse) {
+                progressIndicator.setVisibility(View.GONE);
+                Snackbar theSnackBar = Snackbar.make(toolbar, theResponse.getMessage(), Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                View view = theSnackBar.getView();
+                //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+                TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                snackBarText.setMaxLines(5);
+                theSnackBar.show();
+
+                getAllBatches();
+            }
+
+            @Override
+            public void onUpdateFailed(String errorMessage) {
+                progressIndicator.setVisibility(View.GONE);
+                constructError(errorMessage, false);
+            }
+        });
     }
 
     private void getReferences() {

@@ -6,10 +6,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
@@ -21,7 +24,11 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminCreateModule;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdministratorBatchManagement;
+import com.cb007787.timetabler.view.lecturer.UpdateLecture;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -39,6 +46,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
     private List<BatchShow> batchList;
     private DeleteCallbacks deleteCallbacks;
     private BatchService batchService;
+    private UpdateCallback updateCallback;
 
     public BatchRecycler(Context theContext) {
         this.theContext = theContext;
@@ -53,6 +61,10 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
 
     public void setDeleteCallbacks(DeleteCallbacks deleteCallbacks) {
         this.deleteCallbacks = deleteCallbacks;
+    }
+
+    public void setUpdateCallback(UpdateCallback updateCallback) {
+        this.updateCallback = updateCallback;
     }
 
     @NonNull
@@ -88,11 +100,64 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
     }
 
     private void launchUpdateModal(BatchShow batchAtPosition) {
-        new MaterialAlertDialogBuilder(theContext)
+        AlertDialog theDialog = new MaterialAlertDialogBuilder(theContext)
                 .setTitle("Update Batch Name")
+                .setView(R.layout.dialog_update_batch_name)
+                .setPositiveButton("Update Batch Name", null) //attach custom listener
                 .setNegativeButton("Close", (dialog, which) -> {
+                    dialog.cancel();
+                }).show();
 
-                });
+        Button updateBtn = theDialog.getButton(DialogInterface.BUTTON_POSITIVE); //get positive button
+        //attach custom click listener to it.
+        updateBtn.setOnClickListener(v -> {
+            //this prevents it from closing on click.
+            TextInputLayout theLayout = theDialog.findViewById(R.id.new_name_layout);
+            TextInputEditText theNewNameField = theDialog.findViewById(R.id.new_name);
+
+            String enteredNewBatchName = theNewNameField.getText().toString().trim();
+            if (enteredNewBatchName.length() == 0) {
+                theLayout.setError("Provide a Valid Batch Name");
+            } else {
+                theLayout.setError(null);
+                //update in db
+                batchAtPosition.setBatchName(enteredNewBatchName);
+                updateInDB(batchAtPosition, theDialog);
+            }
+        });
+    }
+
+    private void updateInDB(BatchShow batchAtPosition, AlertDialog theDialog) {
+        updateCallback.onUpdate(); //trigger update
+
+        Call<SuccessResponseAPI> updateCall = batchService.updateBatchName(
+                batchAtPosition,
+                SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
+
+        updateCall.enqueue(new Callback<SuccessResponseAPI>() {
+            @Override
+            public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                //response sent back
+                if (response.isSuccessful()) {
+                    updateCallback.onUpdateCompleted(response.body());
+                    theDialog.cancel(); //close the dialog
+                } else {
+                    //error encountered
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        updateCallback.onUpdateFailed(theErrorReturned.getErrorMessage());
+                    } catch (IOException e) {
+                        updateCallback.onUpdateFailed("We ran into an error while updating the batch name");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                //failed parse response.
+                updateCallback.onUpdateFailed("We ran into an error while updating the batch name");
+            }
+        });
     }
 
 
@@ -156,5 +221,13 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
             modulesInBatch = itemView.findViewById(R.id.modules_enrolled);
             moreButton = itemView.findViewById(R.id.more_options_batch);
         }
+    }
+
+    public interface UpdateCallback {
+        void onUpdate();
+
+        void onUpdateCompleted(SuccessResponseAPI theResponse);
+
+        void onUpdateFailed(String errorMessage);
     }
 }
