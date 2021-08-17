@@ -106,7 +106,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
                 .setPositiveButton("Update Batch Name", null) //attach custom listener
                 .setNegativeButton("Close", (dialog, which) -> {
                     dialog.cancel();
-                }).show();
+                }).show(); //need to first show before accessing ui elements
 
         Button updateBtn = theDialog.getButton(DialogInterface.BUTTON_POSITIVE); //get positive button
         //attach custom click listener to it.
