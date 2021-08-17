@@ -15,8 +15,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.recyclers.BatchRecycler;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
@@ -71,6 +73,34 @@ public class AcademicAdministratorBatchManagement extends AppCompatActivity {
 
         swiper.setOnRefreshListener(() -> {
             getAllBatches();
+        });
+
+        //assign delete callbacks for batch recycler
+        adapter.setDeleteCallbacks(new DeleteCallbacks() {
+            @Override
+            public void onDeleteSuccessResponse(SuccessResponseAPI theSuccessObject) {
+                progressIndicator.setVisibility(View.GONE);
+                Snackbar theSnackBar = Snackbar.make(toolbar, theSuccessObject.getMessage(), Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                View view = theSnackBar.getView();
+                //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+                TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                snackBarText.setMaxLines(5);
+                theSnackBar.show();
+
+                getAllBatches();
+            }
+
+            @Override
+            public void onDeleteFailure(String message) {
+                constructError(message, false);
+                progressIndicator.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onDeleteCalled() {
+                progressIndicator.setVisibility(View.VISIBLE);
+            }
         });
     }
 

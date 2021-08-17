@@ -1,10 +1,13 @@
 package com.cb007787.timetabler.recyclers;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,13 +15,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.BatchShow;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
+import com.cb007787.timetabler.service.PreferenceInformation;
+import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder> {
     private Context theContext;
@@ -54,6 +68,72 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
         holder.batchCode.setText(batchAtPosition.getBatchCode());
         holder.modulesInBatch.setText(String.format(Locale.ENGLISH, "Modules Enrolled: %d", batchAtPosition.getModuleList().size()));
         holder.studentsInBatch.setText(String.format(Locale.ENGLISH, "Students Enrolled: %s", batchAtPosition.getStudentList().size()));
+        holder.moreButton.setOnClickListener(v -> {
+            PopupMenu theMenu = new PopupMenu(theContext, holder.moreButton);
+            //anchor popup on the more button
+            theMenu.inflate(R.menu.batch_popup);
+
+            theMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.update_batch_name) {
+                    //launch update batch name modal
+                    launchUpdateModal(batchAtPosition);
+                } else if (item.getItemId() == R.id.delete_batch) {
+                    //launch delete batch
+                    launchDeleteModal(batchAtPosition);
+                }
+                return true;
+            });
+            theMenu.show();
+        });
+    }
+
+    private void launchUpdateModal(BatchShow batchAtPosition) {
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("Update Batch Name")
+                .setNegativeButton("Close", (dialog, which) -> {
+
+                });
+    }
+
+
+    private void launchDeleteModal(BatchShow theBatch) {
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("Delete Batch")
+                .setMessage("Are you sure that you want to delete this batch?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    deleteBatchInDB(theBatch);
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+                .show(); //show the constructed dialog to the user.
+    }
+
+    private void deleteBatchInDB(BatchShow theBatch) {
+        deleteCallbacks.onDeleteCalled(); //delete triggered
+        Call<SuccessResponseAPI> deleteCall = batchService.deleteBatch(
+                SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME),
+                theBatch.getBatchCode());
+        deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
+            @Override
+            public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                if (response.isSuccessful()) {
+                    //deleted successfully
+                    deleteCallbacks.onDeleteSuccessResponse(response.body());
+                } else {
+                    //delete failed
+                    try {
+                        ErrorResponseAPI theError = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        deleteCallbacks.onDeleteFailure(theError.getErrorMessage());
+                    } catch (IOException e) {
+                        deleteCallbacks.onDeleteFailure("We ran into an error while deleting the batch");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                deleteCallbacks.onDeleteFailure("We ran into an error while deleting the batch");
+            }
+        });
     }
 
     @Override
