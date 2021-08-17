@@ -25,6 +25,7 @@ import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -54,6 +55,9 @@ public class AcademicAdminCreateModule extends AppCompatActivity {
     private Button manageBtn;
 
 
+    private int editingModuleId;
+    private Module moduleBeingEdited;
+    private boolean editMode = false;
     private ModuleService moduleService;
     private String token;
     private List<String> allowedCreditCount = Arrays.asList("10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60");
@@ -86,9 +90,31 @@ public class AcademicAdminCreateModule extends AppCompatActivity {
 
         manageBtn.setOnClickListener(v -> {
             //update/save module.
-            saveModule();
+            if (editMode) {
+                //update
+                updateModule();
+            } else {
+                //create new
+                saveModule();
+            }
         });
+
+        Intent intent = getIntent(); //if the action is an edit, retrieve edit object
+        if (intent.getSerializableExtra("theModule") != null) {
+            //editing a module.
+            editMode = true;
+            editingModuleId = intent.getIntExtra("theModule", 0);
+            //do not allow editing module name and credit count
+            moduleName.setEnabled(false);
+            creditCount.setEnabled(false);
+            moduleName.setTextColor(getResources().getColor(R.color.black, null));
+            creditCount.setTextColor(getResources().getColor(R.color.black, null));
+            manageBtn.setText("Update Module");
+
+            fetchEditModule();
+        }
     }
+
 
     private void getReferences() {
         toolbar = findViewById(R.id.toolbar);
@@ -136,7 +162,7 @@ public class AcademicAdminCreateModule extends AppCompatActivity {
                             if (theErrorReturned.getValidationErrors().size() > 0) {
                                 //have validation errors input
                                 for (String eachError : theErrorReturned.getValidationErrors()) {
-                                    Toast.makeText(getApplicationContext(), eachError, Toast.LENGTH_LONG).show();
+                                    constructError(eachError, false);
                                 }
                             } else {
                                 //no validation error, just errors
@@ -211,5 +237,90 @@ public class AcademicAdminCreateModule extends AppCompatActivity {
         TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
         snackBarText.setMaxLines(5);
         theSnackBar.show();
+    }
+
+    private void fetchEditModule() {
+        progressIndicator.setVisibility(View.VISIBLE);
+        Call<Module> getModuleCall = moduleService.getModuleById(token, editingModuleId);
+        getModuleCall.enqueue(new Callback<Module>() {
+            @Override
+            public void onResponse(@NonNull Call<Module> call, @NonNull Response<Module> response) {
+                progressIndicator.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    //module retrieved
+                    moduleBeingEdited = response.body();
+                    moduleName.setText(moduleBeingEdited.getModuleName());
+                    creditCount.setText(moduleBeingEdited.getCreditCount());
+                    independentLearningHours.setText(moduleBeingEdited.getIndependentHours());
+                    contactHours.setText(moduleBeingEdited.getContactHours());
+                } else {
+                    manageBtn.setEnabled(false);
+                    try {
+                        constructError(APIConfigurer.getTheErrorReturned(response.errorBody()).getErrorMessage(), false);
+                    } catch (IOException e) {
+                        constructError("We rain into an error while retrieving module information for update", false);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Module> call, @NonNull Throwable t) {
+                progressIndicator.setVisibility(View.GONE);
+                manageBtn.setEnabled(false);
+                constructError("We rain into an error while retrieving module information for update", false);
+            }
+        });
+    }
+
+    private void updateModule() {
+        progressIndicator.setVisibility(View.VISIBLE);
+        String enteredIndependentHours = independentLearningHours.getText().toString();
+        String enteredContactHours = contactHours.getText().toString();
+
+        moduleBeingEdited.setIndependentHours(enteredIndependentHours);
+        moduleBeingEdited.setContactHours(enteredContactHours);
+
+        if (areInputsValid(moduleBeingEdited)) {
+            Call<SuccessResponseAPI> updateCall = moduleService.updateModule(moduleBeingEdited, token, moduleBeingEdited.getModuleId());
+            updateCall.enqueue(new Callback<SuccessResponseAPI>() {
+                @Override
+                public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                    progressIndicator.setVisibility(View.GONE);
+                    if (response.isSuccessful()) {
+                        //updated successfully
+                        Toast.makeText(getApplicationContext(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+                        startActivity(
+                                new Intent(getApplicationContext(), AcademicAdminModuleManagement.class)
+                        );
+                        finish(); //do not allow back button to navigate back to this activity after success update
+                    } else {
+                        //module not created
+                        try {
+                            ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                            if (theErrorReturned.getValidationErrors().size() > 0) {
+                                //have validation errors input
+                                for (String eachError : theErrorReturned.getValidationErrors()) {
+                                    constructError(eachError, false);
+                                }
+                            } else {
+                                //no validation error, just errors
+                                constructError(theErrorReturned.getErrorMessage(), false);
+                            }
+                        } catch (IOException e) {
+                            constructError("We ran into an error while updating the module", false);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                    progressIndicator.setVisibility(View.GONE);
+                    constructError("We rain into an error while updating the module information", false);
+                }
+            });
+        } else {
+            constructError("Please provide valid inputs before proceeding", false);
+            progressIndicator.setVisibility(View.GONE);
+        }
     }
 }

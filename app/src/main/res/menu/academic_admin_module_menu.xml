@@ -3,4 +3,8 @@
     <item
         android:id="@+id/delete_module"
         android:title="@string/delete_module" />
+
+    <item android:id="@+id/update_module"
+        android:title="@string/update_module"/>
+
 </menu>

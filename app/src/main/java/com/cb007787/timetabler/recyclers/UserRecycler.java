@@ -120,7 +120,8 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
                 //user click delete
                 //construct confirmation dialog
                 AlertDialog theDeleteDialog = new MaterialAlertDialogBuilder(theContext)
-                        .setTitle("Would you like to delete this user?")
+                        .setTitle("Delete User")
+                        .setMessage("Would you like to delete this user?")
                         .setPositiveButton("Delete", (dialog, which) -> {
                             //user click delete.
                             deleteUserInDb(theUser);

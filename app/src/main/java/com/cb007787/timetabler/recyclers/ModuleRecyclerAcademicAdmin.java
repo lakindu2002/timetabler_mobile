@@ -2,6 +2,9 @@ package com.cb007787.timetabler.recyclers;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,6 +26,9 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminCreateModule;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -98,44 +104,55 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
             thePopupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.delete_module) {
                     //create a popup to denote whether to delete the module.
-                    new MaterialAlertDialogBuilder(theContext)
-                            .setTitle("Are you sure you want to delete this module?")
-                            .setNegativeButton("Cancel", (dialog, which) -> {
-                                dialog.cancel();
-                            })
-                            .setPositiveButton("Delete", (dialog, which) -> {
-                                callbacks.onDeleteCalled();
-                                Call<SuccessResponseAPI> deleteCall = moduleService.deleteModule(module.getModuleId(), SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
-
-                                deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
-                                    @Override
-                                    public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
-                                        if (response.isSuccessful()) {
-                                            //deleted successfully
-                                            callbacks.onDeleteSuccessResponse(response.body());
-                                        } else {
-                                            //failed
-                                            try {
-                                                ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
-                                                callbacks.onDeleteFailure(theErrorReturned.getErrorMessage());
-                                            } catch (IOException e) {
-                                                callbacks.onDeleteFailure("We ran into an error while deleting the module");
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
-                                        callbacks.onDeleteFailure("We ran into an error while deleting the module");
-                                    }
-                                });
-                            })
-                            .show();
+                    launchDeleteModal(module);
+                } else if (item.getItemId() == R.id.update_module) {
+                    //navigate to edit page.
+                    Intent theEditIntent = new Intent(theContext, AcademicAdminCreateModule.class);
+                    //parse the module id to fetch from server in next call.
+                    theEditIntent.putExtra("theModule", module.getModuleId());
+                    theContext.startActivity(theEditIntent);
                 }
                 return true;
             });
             thePopupMenu.show(); //show popup box
         });
+    }
+
+    private void launchDeleteModal(Module theModule) {
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("Delete Module")
+                .setMessage("Are you sure you want to delete this module?")
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.cancel();
+                })
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    callbacks.onDeleteCalled();
+                    Call<SuccessResponseAPI> deleteCall = moduleService.deleteModule(theModule.getModuleId(), SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
+
+                    deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
+                        @Override
+                        public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                            if (response.isSuccessful()) {
+                                //deleted successfully
+                                callbacks.onDeleteSuccessResponse(response.body());
+                            } else {
+                                //failed
+                                try {
+                                    ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                                    callbacks.onDeleteFailure(theErrorReturned.getErrorMessage());
+                                } catch (IOException e) {
+                                    callbacks.onDeleteFailure("We ran into an error while deleting the module");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                            callbacks.onDeleteFailure("We ran into an error while deleting the module");
+                        }
+                    });
+                })
+                .show();
     }
 
     @Override

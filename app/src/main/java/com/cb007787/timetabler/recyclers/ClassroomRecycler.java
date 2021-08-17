@@ -122,7 +122,8 @@ public class ClassroomRecycler extends RecyclerView.Adapter<ClassroomRecycler.Cl
 
     private void showDeleteBox(Classroom theClassroom) {
         new MaterialAlertDialogBuilder(theContext)
-                .setTitle("Are you sure you want to delete this classroom")
+                .setTitle("Delete Classroom")
+                .setMessage("Are you sure you want to delete this classroom?")
                 .setNegativeButton("Close", (dialog, which) -> {
                     dialog.cancel(); //cancel the dialog when user clicks close
                 })

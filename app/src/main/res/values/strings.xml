@@ -129,4 +129,5 @@
     <string name="contact_lecture_hours">Contact Lecture Hours</string>
     <string name="provide_contact_lecture_hours">Provide Contact Lecture Hours</string>
     <string name="delete_module">Delete Module</string>
+    <string name="update_module">Update Module</string>
 </resources>

@@ -12,6 +12,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface ModuleService {
@@ -28,4 +29,10 @@ public interface ModuleService {
 
     @DELETE(BASE_ENDPOINT + "delete/{moduleId}")
     Call<SuccessResponseAPI> deleteModule(@Path("moduleId") int moduleId, @Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "find/{moduleId}")
+    Call<Module> getModuleById(@Header("Authorization") String token, @Path("moduleId") int editingModuleId);
+
+    @PUT(BASE_ENDPOINT + "update/{moduleId}")
+    Call<SuccessResponseAPI> updateModule(@Body() Module moduleBeingEdited, @Header("Authorization") String token, @Path("moduleId") int moduleId);
 }
