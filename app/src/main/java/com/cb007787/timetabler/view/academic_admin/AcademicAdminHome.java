@@ -94,6 +94,8 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
             startActivity(navigationIntent);
         } else if (item.getItemId() == R.id.batch_management) {
             //clicked batch management
+            navigationIntent = new Intent(this, AcademicAdministratorBatchManagement.class);
+            startActivity(navigationIntent);
         } else if (item.getItemId() == R.id.my_account_academic) {
             //click my account
             navigationIntent = new Intent(this, SharedUserProfile.class);
