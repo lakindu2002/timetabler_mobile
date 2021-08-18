@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
+import com.cb007787.timetabler.interfaces.UpdateCallbacks;
 import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
@@ -41,7 +42,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
     private List<BatchShow> batchList;
     private DeleteCallbacks deleteCallbacks;
     private final BatchService batchService;
-    private UpdateCallback updateCallback;
+    private UpdateCallbacks updateCallback;
 
     public BatchRecycler(Context theContext) {
         this.theContext = theContext;
@@ -58,7 +59,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
         this.deleteCallbacks = deleteCallbacks;
     }
 
-    public void setUpdateCallback(UpdateCallback updateCallback) {
+    public void setUpdateCallback(UpdateCallbacks updateCallback) {
         this.updateCallback = updateCallback;
     }
 
@@ -121,7 +122,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
     }
 
     private void updateInDB(BatchShow batchAtPosition, AlertDialog theDialog) {
-        updateCallback.onUpdate(); //trigger update
+        updateCallback.onUpdate(); //trigger update for batch name.
 
         Call<SuccessResponseAPI> updateCall = batchService.updateBatchName(
                 batchAtPosition,
@@ -212,13 +213,5 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
             modulesInBatch = itemView.findViewById(R.id.modules_enrolled);
             moreButton = itemView.findViewById(R.id.more_options_batch);
         }
-    }
-
-    public interface UpdateCallback {
-        void onUpdate();
-
-        void onUpdateCompleted(SuccessResponseAPI theResponse);
-
-        void onUpdateFailed(String errorMessage);
     }
 }

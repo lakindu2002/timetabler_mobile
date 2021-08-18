@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
+import com.cb007787.timetabler.interfaces.UpdateCallbacks;
 import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
@@ -107,7 +108,7 @@ public class AcademicAdministratorBatchManagement extends AppCompatActivity {
         });
 
         //attach update callback
-        adapter.setUpdateCallback(new BatchRecycler.UpdateCallback() {
+        adapter.setUpdateCallback(new UpdateCallbacks() {
             @Override
             public void onUpdate() {
                 progressIndicator.setVisibility(View.VISIBLE);

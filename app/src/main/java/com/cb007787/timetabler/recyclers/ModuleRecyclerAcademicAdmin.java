@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
+import com.cb007787.timetabler.interfaces.UpdateCallbacks;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
@@ -42,7 +43,7 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
     private final ModuleService moduleService;
     private List<Module> modulesList;
     private DeleteCallbacks callbacks;
-    private BatchRecycler.UpdateCallback updateCallbacks;
+    private UpdateCallbacks updateCallbacks;
     private final UserService userService;
 
     public ModuleRecyclerAcademicAdmin(Context theContext) {
@@ -57,7 +58,7 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         notifyDataSetChanged();
     }
 
-    public void setUpdateCallbacks(BatchRecycler.UpdateCallback updateCallbacks) {
+    public void setUpdateCallbacks(UpdateCallbacks updateCallbacks) {
         this.updateCallbacks = updateCallbacks;
     }
 
@@ -140,13 +141,17 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
     }
 
     private void loadAllLecturersAndShowConfirmDialog(Module theModule, boolean isReAssignLecturer) {
+        //load all the lecturers from the server to enable re-assignment and assignment of lecturer to a module
         Call<List<User>> allLecturersCall = userService.getAllLecturers(SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
         allLecturersCall.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
                 if (response.isSuccessful()) {
+                    //response occurred successfully
+                    //launch the modal based on assign/re-assign mode
                     launchLecturersManagementModal(response.body(), theModule, isReAssignLecturer);
                 } else {
+                    //error
                     try {
                         ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
                         Toast.makeText(theContext, theErrorReturned.getErrorMessage(), Toast.LENGTH_LONG).show();
@@ -158,6 +163,8 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
 
             @Override
             public void onFailure(@NonNull Call<List<User>> call, @NonNull Throwable t) {
+                //error
+                Toast.makeText(theContext, "Failed To Load Lecturers", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -165,20 +172,23 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
     //method will launch an alert dialog that is of confirmation so user can select the academic administrators.
     private void launchLecturersManagementModal(List<User> lecturersList, Module theModule, boolean isReAssignLecturer) {
         CharSequence[] alertRequiredList = new CharSequence[lecturersList.size()];
-        List<String> userList = new ArrayList<>();
+        List<String> userList = new ArrayList<>(); //used to hold each username from the lecturerList.
 
         for (User eachLecturer : lecturersList) {
+            //insert each username into the userlist.
             userList.add(String.format("%s", eachLecturer.getUsername()));
         }
 
-        alertRequiredList = userList.toArray(new CharSequence[userList.size()]);
+        alertRequiredList = userList.toArray(new CharSequence[userList.size()]); //alert requires CharSequence array
         int checkedItem = -1; //initially none checked
 
         final CharSequence[] finalAlertRequiredList = alertRequiredList; //required to access inside callback
 
+        //create a modal to assign/re-assign
         MaterialAlertDialogBuilder theBuilder = new MaterialAlertDialogBuilder(theContext);
-        //assign the items displayed
+
         theBuilder.setSingleChoiceItems(alertRequiredList, checkedItem, (dialog, which) -> {
+            //assign the items displayed
             //when user selects an input from the selection, assign it to the module as te lecturer
             String selectedLecturerUsername = finalAlertRequiredList[which].toString();
             User selectedUser = lecturersList.stream().filter((eachUser) -> eachUser.getUsername().equalsIgnoreCase(selectedLecturerUsername)).findFirst().get();
@@ -191,10 +201,12 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
             //have initial lecturer information
             User initiallyPresentLecturer = theModule.getTheLecturer();
             theBuilder.setTitle("Re-Assign Lecturer In Module");
+            //user click positive button
             theBuilder.setPositiveButton("Re-Assign lecturer In Module", (dialog, which) -> {
                 if (theModule.getTheLecturer().getUsername().equalsIgnoreCase(initiallyPresentLecturer.getUsername())) {
                     updateCallbacks.onUpdateFailed("This lecturer is already teaching this module");
                 } else {
+                    //confirm re-assignment in DB using API
                     reAssignLecturerInDb(theModule);
                 }
             });
@@ -220,7 +232,7 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
 
         reAssignCall.enqueue(new Callback<SuccessResponseAPI>() {
             @Override
-            public void onResponse(Call<SuccessResponseAPI> call, Response<SuccessResponseAPI> response) {
+            public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
                 if (response.isSuccessful()) {
                     //lecturer assigned to module successfully
                     updateCallbacks.onUpdateCompleted(response.body());
@@ -235,7 +247,7 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
             }
 
             @Override
-            public void onFailure(Call<SuccessResponseAPI> call, Throwable t) {
+            public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
                 updateCallbacks.onUpdateFailed("We ran into an error while re-assigning the lecturer for this module");
             }
         });
@@ -277,9 +289,7 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         new MaterialAlertDialogBuilder(theContext)
                 .setTitle("Delete Module")
                 .setMessage("Are you sure you want to delete this module?")
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    dialog.cancel();
-                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
                 .setPositiveButton("Delete", (dialog, which) -> {
                     callbacks.onDeleteCalled();
                     Call<SuccessResponseAPI> deleteCall = moduleService.deleteModule(theModule.getModuleId(), SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
@@ -362,13 +372,5 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         public MaterialTextView getBatchCount() {
             return batchCount;
         }
-    }
-
-    public interface UpdateCallbacks {
-        void updateCalled();
-
-        void updateSuccess(SuccessResponseAPI responseBody);
-
-        void updateFailed(String error);
     }
 }

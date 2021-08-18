@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
+import com.cb007787.timetabler.interfaces.UpdateCallbacks;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
@@ -114,7 +115,7 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
             }
         });
 
-        adapter.setUpdateCallbacks(new BatchRecycler.UpdateCallback() {
+        adapter.setUpdateCallbacks(new UpdateCallbacks() {
             @Override
             public void onUpdate() {
                 //update triggered
