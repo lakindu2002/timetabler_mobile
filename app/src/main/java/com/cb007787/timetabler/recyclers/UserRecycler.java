@@ -2,6 +2,7 @@ package com.cb007787.timetabler.recyclers;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,24 +10,28 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.ThemeUtils;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.service.UserService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminModuleManagement;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -38,6 +43,7 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.POST;
 
 public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> {
     private final Context theContext;
@@ -83,6 +89,10 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         holder.getDateOfBirth().setText(dateFormat.format(theUser.getDateOfBirth()));
         holder.getMemberSince().setText(String.format("Member Since: %s", dateFormat.format(theUser.getMemberSince())));
 
+        if (theUser.getTheBatch() != null) {
+            holder.getBatchNameStudent().setText(String.format("Batch: %s", theUser.getTheBatch().getBatchCode()));
+        }
+
         //anchor the popup menu to the more button
         PopupMenu theMoreOption = new PopupMenu(theContext, holder.getMore());
         theMoreOption.inflate(R.menu.user_popup); //inflate the menu resource file for the popup
@@ -92,10 +102,26 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         if (userRole.equalsIgnoreCase("academic administrator")) {
             //do not show the delete button to the academic administrator as they cannot delete the user information
             theInflatedMenu.removeItem(R.id.delete_click);
+        } else {
+            //system admin opens the recycler
+            //system admin cannot view modules assigned
+            theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
         }
-        if (theUser.getUserRole().getRoleName().equalsIgnoreCase("academic administrator")) {
+        String userRoleForTheDBUser = theUser.getUserRole().getRoleName();
+        if (userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
             //prevent deleting academic admin
             theInflatedMenu.removeItem(R.id.delete_click);
+        }
+
+        if (userRoleForTheDBUser.equalsIgnoreCase("student") || userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
+            theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
+        }
+
+        //if academic admin launches recycler, show batch
+        if (userRole.equalsIgnoreCase("system administrator") || userRoleForTheDBUser.equalsIgnoreCase("lecturer")) {
+            //hide if opened by system admin or rendering user is a lecturer.
+            holder.getRuleStudent().setVisibility(View.GONE);
+            holder.getBatchNameStudent().setVisibility(View.GONE);
         }
 
         theMoreOption.setOnMenuItemClickListener(item -> {
@@ -138,6 +164,16 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
                 theEmailIntent.putExtra(Intent.EXTRA_EMAIL, theUser.getEmailAddress());
                 theContext.startActivity(Intent.createChooser(theEmailIntent, "Contact User"));
                 return true;
+            } else if (item.getItemId() == R.id.view_modules_assigned_lecturer) {
+                //academic admin clicks "View Assigned Modules For Lecturer"
+
+                if (userRoleForTheDBUser.equalsIgnoreCase("lecturer")) {
+                    //view modules on a dialog.
+                    showModulesLecturerHasInPopUpDialog(theUser.getTheModule());
+                } else {
+                    Toast.makeText(theContext, "User is not a lecturer", Toast.LENGTH_SHORT).show();
+                }
+                return true;
             } else {
                 return false;
             }
@@ -179,6 +215,31 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         });
     }
 
+    private void showModulesLecturerHasInPopUpDialog(List<Module> theModules) {
+        //re-use array adapter layout.
+        if (theModules.size() == 0) {
+            //do not launch modal
+            Toast.makeText(theContext, "This lecturer has no modules assigned yet", Toast.LENGTH_LONG).show();
+            return;
+        }
+        ArrayAdapter<String> moduleList = new ArrayAdapter<String>(theContext, R.layout.module_view_user_adapter);
+
+        for (Module eachModule : theModules) {
+            moduleList.add(eachModule.getModuleName());
+        }
+
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("The Modules Assigned")
+                .setPositiveButton("Okay", (dialog, which) -> {
+                    dialog.cancel();
+                })
+                .setAdapter(moduleList, (dialog, which) -> {
+                    //when item is clicked, navigate to module management component
+                    theContext.startActivity(new Intent(theContext, AcademicAdminModuleManagement.class));
+                })
+                .show();
+    }
+
     @Override
     public int getItemCount() {
         return userList.size();
@@ -194,6 +255,9 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         private final MaterialTextView dateOfBirth;
         private final MaterialTextView memberSince;
 
+        private final MaterialTextView batchNameStudent;
+        private final View ruleStudent;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.username);
@@ -203,6 +267,16 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             contactNumber = itemView.findViewById(R.id.contact_number);
             dateOfBirth = itemView.findViewById(R.id.date_of_birth);
             memberSince = itemView.findViewById(R.id.member_since);
+            batchNameStudent = itemView.findViewById(R.id.batch_name_student);
+            ruleStudent = itemView.findViewById(R.id.student_section);
+        }
+
+        public View getRuleStudent() {
+            return ruleStudent;
+        }
+
+        public MaterialTextView getBatchNameStudent() {
+            return batchNameStudent;
         }
 
         public ImageView getMore() {

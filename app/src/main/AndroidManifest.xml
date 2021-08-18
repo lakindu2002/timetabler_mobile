@@ -14,6 +14,10 @@
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".view.academic_admin.AcademicAdminUserManagement"
+            android:parentActivityName=".view.academic_admin.AcademicAdminHome"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".view.academic_admin.AcademicAdminCreateBatch"
             android:parentActivityName=".view.academic_admin.AcademicAdministratorBatchManagement"
             android:screenOrientation="portrait" />

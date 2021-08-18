@@ -14,4 +14,10 @@
         android:id="@+id/delete_click"
         android:icon="@drawable/ic_baseline_delete_forever_24_black"
         android:title="@string/delete_user" />
+
+    <item
+        android:id="@+id/view_modules_assigned_lecturer"
+        android:icon="@drawable/ic_module"
+        android:iconTint="@color/white"
+        android:title="@string/view_modules_assigned" />
 </menu>

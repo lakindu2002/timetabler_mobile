@@ -120,6 +120,23 @@
             android:layout_marginTop="5dp"
             android:text="@string/member_since"
             android:textColor="@color/black" />
+
+        <View
+            android:id="@+id/student_section"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_below="@+id/member_since"
+            android:layout_marginTop="5dp"
+            android:background="@color/background" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/batch_name_student"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/student_section"
+            android:paddingTop="5dp"
+            android:text="@string/batch_no_batch"
+            android:textColor="@color/black" />
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

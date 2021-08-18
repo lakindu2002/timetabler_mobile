@@ -1,4 +1,4 @@
-package com.cb007787.timetabler.view.system_admin;
+package com.cb007787.timetabler.view.common.shared;
 
 import android.os.Bundle;
 
@@ -39,6 +39,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Fragment used by System Admin and Academic Admin to Load Users.
+ */
 public class UserLoadingFragment extends Fragment {
 
 

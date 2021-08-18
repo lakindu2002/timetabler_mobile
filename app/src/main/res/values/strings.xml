@@ -133,4 +133,6 @@
     <string name="batch_code">Batch Code</string>
     <string name="assign_lecturer_to_module">Assign Lecturer To Module</string>
     <string name="change_lecturer_assigned">Change Lecturer Assigned</string>
+    <string name="view_modules_assigned">View Modules Assigned</string>
+    <string name="batch_no_batch">Batch: No Batch</string>
 </resources>

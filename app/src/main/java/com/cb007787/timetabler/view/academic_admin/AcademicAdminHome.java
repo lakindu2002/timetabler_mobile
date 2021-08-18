@@ -86,6 +86,8 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
         Intent navigationIntent = null;
         if (item.getItemId() == R.id.user_directory_menu) {
             //clicked user directory
+            navigationIntent = new Intent(this, AcademicAdminUserManagement.class);
+            startActivity(navigationIntent);
         } else if (item.getItemId() == R.id.timetable_management_menu) {
             //click timetable management
         } else if (item.getItemId() == R.id.module_management) {
