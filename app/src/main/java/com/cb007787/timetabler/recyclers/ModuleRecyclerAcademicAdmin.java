@@ -131,9 +131,10 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
                     theContext.startActivity(theEditIntent);
                 } else if (item.getItemId() == R.id.assign_lecturer) {
                     //load all lecturers to be assigned to module
-                    loadAllLecturersAndShowConfirmDialog(module);
+                    loadAllLecturersAndShowConfirmDialog(module, false);
                 } else if (item.getItemId() == R.id.change_lecturer_from_module) {
-
+                    //load re-assign section
+                    loadAllLecturersAndShowConfirmDialog(module, true);
                 }
                 return true;
             });
@@ -141,13 +142,13 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         });
     }
 
-    private void loadAllLecturersAndShowConfirmDialog(Module theModule) {
+    private void loadAllLecturersAndShowConfirmDialog(Module theModule, boolean isReAssignLecturer) {
         Call<List<User>> allLecturersCall = userService.getAllLecturers(SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
         allLecturersCall.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
                 if (response.isSuccessful()) {
-                    launchAssignLecturersModal(response.body(), theModule);
+                    launchLecturersManagementModal(response.body(), theModule, isReAssignLecturer);
                 } else {
                     try {
                         ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
@@ -165,7 +166,7 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
     }
 
     //method will launch an alert dialog that is of confirmation so user can select the academic administrators.
-    private void launchAssignLecturersModal(List<User> lecturersList, Module theModule) {
+    private void launchLecturersManagementModal(List<User> lecturersList, Module theModule, boolean isReAssignLecturer) {
         CharSequence[] alertRequiredList = new CharSequence[lecturersList.size()];
         List<String> userList = new ArrayList<>();
 
@@ -178,23 +179,69 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
 
         final CharSequence[] finalAlertRequiredList = alertRequiredList; //required to access inside callback
 
-        new MaterialAlertDialogBuilder(theContext)
-                .setTitle("Assign Lecturer For Module")
-                .setSingleChoiceItems(alertRequiredList, checkedItem, (dialog, which) -> {
-                    //when user selects an input from the selection, assign it to the module as te lecturer
-                    String selectedLecturerUsername = finalAlertRequiredList[which].toString();
-                    User selectedUser = lecturersList.stream().filter((eachUser) -> eachUser.getUsername().equalsIgnoreCase(selectedLecturerUsername)).findFirst().get();
-                    theModule.setTheLecturer(selectedUser); //assign the lecturer for the module
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-                .setPositiveButton("Assign Lecturer To Module", (dialog, which) -> {
-                    //user click "confirm"
-                    if (theModule.getTheLecturer() == null) {
-                        updateCallbacks.onUpdateFailed("Please select a lecturer before proceeding");
-                    } else {
-                        assignLecturerToModuleInDB(theModule); //update in database over api.
+        MaterialAlertDialogBuilder theBuilder = new MaterialAlertDialogBuilder(theContext);
+        //assign the items displayed
+        theBuilder.setSingleChoiceItems(alertRequiredList, checkedItem, (dialog, which) -> {
+            //when user selects an input from the selection, assign it to the module as te lecturer
+            String selectedLecturerUsername = finalAlertRequiredList[which].toString();
+            User selectedUser = lecturersList.stream().filter((eachUser) -> eachUser.getUsername().equalsIgnoreCase(selectedLecturerUsername)).findFirst().get();
+            theModule.setTheLecturer(selectedUser); //assign the lecturer for the module
+        });
+        theBuilder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        if (isReAssignLecturer) {
+            //lecturer being re-assigned
+            //have initial lecturer information
+            User initiallyPresentLecturer = theModule.getTheLecturer();
+            theBuilder.setTitle("Re-Assign Lecturer In Module");
+            theBuilder.setPositiveButton("Re-Assign lecturer In Module", (dialog, which) -> {
+                if (theModule.getTheLecturer().getUsername().equalsIgnoreCase(initiallyPresentLecturer.getUsername())) {
+                    updateCallbacks.onUpdateFailed("This lecturer is already teaching this module");
+                } else {
+                    reAssignLecturerInDb(theModule);
+                }
+            });
+        } else {
+            //assigning a new lecturer for the module
+            theBuilder.setTitle("Assign Lecturer For Module");
+            theBuilder.setPositiveButton("Assign Lecturer To Module", (dialog, which) -> {
+                //user click "confirm"
+                if (theModule.getTheLecturer() == null) {
+                    updateCallbacks.onUpdateFailed("Please select a lecturer before proceeding");
+                } else {
+                    assignLecturerToModuleInDB(theModule); //update in database over api.
+                }
+            });
+        }
+        theBuilder.show(); //launch modal.
+    }
+
+    //module will update the lecturer teaching the module and re-assign new lecturer
+    private void reAssignLecturerInDb(Module theModule) {
+        updateCallbacks.onUpdate();
+        Call<SuccessResponseAPI> reAssignCall = moduleService.reAssignLecturerInModule(theModule, SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
+
+        reAssignCall.enqueue(new Callback<SuccessResponseAPI>() {
+            @Override
+            public void onResponse(Call<SuccessResponseAPI> call, Response<SuccessResponseAPI> response) {
+                if (response.isSuccessful()) {
+                    //lecturer assigned to module successfully
+                    updateCallbacks.onUpdateCompleted(response.body());
+                } else {
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        updateCallbacks.onUpdateFailed(theErrorReturned.getErrorMessage());
+                    } catch (IOException e) {
+                        updateCallbacks.onUpdateFailed("We ran into an error while re-assigning the lecturer for this module");
                     }
-                }).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SuccessResponseAPI> call, Throwable t) {
+                updateCallbacks.onUpdateFailed("We ran into an error while re-assigning the lecturer for this module");
+            }
+        });
 
     }
 
