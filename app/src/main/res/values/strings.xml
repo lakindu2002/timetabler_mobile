@@ -131,4 +131,6 @@
     <string name="delete_module">Delete Module</string>
     <string name="update_module">Update Module</string>
     <string name="batch_code">Batch Code</string>
+    <string name="assign_lecturer_to_module">Assign Lecturer To Module</string>
+    <string name="change_lecturer_assigned">Change Lecturer Assigned</string>
 </resources>

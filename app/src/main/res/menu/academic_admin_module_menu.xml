@@ -4,7 +4,16 @@
         android:id="@+id/delete_module"
         android:title="@string/delete_module" />
 
-    <item android:id="@+id/update_module"
-        android:title="@string/update_module"/>
+    <item
+        android:id="@+id/update_module"
+        android:title="@string/update_module" />
+
+    <item
+        android:id="@+id/assign_lecturer"
+        android:title="@string/assign_lecturer_to_module" />
+
+    <item
+        android:id="@+id/change_lecturer_from_module"
+        android:title="@string/change_lecturer_assigned" />
 
 </menu>

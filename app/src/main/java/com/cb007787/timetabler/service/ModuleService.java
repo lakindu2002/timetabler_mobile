@@ -38,4 +38,7 @@ public interface ModuleService {
 
     @GET(BASE_ENDPOINT + "modulesAssignedToBatch")
     Call<List<Module>> getModulesThatCanBeAssignedToBatch(@Header("Authorization") String token);
+
+    @PUT(BASE_ENDPOINT + "assignLecturer")
+    Call<SuccessResponseAPI> assignLecturerToModule(@Body Module theModule, @Header("Authorization") String token);
 }

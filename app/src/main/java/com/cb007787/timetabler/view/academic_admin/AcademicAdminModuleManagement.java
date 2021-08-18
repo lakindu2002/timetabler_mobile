@@ -23,6 +23,7 @@ import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
+import com.cb007787.timetabler.recyclers.BatchRecycler;
 import com.cb007787.timetabler.recyclers.ModuleRecyclerAcademicAdmin;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
@@ -110,6 +111,34 @@ public class AcademicAdminModuleManagement extends AppCompatActivity {
             @Override
             public void onDeleteCalled() {
                 linearProgressIndicator.setVisibility(View.VISIBLE);
+            }
+        });
+
+        adapter.setUpdateCallbacks(new BatchRecycler.UpdateCallback() {
+            @Override
+            public void onUpdate() {
+                //update triggered
+                linearProgressIndicator.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onUpdateCompleted(SuccessResponseAPI theResponse) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                Snackbar theSnackBar = Snackbar.make(theToolbar, theResponse.getMessage(), Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                View view = theSnackBar.getView();
+                //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+                TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                snackBarText.setMaxLines(5);
+                theSnackBar.show();
+
+                getAllModules(); //refresh after successful update.
+            }
+
+            @Override
+            public void onUpdateFailed(String errorMessage) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                constructError(errorMessage, false);
             }
         });
     }

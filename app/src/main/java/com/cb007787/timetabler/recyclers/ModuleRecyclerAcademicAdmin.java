@@ -3,14 +3,14 @@ package com.cb007787.timetabler.recyclers;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
@@ -26,9 +26,8 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.service.UserService;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminCreateModule;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -46,16 +45,23 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
     private final ModuleService moduleService;
     private List<Module> modulesList;
     private DeleteCallbacks callbacks;
+    private BatchRecycler.UpdateCallback updateCallbacks;
+    private final UserService userService;
 
     public ModuleRecyclerAcademicAdmin(Context theContext) {
         this.theContext = theContext;
         moduleService = APIConfigurer.getApiConfigurer().getModuleService();
+        userService = APIConfigurer.getApiConfigurer().getUserService();
         modulesList = new ArrayList<>();
     }
 
     public void setModulesList(List<Module> modulesList) {
         this.modulesList = modulesList;
         notifyDataSetChanged();
+    }
+
+    public void setUpdateCallbacks(BatchRecycler.UpdateCallback updateCallbacks) {
+        this.updateCallbacks = updateCallbacks;
     }
 
     public void setCallbacks(DeleteCallbacks callbacks) {
@@ -78,8 +84,8 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         User theLecturer = module.getTheLecturer();
         int batchCountInModule = module.getTheBatchList().size();
 
-        String lecturerName = theLecturer != null ? String.format("%s %s", theLecturer.getFirstName(), theLecturer.getLastName()) : "No Lecturer Assigned";
-        String batchCount = batchCountInModule == 0 ? "No Batches Enrolled" : String.format(Locale.ENGLISH, "%d", batchCountInModule);
+        String lecturerName = theLecturer != null ? String.format("%s %s", theLecturer.getFirstName(), theLecturer.getLastName()) : "No Lecturer";
+        String batchCount = batchCountInModule == 0 ? "No Batches" : String.format(Locale.ENGLISH, "%d", batchCountInModule);
 
         if (theLecturer == null) {
             //set the text to red
@@ -100,6 +106,18 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         holder.getMoreButton().setOnClickListener(v -> {
             PopupMenu thePopupMenu = new PopupMenu(theContext, holder.getMoreButton());
             thePopupMenu.inflate(R.menu.academic_admin_module_menu);
+
+            Menu theInflatedMenuOnPopup = thePopupMenu.getMenu();
+            //if the lecturer has a module, show only "Change Lecturer"
+            //if lecturer has no module, show only "Assign Lecturer"
+
+            if (module.getTheLecturer() != null) {
+                //lecturer is assigned, show only change lecturer
+                theInflatedMenuOnPopup.removeItem(R.id.assign_lecturer);
+            } else {
+                theInflatedMenuOnPopup.removeItem(R.id.change_lecturer_from_module);
+            }
+
             thePopupMenu.setOnDismissListener(PopupMenu::dismiss);
             thePopupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.delete_module) {
@@ -111,10 +129,103 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
                     //parse the module id to fetch from server in next call.
                     theEditIntent.putExtra("theModule", module.getModuleId());
                     theContext.startActivity(theEditIntent);
+                } else if (item.getItemId() == R.id.assign_lecturer) {
+                    //load all lecturers to be assigned to module
+                    loadAllLecturersAndShowConfirmDialog(module);
+                } else if (item.getItemId() == R.id.change_lecturer_from_module) {
+
                 }
                 return true;
             });
             thePopupMenu.show(); //show popup box
+        });
+    }
+
+    private void loadAllLecturersAndShowConfirmDialog(Module theModule) {
+        Call<List<User>> allLecturersCall = userService.getAllLecturers(SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
+        allLecturersCall.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
+                if (response.isSuccessful()) {
+                    launchAssignLecturersModal(response.body(), theModule);
+                } else {
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        Toast.makeText(theContext, theErrorReturned.getErrorMessage(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        Toast.makeText(theContext, "Failed To Load Lecturers", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<User>> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    //method will launch an alert dialog that is of confirmation so user can select the academic administrators.
+    private void launchAssignLecturersModal(List<User> lecturersList, Module theModule) {
+        CharSequence[] alertRequiredList = new CharSequence[lecturersList.size()];
+        List<String> userList = new ArrayList<>();
+
+        for (User eachLecturer : lecturersList) {
+            userList.add(String.format("%s", eachLecturer.getUsername()));
+        }
+
+        alertRequiredList = userList.toArray(new CharSequence[userList.size()]);
+        int checkedItem = -1; //initially none checked
+
+        final CharSequence[] finalAlertRequiredList = alertRequiredList; //required to access inside callback
+
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("Assign Lecturer For Module")
+                .setSingleChoiceItems(alertRequiredList, checkedItem, (dialog, which) -> {
+                    //when user selects an input from the selection, assign it to the module as te lecturer
+                    String selectedLecturerUsername = finalAlertRequiredList[which].toString();
+                    User selectedUser = lecturersList.stream().filter((eachUser) -> eachUser.getUsername().equalsIgnoreCase(selectedLecturerUsername)).findFirst().get();
+                    theModule.setTheLecturer(selectedUser); //assign the lecturer for the module
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+                .setPositiveButton("Assign Lecturer To Module", (dialog, which) -> {
+                    //user click "confirm"
+                    if (theModule.getTheLecturer() == null) {
+                        updateCallbacks.onUpdateFailed("Please select a lecturer before proceeding");
+                    } else {
+                        assignLecturerToModuleInDB(theModule); //update in database over api.
+                    }
+                }).show();
+
+    }
+
+    //method will assign the lecturer in the api call
+    private void assignLecturerToModuleInDB(Module theModule) {
+        //update in DB
+        updateCallbacks.onUpdate(); //update triggered
+        Call<SuccessResponseAPI> assignCall = moduleService.assignLecturerToModule(theModule, SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME));
+
+        assignCall.enqueue(new Callback<SuccessResponseAPI>() {
+            @Override
+            public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                if (response.isSuccessful()) {
+                    //lecturer assigned to module successfully
+                    updateCallbacks.onUpdateCompleted(response.body());
+                } else {
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        updateCallbacks.onUpdateFailed(theErrorReturned.getErrorMessage());
+                    } catch (IOException e) {
+                        updateCallbacks.onUpdateFailed("We ran into an error while assigning a lecturer to this module");
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                //error
+                updateCallbacks.onUpdateFailed("We ran into an error while assigning a lecturer to this module");
+            }
         });
     }
 
@@ -207,5 +318,13 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
         public MaterialTextView getBatchCount() {
             return batchCount;
         }
+    }
+
+    public interface UpdateCallbacks {
+        void updateCalled();
+
+        void updateSuccess(SuccessResponseAPI responseBody);
+
+        void updateFailed(String error);
     }
 }
