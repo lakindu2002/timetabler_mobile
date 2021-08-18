@@ -2,15 +2,12 @@ package com.cb007787.timetabler.recyclers;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
@@ -18,10 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.BatchShow;
-import com.cb007787.timetabler.model.Classroom;
 import com.cb007787.timetabler.model.LectureShow;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
-import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -44,7 +39,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
     private final Context theContext;
     private List<LectureShow> theLectureList;
     private static String userRole;
-    private LectureService lectureService;
+    private final LectureService lectureService;
 
     public LectureRecycler(Context theContext, List<LectureShow> theLectureList) {
         this.theContext = theContext;
@@ -79,7 +74,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         //bind data of each lecture to each view associated to each holder.
         LectureShow theLectureForView = theLectureList.get(position);
         String lecturerName = String.format("%s %s", theLectureForView.getTheModule().getTheLecturer().getFirstName(), theLectureForView.getTheModule().getTheLecturer().getLastName());
-        String classroomName = "";
+        String classroomName;
 
         if (theLectureForView.getTheClassroom() == null) {
             classroomName = "Classroom Not Available";
@@ -134,7 +129,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         });
         deleteDialog.setPositiveButton("Cancel Lecture", (dialog, which) -> {
             //user click cancel, cancel the session from the database.
-            //construct loading spinner to show action occuring
+            //construct loading spinner to show action occurring
             ProgressDialog theDeleteProgress = new ProgressDialog(theContext);
             theDeleteProgress.setCancelable(false);
             theDeleteProgress.setMessage("Cancelling the lecture...");
@@ -236,8 +231,8 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         private final TextView timeDuration;
         private final TextView venue;
         //used by staff only.
-        private ImageView deleteButton;
-        private ImageView editButton;
+        private final ImageView deleteButton;
+        private final ImageView editButton;
 
         public LectureHolder(@NonNull View itemView) {
             super(itemView);
@@ -282,8 +277,5 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             return deleteButton;
         }
 
-        public void setDeleteButton(ImageView deleteButton) {
-            this.deleteButton = deleteButton;
-        }
     }
 }

@@ -3,13 +3,11 @@ package com.cb007787.timetabler.recyclers;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -24,9 +22,6 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
-import com.cb007787.timetabler.view.academic_admin.AcademicAdminCreateModule;
-import com.cb007787.timetabler.view.academic_admin.AcademicAdministratorBatchManagement;
-import com.cb007787.timetabler.view.lecturer.UpdateLecture;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -42,10 +37,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder> {
-    private Context theContext;
+    private final Context theContext;
     private List<BatchShow> batchList;
     private DeleteCallbacks deleteCallbacks;
-    private BatchService batchService;
+    private final BatchService batchService;
     private UpdateCallback updateCallback;
 
     public BatchRecycler(Context theContext) {
@@ -104,9 +99,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
                 .setTitle("Update Batch Name")
                 .setView(R.layout.dialog_update_batch_name)
                 .setPositiveButton("Update Batch Name", null) //attach custom listener
-                .setNegativeButton("Close", (dialog, which) -> {
-                    dialog.cancel();
-                }).show(); //need to first show before accessing ui elements
+                .setNegativeButton("Close", (dialog, which) -> dialog.cancel()).show(); //need to first show before accessing ui elements
 
         Button updateBtn = theDialog.getButton(DialogInterface.BUTTON_POSITIVE); //get positive button
         //attach custom click listener to it.
@@ -165,9 +158,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
         new MaterialAlertDialogBuilder(theContext)
                 .setTitle("Delete Batch")
                 .setMessage("Are you sure that you want to delete this batch?")
-                .setPositiveButton("Delete", (dialog, which) -> {
-                    deleteBatchInDB(theBatch);
-                })
+                .setPositiveButton("Delete", (dialog, which) -> deleteBatchInDB(theBatch))
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
                 .show(); //show the constructed dialog to the user.
     }

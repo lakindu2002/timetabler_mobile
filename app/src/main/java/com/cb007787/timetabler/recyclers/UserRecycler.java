@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,7 +32,6 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,9 +42,9 @@ import retrofit2.Response;
 public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> {
     private final Context theContext;
     private List<User> userList;
-    private SimpleDateFormat dateFormat;
-    private String userRole;
-    private UserService userService;
+    private final SimpleDateFormat dateFormat;
+    private final String userRole;
+    private final UserService userService;
     private DeleteCallbacks onDeleteCallbacks; //implementation will be provided by fragments calling adapter.
 
     public UserRecycler(Context theContext, String userRole) {
@@ -119,7 +117,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             } else if (item.getItemId() == R.id.delete_click) {
                 //user click delete
                 //construct confirmation dialog
-                AlertDialog theDeleteDialog = new MaterialAlertDialogBuilder(theContext)
+                new MaterialAlertDialogBuilder(theContext)
                         .setTitle("Delete User")
                         .setMessage("Would you like to delete this user?")
                         .setPositiveButton("Delete", (dialog, which) -> {

@@ -76,9 +76,7 @@ public class ClassroomRecycler extends RecyclerView.Adapter<ClassroomRecycler.Cl
         holder.getSmartBoard().setText(String.format("Smart Board: %s", isSmartBoardPresent));
 
         //when user clicks more, show a popup menu to edit, delete classroom.
-        holder.getMoreButton().setOnClickListener(v -> {
-            showMoreOptions(holder.getMoreButton(), classroom);
-        });
+        holder.getMoreButton().setOnClickListener(v -> showMoreOptions(holder.getMoreButton(), classroom));
     }
 
     @Override
@@ -163,11 +161,11 @@ public class ClassroomRecycler extends RecyclerView.Adapter<ClassroomRecycler.Cl
     }
 
     public static class ClassroomViewHolder extends RecyclerView.ViewHolder {
-        private MaterialTextView classroomName;
-        private MaterialTextView maximumCapacity;
-        private MaterialTextView airConditioner;
-        private MaterialTextView smartBoard;
-        private ImageView moreButton;
+        private final MaterialTextView classroomName;
+        private final MaterialTextView maximumCapacity;
+        private final MaterialTextView airConditioner;
+        private final MaterialTextView smartBoard;
+        private final ImageView moreButton;
 
         public ClassroomViewHolder(@NonNull View itemView) {
             super(itemView);
