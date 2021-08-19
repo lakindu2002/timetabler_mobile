@@ -44,6 +44,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> {
     private final Context theContext;
@@ -109,6 +110,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         theMoreOption.inflate(R.menu.user_popup); //inflate the menu resource file for the popup
 
         Menu theInflatedMenu = theMoreOption.getMenu();
+
         //disable certain actions on the menu based on requirements done below.
         if (userRole.equalsIgnoreCase("academic administrator")) {
             //do not show the delete button to the academic administrator as they cannot delete the user information
@@ -118,6 +120,8 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             //system admin cannot view modules assigned
             theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
         }
+
+
         String userRoleForTheDBUser = theUser.getUserRole().getRoleName();
         if (userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
             //prevent deleting academic admin
@@ -128,11 +132,16 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
         }
 
-        //if academic admin launches recycler, show batch
+        //if academic admin launches recycler on user view, show batch
         if (userRole.equalsIgnoreCase("system administrator") || userRoleForTheDBUser.equalsIgnoreCase("lecturer")) {
             //hide if opened by system admin or rendering user is a lecturer.
             holder.getRuleStudent().setVisibility(View.GONE);
             holder.getBatchNameStudent().setVisibility(View.GONE);
+        }
+
+        if (!isBatchViewMode) {
+            //if not viewing from batch, delete the de-assign button
+            theInflatedMenu.removeItem(R.id.de_assign_batch);
         }
 
         theMoreOption.setOnMenuItemClickListener(item -> {
@@ -185,6 +194,9 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
                     Toast.makeText(theContext, "User is not a lecturer", Toast.LENGTH_SHORT).show();
                 }
                 return true;
+            } else if (item.getItemId() == R.id.de_assign_batch) {
+                showDeAssignConfirmation(theUser.getUsername());
+                return true;
             } else {
                 return false;
             }
@@ -194,6 +206,45 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             //user click show more, open the popup menu
             theMoreOption.show();
         });
+    }
+
+    private void showDeAssignConfirmation(String username) {
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("De-Assign Student")
+                .setMessage("Are you sure you want to de-assign student from batch")
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+                .setPositiveButton("De-Assign Student", (dialog, which) -> {
+                    //remove batch from student in api (De-assign)
+                    onDeleteCallbacks.onDeleteCalled();
+                    Call<SuccessResponseAPI> deAssignCall = userService.deAssignStudentFromBatch(
+                            SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME),
+                            username
+                    );
+
+                    deAssignCall.enqueue(new Callback<SuccessResponseAPI>() {
+                        @Override
+                        public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                            if (response.isSuccessful()) {
+                                //de-assigned successfully
+                                onDeleteCallbacks.onDeleteSuccessResponse(response.body());
+                            } else {
+                                try {
+                                    ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                                    onDeleteCallbacks.onDeleteFailure(theErrorReturned.getErrorMessage());
+                                } catch (IOException e) {
+                                    onDeleteCallbacks.onDeleteFailure("We ran into an error while de-assigning the student from the batch");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                            onDeleteCallbacks.onDeleteFailure("We ran into an error while de-assigning the student from the batch");
+                        }
+                    });
+
+                })
+                .show();
     }
 
     private void deleteUserInDb(User theUser) {

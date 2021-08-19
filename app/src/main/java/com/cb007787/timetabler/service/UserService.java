@@ -14,6 +14,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Interface exposes the API for the User API
@@ -48,4 +49,7 @@ public interface UserService {
 
     @DELETE(BASE_ENDPOINT + "delete/{username}")
     Call<SuccessResponseAPI> deleteUser(@Header("Authorization") String token, @Path("username") String username);
+
+    @PUT(BASE_ENDPOINT + "deAssignStudent")
+    Call<SuccessResponseAPI> deAssignStudentFromBatch(@Header("Authorization") String token, @Query("username") String username);
 }

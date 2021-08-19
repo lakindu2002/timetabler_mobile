@@ -95,9 +95,38 @@ public class AcademicAdminManageSingleBatch extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(this::getBatchInformation);
 
         studentAdapter = new UserRecycler(this, loggedInUser.getRole());
+        studentAdapter.setBatchViewMode(true); //hide certain elements of the rendered card for recycler.
         studentAdapter.setUserList(new ArrayList<>());
         studentList.setLayoutManager(new LinearLayoutManager(this));
         studentList.setAdapter(studentAdapter);
+
+        studentAdapter.setOnDeleteCallbacks(new DeleteCallbacks() {
+            @Override
+            public void onDeleteSuccessResponse(SuccessResponseAPI theSuccessObject) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                Snackbar theSnackBar = Snackbar.make(toolbar, theSuccessObject.getMessage(), Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                View view = theSnackBar.getView();
+                //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+                TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                snackBarText.setMaxLines(5);
+                theSnackBar.show();
+
+                getBatchInformation(); //refresh batch after de-assigning student.
+            }
+
+            @Override
+            public void onDeleteFailure(String message) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                constructError(message, false);
+            }
+
+            @Override
+            public void onDeleteCalled() {
+                linearProgressIndicator.setVisibility(View.VISIBLE);
+            }
+        });
+
 
         moduleAdapter = new ModuleRecyclerBatchOperation(this, batchCodeToLoad);
         moduleAdapter.setModuleList(new ArrayList<>());
