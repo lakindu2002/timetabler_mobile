@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,16 +46,22 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
     private DeleteCallbacks deleteCallbacks;
     private final BatchService batchService;
     private UpdateCallbacks updateCallback;
+    private boolean isTimetableComponent;
 
     public BatchRecycler(Context theContext) {
         this.theContext = theContext;
         this.batchList = new ArrayList<>();
         this.batchService = APIConfigurer.getApiConfigurer().getBatchService();
+        isTimetableComponent = false;
     }
 
     public void setBatchList(List<BatchShow> batchList) {
         this.batchList = batchList;
         notifyDataSetChanged();
+    }
+
+    public void setTimetableComponent(boolean timetableComponent) {
+        isTimetableComponent = timetableComponent;
     }
 
     public void setDeleteCallbacks(DeleteCallbacks deleteCallbacks) {
@@ -82,6 +89,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
             PopupMenu theMenu = new PopupMenu(theContext, holder.moreButton);
             //anchor popup on the more button
             theMenu.inflate(R.menu.batch_popup);
+            Menu inflatedMenu = theMenu.getMenu();
 
             theMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.update_batch_name) {
@@ -95,11 +103,24 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
                     Intent navigationIntent = new Intent(theContext, AcademicAdminManageSingleBatch.class);
                     navigationIntent.putExtra("batchCode", batchAtPosition.getBatchCode());
                     theContext.startActivity(navigationIntent);
+                } else if (item.getItemId() == R.id.view_lectures_batch) {
+                    //open view lecture for the batch.
                 }
                 return true;
             });
+
+            if (isTimetableComponent) {
+                //remove everything else show lectures and manage batch
+                inflatedMenu.removeItem(R.id.update_batch_name);
+                inflatedMenu.removeItem(R.id.delete_batch);
+            } else {
+                inflatedMenu.removeItem(R.id.view_lectures_batch);
+            }
+
             theMenu.show();
         });
+
+
     }
 
     private void launchUpdateModal(BatchShow batchAtPosition) {

@@ -78,11 +78,6 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         //callback for the events raised when the user clicks on a nav menu item from the drawer.
-        if (theDrawer.isDrawerOpen(GravityCompat.START)) {
-            //drawer open, close
-            theDrawer.closeDrawer(GravityCompat.START);
-        }
-
         Intent navigationIntent = null;
         if (item.getItemId() == R.id.user_directory_menu) {
             //clicked user directory
@@ -90,6 +85,8 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
             startActivity(navigationIntent);
         } else if (item.getItemId() == R.id.timetable_management_menu) {
             //click timetable management
+            navigationIntent = new Intent(this, AcademicAdminTimeTableManagement.class);
+            startActivity(navigationIntent);
         } else if (item.getItemId() == R.id.module_management) {
             //clicked module management
             navigationIntent = new Intent(this, AcademicAdminModuleManagement.class);
@@ -111,6 +108,10 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
             startActivity(navigationIntent);
             finish();
             //clear token and logged in info and navigate to login.
+        }
+        if (theDrawer.isDrawerOpen(GravityCompat.START)) {
+            //drawer open, close
+            theDrawer.closeDrawer(GravityCompat.START);
         }
         return true;
     }

@@ -37,4 +37,6 @@ public interface BatchService {
     @PUT(BASE_ENDPOINT + "removeModuleFromBatch")
     Call<SuccessResponseAPI> deAssignModuleFromBatch(@Header("Authorization") String token, @Query("moduleId") int moduleId, @Query("batchCode") String batchCode);
 
+    @GET(BASE_ENDPOINT + "find/all/batchesWithLectures")
+    Call<List<BatchShow>> getAllBatchesWithLectures(@Header("Authorization") String token);
 }

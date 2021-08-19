@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/batch_timetables"
+        android:icon="@drawable/ic_batch"
+        android:title="Batch Timetables" />
+
+    <item
+        android:id="@+id/lecturer_timetables"
+        android:icon="@drawable/ic_lecturer"
+        android:title="Lecturer Timetables" />
+</menu>
