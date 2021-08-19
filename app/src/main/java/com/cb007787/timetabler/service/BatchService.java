@@ -14,6 +14,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface BatchService {
     String BASE_ENDPOINT = "batch/";
@@ -29,4 +30,11 @@ public interface BatchService {
 
     @POST(BASE_ENDPOINT + "create")
     Call<SuccessResponseAPI> createBatch(@Body BatchCreate theCreateObj, @Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "find/{batchCode}")
+    Call<BatchShow> getBatchInformation(@Header("Authorization") String token, @Path("batchCode") String batchCodeToLoad);
+
+    @PUT(BASE_ENDPOINT + "removeModuleFromBatch")
+    Call<SuccessResponseAPI> deAssignModuleFromBatch(@Header("Authorization") String token, @Query("moduleId") int moduleId, @Query("batchCode") String batchCode);
+
 }

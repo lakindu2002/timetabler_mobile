@@ -20,4 +20,9 @@
         android:icon="@drawable/ic_module"
         android:iconTint="@color/white"
         android:title="@string/view_modules_assigned" />
+
+    <item
+        android:id="@+id/de_assign_batch"
+        android:iconTint="@color/white"
+        android:title="De-Assign From Batch" />
 </menu>

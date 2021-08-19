@@ -52,12 +52,18 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
     private final String userRole;
     private final UserService userService;
     private DeleteCallbacks onDeleteCallbacks; //implementation will be provided by fragments calling adapter.
+    private boolean isBatchViewMode; //true when viewing students in batch.
 
     public UserRecycler(Context theContext, String userRole) {
         this.theContext = theContext;
         this.userRole = userRole;
         this.userService = APIConfigurer.getApiConfigurer().getUserService();
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        isBatchViewMode = false;
+    }
+
+    public void setBatchViewMode(boolean batchViewMode) {
+        isBatchViewMode = batchViewMode;
     }
 
     public void setUserList(List<User> userList) {
@@ -91,6 +97,11 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
 
         if (theUser.getTheBatch() != null) {
             holder.getBatchNameStudent().setText(String.format("Batch: %s", theUser.getTheBatch().getBatchCode()));
+        }
+
+        if (isBatchViewMode) {
+            holder.getRuleStudent().setVisibility(View.GONE);
+            holder.getBatchNameStudent().setVisibility(View.GONE);
         }
 
         //anchor the popup menu to the more button

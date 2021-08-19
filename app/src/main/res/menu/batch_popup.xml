@@ -8,4 +8,8 @@
         android:id="@+id/delete_batch"
         android:title="Delete Batch" />
 
+    <item
+        android:id="@+id/manage_batch"
+        android:title="Manage Modules/Students In Batch" />
+
 </menu>

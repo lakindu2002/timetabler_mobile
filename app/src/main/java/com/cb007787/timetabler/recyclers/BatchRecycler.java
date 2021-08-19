@@ -2,6 +2,7 @@ package com.cb007787.timetabler.recyclers;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminManageSingleBatch;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -88,6 +90,11 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
                 } else if (item.getItemId() == R.id.delete_batch) {
                     //launch delete batch
                     launchDeleteModal(batchAtPosition);
+                } else if (item.getItemId() == R.id.manage_batch) {
+                    //open manage students and modules panel for batch
+                    Intent navigationIntent = new Intent(theContext, AcademicAdminManageSingleBatch.class);
+                    navigationIntent.putExtra("batchCode", batchAtPosition.getBatchCode());
+                    theContext.startActivity(navigationIntent);
                 }
                 return true;
             });
