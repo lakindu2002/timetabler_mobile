@@ -45,4 +45,10 @@ public interface LectureService {
 
     @PUT(BASE_ENDPOINT + "reschedule/{lectureId}")
     Call<SuccessResponseAPI> rescheduleLecture(@Header("Authorization") String token, @Body LectureCreate createdLecture, @Path("lectureId") int lectureId);
+
+    @GET(BASE_ENDPOINT + "find/allLectures/{batchCode}")
+    Call<List<LectureShow>> loadLecturesPerBatch(@Path("batchCode") String batchCode, @Header("Authorization") String token);
+
+    @DELETE(BASE_ENDPOINT + "cancel/admin/{lectureId}")
+    Call<SuccessResponseAPI> cancelLectureForAdmin(@Header("Authorization") String token, @Path("lectureId") int lectureId, @Query("batchCode") String batchCode);
 }

@@ -36,6 +36,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Fragment to hold the batches with lectures scheduled and the lecturers.
+ */
 public class AcademicAdminLectureView extends Fragment {
 
     private BatchService batchService;

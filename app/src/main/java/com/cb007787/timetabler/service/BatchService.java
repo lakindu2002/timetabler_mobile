@@ -2,6 +2,7 @@ package com.cb007787.timetabler.service;
 
 import com.cb007787.timetabler.model.BatchCreate;
 import com.cb007787.timetabler.model.BatchShow;
+import com.cb007787.timetabler.model.LectureShow;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 
 import java.util.List;

@@ -27,8 +27,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,16 +42,23 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
     private List<LectureShow> theLectureList;
     private static String userRole;
     private final LectureService lectureService;
+    private SimpleDateFormat dateFormat;
+    private LectureCancelAdminListener lectureCancelAdminListener; //utilized by academic admin only.
 
     public LectureRecycler(Context theContext, List<LectureShow> theLectureList) {
         this.theContext = theContext;
         this.theLectureList = theLectureList;
         this.lectureService = APIConfigurer.getApiConfigurer().getLectureService();
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
     }
 
     public void setTheLectureList(List<LectureShow> theLectureList) {
         this.theLectureList = theLectureList;
         notifyDataSetChanged(); //trigger a notification to the adapter so that it updates the data respectively.
+    }
+
+    public void setLectureCancelAdminListener(LectureCancelAdminListener lectureCancelAdminListener) {
+        this.lectureCancelAdminListener = lectureCancelAdminListener;
     }
 
     public static String getUserRole() {
@@ -80,6 +89,10 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             classroomName = "Classroom Not Available";
         } else {
             classroomName = String.format("%s", theLectureForView.getTheClassroom().getClassroomName());
+        }
+
+        if (holder.getLectureDate().getVisibility() == View.VISIBLE) {
+            holder.getLectureDate().setText(dateFormat.format(theLectureForView.getLectureDate()));
         }
 
         if (holder.getDeleteButton().getVisibility() == View.VISIBLE) {
@@ -131,18 +144,26 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             //user click cancel, cancel the session from the database.
             //construct loading spinner to show action occurring
             ProgressDialog theDeleteProgress = new ProgressDialog(theContext);
-            theDeleteProgress.setCancelable(false);
-            theDeleteProgress.setMessage("Cancelling the lecture...");
-            theDeleteProgress.show();
+            if (userRole.equalsIgnoreCase("lecturer")) {
+                theDeleteProgress.setCancelable(false);
+                theDeleteProgress.setMessage("Cancelling the lecture...");
+                theDeleteProgress.show();
+            }
 
             //execute api call
-            deleteLectureFromDB(theDeleteProgress, holder, theLectureForView);
+            if (userRole.equalsIgnoreCase("lecturer")) {
+                deleteLectureFromDBOnLecturer(theDeleteProgress, holder, theLectureForView);
+            } else {
+                //admin
+                if (lectureCancelAdminListener != null) {
+                    lectureCancelAdminListener.onDeleteCalled(theLectureForView);
+                }
+            }
         });
-
         deleteDialog.show(); //show delete popup
     }
 
-    private void deleteLectureFromDB(ProgressDialog theDeleteProgress, View theView, LectureShow theLectureForView) {
+    private void deleteLectureFromDBOnLecturer(ProgressDialog theDeleteProgress, View theView, LectureShow theLectureForView) {
         Call<SuccessResponseAPI> deleteCall = lectureService.cancelLecture(SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME), theLectureForView.getLectureId());
         //hit the call asynchronously
         deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
@@ -158,8 +179,6 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
                         LecturerHome theHomeOfLecturer = (LecturerHome) theContext;
                         theHomeOfLecturer.getLecturesForSelectedDate(new Date()); //load today lectures for lecturer to refresh from DB
                         //fill lecturer home with today lectures
-                    } else {
-                        //fill academic admin
                     }
                     //general success message
                     Snackbar theSnackbar = Snackbar.make(theView, response.body().getMessage(), Snackbar.LENGTH_LONG);
@@ -233,6 +252,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         //used by staff only.
         private final ImageView deleteButton;
         private final ImageView editButton;
+        private TextView lectureDate; //used by academic admin only.
 
         public LectureHolder(@NonNull View itemView) {
             super(itemView);
@@ -242,6 +262,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             venue = itemView.findViewById(R.id.venue);
             deleteButton = itemView.findViewById(R.id.cancel_lecture);
             editButton = itemView.findViewById(R.id.edit_lecture);
+            lectureDate = itemView.findViewById(R.id.date);
 
             if (userRole.equalsIgnoreCase("student")) {
                 //for students, they can only view lecture.
@@ -251,6 +272,17 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
                 editButton.setVisibility(View.VISIBLE);
                 deleteButton.setVisibility(View.VISIBLE);
             }
+
+            if (userRole.equalsIgnoreCase("academic administrator")) {
+                //show date
+                lectureDate.setVisibility(View.VISIBLE);
+            } else {
+                lectureDate.setVisibility(View.GONE);
+            }
+        }
+
+        public TextView getLectureDate() {
+            return lectureDate;
         }
 
         public ImageView getEditButton() {
@@ -277,5 +309,9 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             return deleteButton;
         }
 
+    }
+
+    public interface LectureCancelAdminListener {
+        void onDeleteCalled(LectureShow theLecture);
     }
 }
