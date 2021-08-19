@@ -26,6 +26,7 @@ import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminManageSingleBatch;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminViewLecturesPerBatch;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -105,6 +106,9 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
                     theContext.startActivity(navigationIntent);
                 } else if (item.getItemId() == R.id.view_lectures_batch) {
                     //open view lecture for the batch.
+                    Intent navigationIntent = new Intent(theContext, AcademicAdminViewLecturesPerBatch.class);
+                    navigationIntent.putExtra("batchCode", batchAtPosition.getBatchCode());
+                    theContext.startActivity(navigationIntent);
                 }
                 return true;
             });
