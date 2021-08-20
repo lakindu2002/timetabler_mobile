@@ -10,10 +10,18 @@
 
     <item
         android:id="@+id/manage_batch"
-        android:title="Manage Modules/Students In Batch" />
+        android:title="Remove Modules/Students In Batch" />
 
     <item
         android:id="@+id/view_lectures_batch"
         android:title="View Lectures" />
+
+    <item
+        android:id="@+id/assign_students_batch"
+        android:title="Assign Students To Batch" />
+
+    <item
+        android:id="@+id/assign_modules_batch"
+        android:title="Assign Modules To Batch" />
 
 </menu>

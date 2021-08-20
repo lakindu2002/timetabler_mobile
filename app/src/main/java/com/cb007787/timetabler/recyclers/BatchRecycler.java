@@ -25,8 +25,10 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminAssignModulesStudentsToBatchDialog;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminManageSingleBatch;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminViewLecturesPerBatch;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdministratorBatchManagement;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -42,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * Utilized by academic admin to view all batches.
+ * Utilized by academic admin to view all batches and to view batches with lectures in it.
  */
 public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder> {
     private final Context theContext;
@@ -112,15 +114,33 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
                     Intent navigationIntent = new Intent(theContext, AcademicAdminViewLecturesPerBatch.class);
                     navigationIntent.putExtra("batchCode", batchAtPosition.getBatchCode());
                     theContext.startActivity(navigationIntent);
+                } else if (item.getItemId() == R.id.assign_modules_batch) {
+                    //assign modules to batch
+                    //admin on batch management to assign modules to batch.
+                    AcademicAdministratorBatchManagement loadedContext = (AcademicAdministratorBatchManagement) theContext;
+                    AcademicAdminAssignModulesStudentsToBatchDialog theDialog = AcademicAdminAssignModulesStudentsToBatchDialog.newInstance("assign-modules", batchAtPosition.getBatchCode());
+                    theDialog.show(loadedContext.getSupportFragmentManager(), "ASSIGN_MODULES");
+                    return true;
+                } else if (item.getItemId() == R.id.assign_students_batch) {
+                    //assign students to batch
+                    AcademicAdministratorBatchManagement loadedContext = (AcademicAdministratorBatchManagement) theContext;
+                    AcademicAdminAssignModulesStudentsToBatchDialog theDialog = AcademicAdminAssignModulesStudentsToBatchDialog.newInstance("assign-batches", batchAtPosition.getBatchCode());
+                    theDialog.show(loadedContext.getSupportFragmentManager(), "ASSIGN_BATCHES");
+                    return true;
                 }
                 return true;
             });
 
             if (isTimetableComponent) {
+                //recycler loaded inside timetable section (batches with lectures)
                 //remove everything else show lectures and manage batch
                 inflatedMenu.removeItem(R.id.update_batch_name);
                 inflatedMenu.removeItem(R.id.delete_batch);
+                inflatedMenu.removeItem(R.id.assign_students_batch);
+                inflatedMenu.removeItem(R.id.assign_modules_batch);
             } else {
+                //batch recycler inflated inside Batch Management,
+                //remove the view lectures button
                 inflatedMenu.removeItem(R.id.view_lectures_batch);
             }
 

@@ -3,8 +3,10 @@ package com.cb007787.timetabler.service;
 import com.cb007787.timetabler.model.BatchCreate;
 import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.LectureShow;
+import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -40,4 +42,13 @@ public interface BatchService {
 
     @GET(BASE_ENDPOINT + "find/all/batchesWithLectures")
     Call<List<BatchShow>> getAllBatchesWithLectures(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "find/modulesNotInBatch")
+    Call<List<Module>> getModulesNotInBatch(@Query("batchCode") String batchCode, @Header("Authorization") String token);
+
+    @PUT(BASE_ENDPOINT + "assignModulesToBatch")
+    Call<SuccessResponseAPI> assignModulesToBatch(@Body HashMap<String, String[]> moduleList, @Query("batchCode") String batchCode, @Header("Authorization") String token);
+
+    @PUT(BASE_ENDPOINT + "assignStudentsToBatch")
+    Call<SuccessResponseAPI> assignStudentsToBatch(@Body HashMap<String, String[]> studentList, @Query("batchCode") String batchCode, @Header("Authorization") String token);
 }

@@ -52,4 +52,7 @@ public interface UserService {
 
     @PUT(BASE_ENDPOINT + "deAssignStudent")
     Call<SuccessResponseAPI> deAssignStudentFromBatch(@Header("Authorization") String token, @Query("username") String username);
+
+    @GET(BASE_ENDPOINT + "find/studentsWithNoBatch")
+    Call<List<User>> getStudentsWithoutABatch(@Header("Authorization") String token);
 }
