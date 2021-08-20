@@ -28,13 +28,13 @@ import java.util.List;
  * Students =  batch modules
  * lecturer = their modules
  */
-public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleViewHolder> {
+public class ModuleRecyclerStudentLecturer extends RecyclerView.Adapter<ModuleRecyclerStudentLecturer.ModuleViewHolder> {
 
     private final List<Module> moduleList;
     private final Context theContext;
     private static AuthReturn loggedInUser;
 
-    public ModuleRecycler(List<Module> moduleList, Context theContext) {
+    public ModuleRecyclerStudentLecturer(List<Module> moduleList, Context theContext) {
         this.moduleList = moduleList;
         this.theContext = theContext;
         try {
@@ -54,7 +54,7 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ModuleRecycler.ModuleViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ModuleRecyclerStudentLecturer.ModuleViewHolder holder, int position) {
         //get module at position
         Module theModuleAtPosition = moduleList.get(position);
         //associate view holder with data from api

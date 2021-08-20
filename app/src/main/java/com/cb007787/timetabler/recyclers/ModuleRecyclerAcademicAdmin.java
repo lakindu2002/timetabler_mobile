@@ -116,6 +116,7 @@ public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecy
                 //lecturer is assigned, show only change lecturer
                 theInflatedMenuOnPopup.removeItem(R.id.assign_lecturer);
             } else {
+                //remove change lecturer button as no lecturer in module exists, can only assign
                 theInflatedMenuOnPopup.removeItem(R.id.change_lecturer_from_module);
             }
 

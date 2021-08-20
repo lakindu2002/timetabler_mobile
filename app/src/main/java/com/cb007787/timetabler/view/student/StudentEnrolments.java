@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.Module;
-import com.cb007787.timetabler.recyclers.ModuleRecycler;
+import com.cb007787.timetabler.recyclers.ModuleRecyclerStudentLecturer;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -142,7 +142,7 @@ public class StudentEnrolments extends AppCompatActivity {
     }
 
     private void showRecycler(List<Module> theModulesInStudentsBatch) {
-        ModuleRecycler moduleAdapter = new ModuleRecycler(theModulesInStudentsBatch, this);
+        ModuleRecyclerStudentLecturer moduleAdapter = new ModuleRecyclerStudentLecturer(theModulesInStudentsBatch, this);
         recyclerView.setAdapter(moduleAdapter);
         recyclerView.setLayoutManager(recyclerLayout);
     }

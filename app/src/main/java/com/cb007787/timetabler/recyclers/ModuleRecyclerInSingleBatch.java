@@ -16,7 +16,6 @@ import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
-import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -33,14 +32,14 @@ import retrofit2.Response;
  * Recycler view used to show the modules when the single back information is viewed.
  * contains layout configs for de-assigning modules from the batch.
  */
-public class ModuleRecyclerBatchOperation extends RecyclerView.Adapter<ModuleRecyclerBatchOperation.ViewHolder> {
+public class ModuleRecyclerInSingleBatch extends RecyclerView.Adapter<ModuleRecyclerInSingleBatch.ViewHolder> {
     private Context context;
     private List<Module> moduleList;
     private BatchService batchService;
     private final String batchCode;
     private DeleteCallbacks deleteCallbacks;
 
-    public ModuleRecyclerBatchOperation(Context context, String batchCode) {
+    public ModuleRecyclerInSingleBatch(Context context, String batchCode) {
         this.context = context;
         this.batchCode = batchCode;
         batchService = APIConfigurer.getApiConfigurer().getBatchService();
@@ -61,12 +60,12 @@ public class ModuleRecyclerBatchOperation extends RecyclerView.Adapter<ModuleRec
 
     @NonNull
     @Override
-    public ModuleRecyclerBatchOperation.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ModuleRecyclerInSingleBatch.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.batch_module_card, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ModuleRecyclerBatchOperation.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ModuleRecyclerInSingleBatch.ViewHolder holder, int position) {
         Module module = moduleList.get(position);
         holder.lecturerName.setText(String.format("%s %s", module.getTheLecturer().getFirstName(), module.getTheLecturer().getLastName()));
         holder.moduleName.setText(module.getModuleName());

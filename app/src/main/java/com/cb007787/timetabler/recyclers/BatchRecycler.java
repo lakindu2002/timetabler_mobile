@@ -50,7 +50,7 @@ public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder
     private DeleteCallbacks deleteCallbacks;
     private final BatchService batchService;
     private UpdateCallbacks updateCallback;
-    private boolean isTimetableComponent;
+    private boolean isTimetableComponent; //check to see if recycler inflated in Timetable management
 
     public BatchRecycler(Context theContext) {
         this.theContext = theContext;

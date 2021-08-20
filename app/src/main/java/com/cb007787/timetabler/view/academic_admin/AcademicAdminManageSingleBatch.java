@@ -21,15 +21,13 @@ import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
-import com.cb007787.timetabler.recyclers.ModuleRecyclerBatchOperation;
+import com.cb007787.timetabler.recyclers.ModuleRecyclerInSingleBatch;
 import com.cb007787.timetabler.recyclers.UserRecycler;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.BatchService;
-import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
@@ -63,7 +61,7 @@ public class AcademicAdminManageSingleBatch extends AppCompatActivity {
     private RecyclerView studentList;
     private UserRecycler studentAdapter;
     private RecyclerView moduleList;
-    private ModuleRecyclerBatchOperation moduleAdapter;
+    private ModuleRecyclerInSingleBatch moduleAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +126,7 @@ public class AcademicAdminManageSingleBatch extends AppCompatActivity {
         });
 
 
-        moduleAdapter = new ModuleRecyclerBatchOperation(this, batchCodeToLoad);
+        moduleAdapter = new ModuleRecyclerInSingleBatch(this, batchCodeToLoad);
         moduleAdapter.setModuleList(new ArrayList<>());
         moduleList.setAdapter(moduleAdapter);
         moduleList.setLayoutManager(new LinearLayoutManager(this));
