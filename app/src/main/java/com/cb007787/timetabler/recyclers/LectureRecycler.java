@@ -51,12 +51,18 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
     private final LectureService lectureService;
     private SimpleDateFormat dateFormat;
     private LectureCancelAdminListener lectureCancelAdminListener; //utilized by academic admin only.
+    private static boolean isAcademicAdminViewingLecturerTimetable = false; //if true, disable edit and delete buttons.
 
     public LectureRecycler(Context theContext, List<LectureShow> theLectureList) {
         this.theContext = theContext;
         this.theLectureList = theLectureList;
         this.lectureService = APIConfigurer.getApiConfigurer().getLectureService();
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        isAcademicAdminViewingLecturerTimetable = false;
+    }
+
+    public static void setIsAcademicAdminViewingLecturerTimetable(boolean isAcademicAdminViewingLecturerTimetable) {
+        LectureRecycler.isAcademicAdminViewingLecturerTimetable = isAcademicAdminViewingLecturerTimetable;
     }
 
     public void setTheLectureList(List<LectureShow> theLectureList) {
@@ -132,6 +138,18 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         } else {
             holder.getBatchLecturerView().setText(lecturerName); //show lecturer name since user role is not a lecturer.
         }
+
+        if (isAcademicAdminViewingLecturerTimetable) {
+            //viewing lecturer timetables, show batch names for lectures for the lecturer
+            StringBuilder batchList = new StringBuilder();
+            batchList.append("Batches: ");
+
+            for (BatchShow eachBatch : theLectureForView.getBatchesLectureConducedTo()) {
+                batchList.append(String.format("%s, ", eachBatch.getBatchCode()));
+            }
+            holder.getBatchLecturerView().setText(batchList.toString());
+        }
+
         //assign the remaining module, time, venue to the view.
         holder.getModuleName().setText(theLectureForView.getTheModule().getModuleName());
         holder.getTimeDuration().setText(String.format("%s - %s", theLectureForView.getStartTime(), theLectureForView.getEndTime()));
@@ -146,6 +164,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         deleteDialog.setNegativeButton("Close", (dialog, which) -> {
             //user click close.
             //do nothing
+            dialog.cancel();
         });
         deleteDialog.setPositiveButton("Cancel Lecture", (dialog, which) -> {
             //user click cancel, cancel the session from the database.
@@ -155,14 +174,13 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
                 theDeleteProgress.setCancelable(false);
                 theDeleteProgress.setMessage("Cancelling the lecture...");
                 theDeleteProgress.show();
-            }
 
-            //execute api call
-            if (userRole.equalsIgnoreCase("lecturer")) {
+                //execute api call
                 deleteLectureFromDBOnLecturer(theDeleteProgress, holder, theLectureForView);
             } else {
                 //admin
                 if (lectureCancelAdminListener != null) {
+                    //call from within activity as batch code is required and is available in activity.
                     lectureCancelAdminListener.onDeleteCalled(theLectureForView);
                 }
             }
@@ -236,13 +254,19 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         }
         //show the dialog.
         updateLectureDialog.setActionListener(() -> {
+            //method "onSuccess" declared in UpdateLecture dialog is retrieving a custom implementation
+            //set an implementation for the custom action listen that will be declared in the UpdateLecture
             if (userRole.equalsIgnoreCase("lecturer")) {
                 //refresh lecturer section
                 LecturerHome theHomePageOfLecturer = (LecturerHome) theContext;
                 theHomePageOfLecturer.getLecturesForSelectedDate(new Date()); //load today lectures.
+            } else {
+                //academic admin edited, therefore, refresh the lectures per batch after success update.
+                ((AcademicAdminViewLecturesPerBatch) theContext).loadLecturesPerBatch();
             }
 
         });
+
         if (fragmentTransaction != null) {
             //prevent app crashes
             updateLectureDialog.show(fragmentTransaction, "updateLecture");
@@ -292,6 +316,12 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
                 lectureDate.setVisibility(View.VISIBLE);
             } else {
                 lectureDate.setVisibility(View.GONE);
+            }
+
+            if (isAcademicAdminViewingLecturerTimetable) {
+                //academic admin is viewing lecturer timetables.
+                deleteButton.setVisibility(View.GONE);
+                editButton.setVisibility(View.GONE);
             }
         }
 

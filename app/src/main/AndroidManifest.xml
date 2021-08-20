@@ -14,6 +14,10 @@
         android:theme="@style/Theme.EEACB007787Mobile"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".view.academic_admin.AcademicAdminViewLecturerTimetable"
+            android:parentActivityName=".view.academic_admin.AcademicAdminTimeTableManagement"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".view.academic_admin.AcademicAdminViewLecturesPerBatch"
             android:parentActivityName=".view.academic_admin.AcademicAdminTimeTableManagement"
             android:screenOrientation="portrait" />

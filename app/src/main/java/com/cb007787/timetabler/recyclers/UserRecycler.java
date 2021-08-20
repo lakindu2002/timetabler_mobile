@@ -32,6 +32,7 @@ import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.service.UserService;
 import com.cb007787.timetabler.view.academic_admin.AcademicAdminModuleManagement;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminViewLecturerTimetable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -57,6 +58,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
     private final UserService userService;
     private DeleteCallbacks onDeleteCallbacks; //implementation will be provided by fragments calling adapter.
     private boolean isBatchViewMode; //true when viewing students in batch, will disable certain popup menu functions.
+    private boolean inflatedInTimeTableComponent; //if true, enable view timetable button.
 
     public UserRecycler(Context theContext, String userRole) {
         this.theContext = theContext;
@@ -64,10 +66,15 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         this.userService = APIConfigurer.getApiConfigurer().getUserService();
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
         isBatchViewMode = false;
+        inflatedInTimeTableComponent = false;
     }
 
     public void setBatchViewMode(boolean batchViewMode) {
         isBatchViewMode = batchViewMode;
+    }
+
+    public void setInflatedInTimeTableComponent(boolean inflatedInTimeTableComponent) {
+        this.inflatedInTimeTableComponent = inflatedInTimeTableComponent;
     }
 
     public void setUserList(List<User> userList) {
@@ -127,6 +134,11 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
         }
 
+
+        if (!inflatedInTimeTableComponent) {
+            //inflated in the another place except the timetable section, disable view lectures
+            theInflatedMenu.removeItem(R.id.view_lectures_lecturer);
+        }
 
         String userRoleForTheDBUser = theUser.getUserRole().getRoleName(); //get user role retrieved from a list item
         if (userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
@@ -204,6 +216,12 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
                 return true;
             } else if (item.getItemId() == R.id.de_assign_batch) {
                 showDeAssignConfirmation(theUser.getUsername());
+                return true;
+            } else if (item.getItemId() == R.id.view_lectures_lecturer) {
+                //navigate to lecturer view timetable
+                Intent navigationIntent = new Intent(theContext, AcademicAdminViewLecturerTimetable.class);
+                navigationIntent.putExtra("lecturerUsername", theUser.getUsername());
+                theContext.startActivity(navigationIntent);
                 return true;
             } else {
                 return false;

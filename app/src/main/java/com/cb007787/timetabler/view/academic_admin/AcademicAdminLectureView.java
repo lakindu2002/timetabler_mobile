@@ -25,6 +25,7 @@ import com.cb007787.timetabler.service.BatchService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -45,11 +46,13 @@ public class AcademicAdminLectureView extends Fragment {
     private UserService userService;
     private String token;
     private String loadType;
+    private AuthReturn loggedInUser;
 
     private LinearProgressIndicator progressIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private BatchRecycler batchAdapter;
+    private UserRecycler lecturerAdapter;
 
     public AcademicAdminLectureView() {
     }
@@ -78,12 +81,18 @@ public class AcademicAdminLectureView extends Fragment {
         progressIndicator = inflatedView.findViewById(R.id.progress_bar);
         swipeRefreshLayout = inflatedView.findViewById(R.id.swiper);
         recyclerView = inflatedView.findViewById(R.id.recycler);
+        try {
+            loggedInUser = SharedPreferenceService.getLoggedInUser(requireContext(), PreferenceInformation.PREFERENCE_NAME);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
         swipeRefreshLayout.setOnRefreshListener(this::loadData);
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         batchAdapter = new BatchRecycler(requireContext());
+        lecturerAdapter = new UserRecycler(requireContext(), loggedInUser.getRole());
 
 
         //default load type to batch.
@@ -105,6 +114,9 @@ public class AcademicAdminLectureView extends Fragment {
             loadBatchesWithLectures();
         } else {
             //load all lectures
+            lecturerAdapter.setUserList(new ArrayList<>());
+            lecturerAdapter.setInflatedInTimeTableComponent(true);
+            recyclerView.setAdapter(lecturerAdapter);
             loadAllLecturers();
         }
     }
@@ -121,7 +133,7 @@ public class AcademicAdminLectureView extends Fragment {
                 }
 
                 if (response.isSuccessful()) {
-
+                    lecturerAdapter.setUserList(response.body());
                 } else {
                     try {
                         ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());

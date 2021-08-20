@@ -25,4 +25,8 @@
         android:id="@+id/de_assign_batch"
         android:iconTint="@color/white"
         android:title="De-Assign From Batch" />
+
+    <item
+        android:id="@+id/view_lectures_lecturer"
+        android:title="View Lectures" />
 </menu>

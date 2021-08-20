@@ -51,4 +51,7 @@ public interface LectureService {
 
     @DELETE(BASE_ENDPOINT + "cancel/admin/{lectureId}")
     Call<SuccessResponseAPI> cancelLectureForAdmin(@Header("Authorization") String token, @Path("lectureId") int lectureId, @Query("batchCode") String batchCode);
+
+    @GET(BASE_ENDPOINT + "find/lectures/lecturer/{lecturer}")
+    Call<List<LectureShow>> getLectureForLecturer(@Header("Authorization") String token, @Path("lecturer") String usernameOfLecturer);
 }
