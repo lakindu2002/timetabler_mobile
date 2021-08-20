@@ -38,6 +38,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Utilized by the academic admin in the "ModuleManagement Component"
+ */
 public class ModuleRecyclerAcademicAdmin extends RecyclerView.Adapter<ModuleRecyclerAcademicAdmin.ViewHolder> {
     private final Context theContext;
     private final ModuleService moduleService;

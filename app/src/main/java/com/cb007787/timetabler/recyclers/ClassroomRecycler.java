@@ -32,6 +32,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Utilized by system admin to view all the classrooms.
+ */
 public class ClassroomRecycler extends RecyclerView.Adapter<ClassroomRecycler.ClassroomViewHolder> {
     private final Context theContext;
     private List<Classroom> classroomList;

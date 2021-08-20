@@ -41,6 +41,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Utilized by academic admin to view all batches.
+ */
 public class BatchRecycler extends RecyclerView.Adapter<BatchRecycler.ViewHolder> {
     private final Context theContext;
     private List<BatchShow> batchList;

@@ -38,6 +38,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Utilized by academic admin for editing and deleting and viewing
+ * Utilized by student for viewing purposes
+ * Utilized by the lecturer for viewing and editing and deleting.
+ */
 public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.LectureHolder> {
 
     private final Context theContext;

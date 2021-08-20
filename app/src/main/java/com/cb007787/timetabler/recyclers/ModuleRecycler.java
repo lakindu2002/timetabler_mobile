@@ -23,6 +23,11 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
 
+/**
+ * Utilized by the student and lecturer to load the modules assigned to them.
+ * Students =  batch modules
+ * lecturer = their modules
+ */
 public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleViewHolder> {
 
     private final List<Module> moduleList;

@@ -46,6 +46,9 @@ import retrofit2.Response;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
+/**
+ * Loads the users on academic admin, system admin side and also loads users on single batch information.
+ */
 public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> {
     private final Context theContext;
     private List<User> userList;
@@ -53,7 +56,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
     private final String userRole;
     private final UserService userService;
     private DeleteCallbacks onDeleteCallbacks; //implementation will be provided by fragments calling adapter.
-    private boolean isBatchViewMode; //true when viewing students in batch.
+    private boolean isBatchViewMode; //true when viewing students in batch, will disable certain popup menu functions.
 
     public UserRecycler(Context theContext, String userRole) {
         this.theContext = theContext;
@@ -97,10 +100,13 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         holder.getMemberSince().setText(String.format("Member Since: %s", dateFormat.format(theUser.getMemberSince())));
 
         if (theUser.getTheBatch() != null) {
+            //if academic admin loads in the user directory.
             holder.getBatchNameStudent().setText(String.format("Batch: %s", theUser.getTheBatch().getBatchCode()));
         }
 
         if (isBatchViewMode) {
+            //if recycler called inside the single batch information page,
+            //hide the batch name section.
             holder.getRuleStudent().setVisibility(View.GONE);
             holder.getBatchNameStudent().setVisibility(View.GONE);
         }
@@ -122,13 +128,14 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         }
 
 
-        String userRoleForTheDBUser = theUser.getUserRole().getRoleName();
+        String userRoleForTheDBUser = theUser.getUserRole().getRoleName(); //get user role retrieved from a list item
         if (userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
-            //prevent deleting academic admin
+            //prevent deleting academic admin as academic admins cannot be deleted from the system.
             theInflatedMenu.removeItem(R.id.delete_click);
         }
 
         if (userRoleForTheDBUser.equalsIgnoreCase("student") || userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
+            //if student or academic admin being rendered on recycler view, cannot view modules assigned as only lecturers have modules
             theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
         }
 
@@ -141,6 +148,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
 
         if (!isBatchViewMode) {
             //if not viewing from batch, delete the de-assign button
+            //this is because to de-assign students from batch, you must be inside the single batch operation.
             theInflatedMenu.removeItem(R.id.de_assign_batch);
         }
 

@@ -29,6 +29,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Recycler view used to show the modules when the single back information is viewed.
+ * contains layout configs for de-assigning modules from the batch.
+ */
 public class ModuleRecyclerBatchOperation extends RecyclerView.Adapter<ModuleRecyclerBatchOperation.ViewHolder> {
     private Context context;
     private List<Module> moduleList;
