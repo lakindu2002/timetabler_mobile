@@ -9,4 +9,9 @@
         android:id="@+id/lecturer_timetables"
         android:icon="@drawable/ic_lecturer"
         android:title="Lecturer Timetables" />
+
+    <item
+        android:id="@+id/schedule_a_lecture"
+        android:icon="@drawable/ic_baseline_add_24"
+        android:title="Schedule a Lecture" />
 </menu>

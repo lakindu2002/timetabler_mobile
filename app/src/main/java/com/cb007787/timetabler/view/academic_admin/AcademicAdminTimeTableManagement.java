@@ -1,5 +1,6 @@
 package com.cb007787.timetabler.view.academic_admin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ public class AcademicAdminTimeTableManagement extends AppCompatActivity {
     private MaterialTextView timeTableType;
 
     private AcademicAdminLectureView academicAdminLectureView;
+    private boolean loadModuleForSchedule = false;
 
 
     @Override
@@ -45,15 +47,31 @@ public class AcademicAdminTimeTableManagement extends AppCompatActivity {
                 timeTableType.setText("Batches With Lectures");
                 //construct to show batches with lectures
                 academicAdminLectureView = AcademicAdminLectureView.newInstance("batch");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_holder, academicAdminLectureView).commit();
             } else if (item.getItemId() == R.id.lecturer_timetables) {
                 //lecturer timetables
                 timeTableType.setText("Lecturer Timetables");
                 //construct to show lecturer all lecturers to view timetables for.
                 academicAdminLectureView = AcademicAdminLectureView.newInstance("lecturer");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_holder, academicAdminLectureView).commit();
+            } else if (item.getItemId() == R.id.schedule_a_lecture) {
+                //academic admin clicked schedule lecture
+                timeTableType.setText("Modules To Schedule For");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_holder, AcademicAdminModulesWithLecturersAndAdmins.newInstance()).commit();
             }
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_holder, academicAdminLectureView).commit();
             return true;
         });
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            //check if academic admin has scheduled a lecture
+            //this is done by passing a boolean for "loadModulesForSchedule" in the ScheduleLecture activity in the common pacakage
+            //the is added inside the handleOnResponse method after lecture has been saved
+            if (intent.getBooleanExtra("loadModulesForSchedule", false)) {
+                //if loadModulesForSchedule is true, show lecture schedule helper
+                loadModuleForSchedule = intent.getBooleanExtra("loadModulesForSchedule", false);
+            }
+        }
     }
 
     private void getReferences() {
@@ -65,6 +83,10 @@ public class AcademicAdminTimeTableManagement extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        bottomNavigationView.setSelectedItemId(R.id.batch_timetables); //load batch timetables initially.
+        if (!loadModuleForSchedule) {
+            bottomNavigationView.setSelectedItemId(R.id.batch_timetables); //load batch timetables initially.
+        } else {
+            bottomNavigationView.setSelectedItemId(R.id.schedule_a_lecture); //load schedule modules.
+        }
     }
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:backgroundTint="@color/white"
+    android:padding="10dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/module_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Module Name"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <View
+            android:id="@+id/ruler"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_below="@id/module_name"
+            android:background="@color/background" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/lecturer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ruler"
+            android:paddingTop="5dp"
+            android:text="Lecturer: Lakindu Hewawasam"
+            android:textColor="@color/black" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/batches_enrolled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lecturer_name"
+            android:paddingTop="3dp"
+            android:text="Batches Enrolled: IF2131SENG, HF2131SSENG"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/schedule_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:layout_below="@id/batches_enrolled"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="true"
+            android:backgroundTint="@color/btn_primary"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/schedule_a_lecture"
+            android:textAllCaps="false" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

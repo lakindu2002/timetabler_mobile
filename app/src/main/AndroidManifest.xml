@@ -65,7 +65,7 @@
             android:name=".view.system_admin.SystemAdminUserManagement"
             android:parentActivityName=".view.system_admin.SystemAdminHome"
             android:screenOrientation="portrait" />
-        <activity android:name=".view.lecturer.ScheduleLecture" />
+        <activity android:name=".view.common.shared.ScheduleLecture" />
         <activity
             android:name=".view.lecturer.LecturerModules"
             android:parentActivityName=".view.lecturer.LecturerHome"

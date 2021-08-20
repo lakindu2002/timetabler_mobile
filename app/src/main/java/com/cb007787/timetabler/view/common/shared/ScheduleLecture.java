@@ -1,4 +1,4 @@
-package com.cb007787.timetabler.view.lecturer;
+package com.cb007787.timetabler.view.common.shared;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.BatchShow;
 import com.cb007787.timetabler.model.Classroom;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
@@ -31,7 +32,9 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminTimeTableManagement;
 import com.cb007787.timetabler.view.lecturer.LecturerModules;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -68,6 +71,7 @@ public class ScheduleLecture extends AppCompatActivity {
 
     private int moduleIdPassedFromIntent;
     private String token;
+    private AuthReturn loggedInUser;
     private List<Classroom> loadedClassrooms;
     private Module loadedModule;
     private String selectedDateInUi;//to be formatted in "yyyy-mm-dd"
@@ -110,7 +114,11 @@ public class ScheduleLecture extends AppCompatActivity {
 
         SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
         token = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
-
+        try {
+            loggedInUser = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         Intent intent = getIntent();
         if (intent != null) {
             this.moduleIdPassedFromIntent = intent.getIntExtra("theModuleId", 0);
@@ -426,7 +434,15 @@ public class ScheduleLecture extends AppCompatActivity {
             //lecture created successfully
             Toast.makeText(getApplicationContext(), response.body().getMessage(), Toast.LENGTH_LONG).show();
             //navigate to lecturer modules
-            startActivity(new Intent(this, LecturerModules.class));
+            if (loggedInUser.getRole().equalsIgnoreCase("lecturer")) {
+                //navigate to lecturer home as lecturer scheduled
+                startActivity(new Intent(this, LecturerModules.class));
+            } else {
+                //navigate to academic admin schedule section
+                Intent navigationIntent = new Intent(this, AcademicAdminTimeTableManagement.class);
+                navigationIntent.putExtra("loadModulesForSchedule", true);
+                startActivity(navigationIntent);
+            }
             finish(); //remove activity from back trace so that when user clicks back, it doesn't navigate to this
         } else {
             try {

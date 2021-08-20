@@ -45,4 +45,7 @@ public interface ModuleService {
 
     @PUT(BASE_ENDPOINT + "reAssignLecturer")
     Call<SuccessResponseAPI> reAssignLecturerInModule(@Body Module theModule, @Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "get/modulesWithLecturersAndAssignedToBatch")
+    Call<List<Module>> getAllModulesWithBatchesAndLecturers(@Header("Authorization") String token);
 }
