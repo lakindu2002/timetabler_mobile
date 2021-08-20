@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
@@ -21,8 +22,9 @@ import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminViewLecturesPerBatch;
 import com.cb007787.timetabler.view.lecturer.LecturerHome;
-import com.cb007787.timetabler.view.lecturer.UpdateLecture;
+import com.cb007787.timetabler.view.common.shared.UpdateLecture;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -222,8 +224,10 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             //lecturer clicked edit
             LecturerHome theHomePageOfLecturer = (LecturerHome) theContext;
             fragmentTransaction = theHomePageOfLecturer.getSupportFragmentManager().beginTransaction();
-        } else {
+        } else if (userRole.equalsIgnoreCase("academic administrator")) {
             //academic admin clicked the edit.
+            //lectures cannot be cancelled or edited when academic admin views the lecturer timetable.
+            fragmentTransaction = ((AcademicAdminViewLecturesPerBatch) theContext).getSupportFragmentManager().beginTransaction();
         }
         //show the dialog.
         updateLectureDialog.setActionListener(() -> {
@@ -234,7 +238,12 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             }
 
         });
-        updateLectureDialog.show(fragmentTransaction, "updateLecture");
+        if (fragmentTransaction != null) {
+            //prevent app crashes
+            updateLectureDialog.show(fragmentTransaction, "updateLecture");
+        } else {
+            Toast.makeText(theContext, "No Valid Fragment Transaction To Launch Re-Schedule Page", Toast.LENGTH_LONG).show();
+        }
     }
 
 
