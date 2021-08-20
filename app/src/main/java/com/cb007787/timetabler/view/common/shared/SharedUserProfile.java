@@ -43,6 +43,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Used by all users to view profile info. Allows updating for all except system admin
+ */
 public class SharedUserProfile extends AppCompatActivity {
 
     private Toolbar toolbar;

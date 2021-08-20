@@ -61,6 +61,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Used by academic admin and lecturer to schedule a lecture
+ */
 public class ScheduleLecture extends AppCompatActivity {
 
     private int moduleIdPassedFromIntent;
