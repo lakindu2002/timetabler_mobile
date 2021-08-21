@@ -2,8 +2,6 @@ package com.cb007787.timetabler.recyclers;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,43 +16,62 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.BatchShow;
-import com.cb007787.timetabler.model.Classroom;
 import com.cb007787.timetabler.model.LectureShow;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
-import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.LectureService;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminViewLecturesPerBatch;
 import com.cb007787.timetabler.view.lecturer.LecturerHome;
-import com.cb007787.timetabler.view.lecturer.UpdateLecture;
+import com.cb007787.timetabler.view.common.shared.UpdateLecture;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Utilized by academic admin for editing and deleting and viewing
+ * Utilized by student for viewing purposes
+ * Utilized by the lecturer for viewing and editing and deleting.
+ */
 public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.LectureHolder> {
 
     private final Context theContext;
     private List<LectureShow> theLectureList;
     private static String userRole;
-    private LectureService lectureService;
+    private final LectureService lectureService;
+    private SimpleDateFormat dateFormat;
+    private LectureCancelAdminListener lectureCancelAdminListener; //utilized by academic admin only.
+    private static boolean isAcademicAdminViewingLecturerTimetable = false; //if true, disable edit and delete buttons.
 
     public LectureRecycler(Context theContext, List<LectureShow> theLectureList) {
         this.theContext = theContext;
         this.theLectureList = theLectureList;
         this.lectureService = APIConfigurer.getApiConfigurer().getLectureService();
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        isAcademicAdminViewingLecturerTimetable = false;
+    }
+
+    public static void setIsAcademicAdminViewingLecturerTimetable(boolean isAcademicAdminViewingLecturerTimetable) {
+        LectureRecycler.isAcademicAdminViewingLecturerTimetable = isAcademicAdminViewingLecturerTimetable;
     }
 
     public void setTheLectureList(List<LectureShow> theLectureList) {
         this.theLectureList = theLectureList;
         notifyDataSetChanged(); //trigger a notification to the adapter so that it updates the data respectively.
+    }
+
+    public void setLectureCancelAdminListener(LectureCancelAdminListener lectureCancelAdminListener) {
+        this.lectureCancelAdminListener = lectureCancelAdminListener;
     }
 
     public static String getUserRole() {
@@ -79,12 +96,16 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         //bind data of each lecture to each view associated to each holder.
         LectureShow theLectureForView = theLectureList.get(position);
         String lecturerName = String.format("%s %s", theLectureForView.getTheModule().getTheLecturer().getFirstName(), theLectureForView.getTheModule().getTheLecturer().getLastName());
-        String classroomName = "";
+        String classroomName;
 
         if (theLectureForView.getTheClassroom() == null) {
             classroomName = "Classroom Not Available";
         } else {
             classroomName = String.format("%s", theLectureForView.getTheClassroom().getClassroomName());
+        }
+
+        if (holder.getLectureDate().getVisibility() == View.VISIBLE) {
+            holder.getLectureDate().setText(dateFormat.format(theLectureForView.getLectureDate()));
         }
 
         if (holder.getDeleteButton().getVisibility() == View.VISIBLE) {
@@ -117,6 +138,18 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         } else {
             holder.getBatchLecturerView().setText(lecturerName); //show lecturer name since user role is not a lecturer.
         }
+
+        if (isAcademicAdminViewingLecturerTimetable) {
+            //viewing lecturer timetables, show batch names for lectures for the lecturer
+            StringBuilder batchList = new StringBuilder();
+            batchList.append("Batches: ");
+
+            for (BatchShow eachBatch : theLectureForView.getBatchesLectureConducedTo()) {
+                batchList.append(String.format("%s, ", eachBatch.getBatchCode()));
+            }
+            holder.getBatchLecturerView().setText(batchList.toString());
+        }
+
         //assign the remaining module, time, venue to the view.
         holder.getModuleName().setText(theLectureForView.getTheModule().getModuleName());
         holder.getTimeDuration().setText(String.format("%s - %s", theLectureForView.getStartTime(), theLectureForView.getEndTime()));
@@ -131,23 +164,31 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         deleteDialog.setNegativeButton("Close", (dialog, which) -> {
             //user click close.
             //do nothing
+            dialog.cancel();
         });
         deleteDialog.setPositiveButton("Cancel Lecture", (dialog, which) -> {
             //user click cancel, cancel the session from the database.
-            //construct loading spinner to show action occuring
+            //construct loading spinner to show action occurring
             ProgressDialog theDeleteProgress = new ProgressDialog(theContext);
-            theDeleteProgress.setCancelable(false);
-            theDeleteProgress.setMessage("Cancelling the lecture...");
-            theDeleteProgress.show();
+            if (userRole.equalsIgnoreCase("lecturer")) {
+                theDeleteProgress.setCancelable(false);
+                theDeleteProgress.setMessage("Cancelling the lecture...");
+                theDeleteProgress.show();
 
-            //execute api call
-            deleteLectureFromDB(theDeleteProgress, holder, theLectureForView);
+                //execute api call
+                deleteLectureFromDBOnLecturer(theDeleteProgress, holder, theLectureForView);
+            } else {
+                //admin
+                if (lectureCancelAdminListener != null) {
+                    //call from within activity as batch code is required and is available in activity.
+                    lectureCancelAdminListener.onDeleteCalled(theLectureForView);
+                }
+            }
         });
-
         deleteDialog.show(); //show delete popup
     }
 
-    private void deleteLectureFromDB(ProgressDialog theDeleteProgress, View theView, LectureShow theLectureForView) {
+    private void deleteLectureFromDBOnLecturer(ProgressDialog theDeleteProgress, View theView, LectureShow theLectureForView) {
         Call<SuccessResponseAPI> deleteCall = lectureService.cancelLecture(SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME), theLectureForView.getLectureId());
         //hit the call asynchronously
         deleteCall.enqueue(new Callback<SuccessResponseAPI>() {
@@ -163,8 +204,6 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
                         LecturerHome theHomeOfLecturer = (LecturerHome) theContext;
                         theHomeOfLecturer.getLecturesForSelectedDate(new Date()); //load today lectures for lecturer to refresh from DB
                         //fill lecturer home with today lectures
-                    } else {
-                        //fill academic admin
                     }
                     //general success message
                     Snackbar theSnackbar = Snackbar.make(theView, response.body().getMessage(), Snackbar.LENGTH_LONG);
@@ -208,19 +247,32 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             //lecturer clicked edit
             LecturerHome theHomePageOfLecturer = (LecturerHome) theContext;
             fragmentTransaction = theHomePageOfLecturer.getSupportFragmentManager().beginTransaction();
-        } else {
+        } else if (userRole.equalsIgnoreCase("academic administrator")) {
             //academic admin clicked the edit.
+            //lectures cannot be cancelled or edited when academic admin views the lecturer timetable.
+            fragmentTransaction = ((AcademicAdminViewLecturesPerBatch) theContext).getSupportFragmentManager().beginTransaction();
         }
         //show the dialog.
         updateLectureDialog.setActionListener(() -> {
+            //method "onSuccess" declared in UpdateLecture dialog is retrieving a custom implementation
+            //set an implementation for the custom action listen that will be declared in the UpdateLecture
             if (userRole.equalsIgnoreCase("lecturer")) {
                 //refresh lecturer section
                 LecturerHome theHomePageOfLecturer = (LecturerHome) theContext;
                 theHomePageOfLecturer.getLecturesForSelectedDate(new Date()); //load today lectures.
+            } else {
+                //academic admin edited, therefore, refresh the lectures per batch after success update.
+                ((AcademicAdminViewLecturesPerBatch) theContext).loadLecturesPerBatch();
             }
 
         });
-        updateLectureDialog.show(fragmentTransaction, "updateLecture");
+
+        if (fragmentTransaction != null) {
+            //prevent app crashes
+            updateLectureDialog.show(fragmentTransaction, "updateLecture");
+        } else {
+            Toast.makeText(theContext, "No Valid Fragment Transaction To Launch Re-Schedule Page", Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -236,8 +288,9 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
         private final TextView timeDuration;
         private final TextView venue;
         //used by staff only.
-        private ImageView deleteButton;
-        private ImageView editButton;
+        private final ImageView deleteButton;
+        private final ImageView editButton;
+        private TextView lectureDate; //used by academic admin only.
 
         public LectureHolder(@NonNull View itemView) {
             super(itemView);
@@ -247,6 +300,7 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             venue = itemView.findViewById(R.id.venue);
             deleteButton = itemView.findViewById(R.id.cancel_lecture);
             editButton = itemView.findViewById(R.id.edit_lecture);
+            lectureDate = itemView.findViewById(R.id.date);
 
             if (userRole.equalsIgnoreCase("student")) {
                 //for students, they can only view lecture.
@@ -256,6 +310,23 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
                 editButton.setVisibility(View.VISIBLE);
                 deleteButton.setVisibility(View.VISIBLE);
             }
+
+            if (userRole.equalsIgnoreCase("academic administrator")) {
+                //show date
+                lectureDate.setVisibility(View.VISIBLE);
+            } else {
+                lectureDate.setVisibility(View.GONE);
+            }
+
+            if (isAcademicAdminViewingLecturerTimetable) {
+                //academic admin is viewing lecturer timetables.
+                deleteButton.setVisibility(View.GONE);
+                editButton.setVisibility(View.GONE);
+            }
+        }
+
+        public TextView getLectureDate() {
+            return lectureDate;
         }
 
         public ImageView getEditButton() {
@@ -282,8 +353,9 @@ public class LectureRecycler extends RecyclerView.Adapter<LectureRecycler.Lectur
             return deleteButton;
         }
 
-        public void setDeleteButton(ImageView deleteButton) {
-            this.deleteButton = deleteButton;
-        }
+    }
+
+    public interface LectureCancelAdminListener {
+        void onDeleteCalled(LectureShow theLecture);
     }
 }

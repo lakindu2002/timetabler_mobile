@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.view.common.shared.UserLoadingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SystemAdminUserManagement extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +32,8 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
         MenuItem searchMenuItem = menu.findItem(R.id.search); //the search menu item will be instantiated as a SearchView as defined in menu file
         SearchView actionView = (SearchView) searchMenuItem.getActionView(); //retrieve the underlying SearchView for the menu item.
         actionView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set background to white.
+        actionView.setQueryHint("Provide Username");
+
         actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

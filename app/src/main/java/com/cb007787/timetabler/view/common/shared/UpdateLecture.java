@@ -1,4 +1,4 @@
-package com.cb007787.timetabler.view.lecturer;
+package com.cb007787.timetabler.view.common.shared;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -54,6 +54,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Utilized by academic admin and lecturer to re-schedule a lecture.
+ */
 public class UpdateLecture extends DialogFragment {
 
     private int lectureIdToEdit;

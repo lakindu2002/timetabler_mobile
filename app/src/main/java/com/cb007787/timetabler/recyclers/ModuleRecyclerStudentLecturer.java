@@ -16,20 +16,25 @@ import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
-import com.cb007787.timetabler.view.lecturer.ScheduleLecture;
+import com.cb007787.timetabler.view.common.shared.ScheduleLecture;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
 
-public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleViewHolder> {
+/**
+ * Utilized by the student and lecturer to load the modules assigned to them.
+ * Students =  batch modules
+ * lecturer = their modules
+ */
+public class ModuleRecyclerStudentLecturer extends RecyclerView.Adapter<ModuleRecyclerStudentLecturer.ModuleViewHolder> {
 
     private final List<Module> moduleList;
     private final Context theContext;
     private static AuthReturn loggedInUser;
 
-    public ModuleRecycler(List<Module> moduleList, Context theContext) {
+    public ModuleRecyclerStudentLecturer(List<Module> moduleList, Context theContext) {
         this.moduleList = moduleList;
         this.theContext = theContext;
         try {
@@ -49,7 +54,7 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ModuleRecycler.ModuleViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ModuleRecyclerStudentLecturer.ModuleViewHolder holder, int position) {
         //get module at position
         Module theModuleAtPosition = moduleList.get(position);
         //associate view holder with data from api
@@ -60,34 +65,28 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
         holder.getContactLearning().setText(String.format("%s Hours", theModuleAtPosition.getContactHours()));
 
         if (holder.getContactLecturerButton().getVisibility() == View.VISIBLE) {
-            holder.getContactLecturerButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent theEmailIntent = new Intent(Intent.ACTION_SEND); //email intent
-                    theEmailIntent.setType("text/plain");
-                    theEmailIntent.putExtra(Intent.EXTRA_EMAIL, theModuleAtPosition.getTheLecturer().getEmailAddress());
-                    theEmailIntent.putExtra(Intent.EXTRA_SUBJECT, "Contacting The Lecturer");
+            holder.getContactLecturerButton().setOnClickListener(v -> {
+                Intent theEmailIntent = new Intent(Intent.ACTION_SEND); //email intent
+                theEmailIntent.setType("text/plain");
+                theEmailIntent.putExtra(Intent.EXTRA_EMAIL, theModuleAtPosition.getTheLecturer().getEmailAddress());
+                theEmailIntent.putExtra(Intent.EXTRA_SUBJECT, "Contacting The Lecturer");
 
-                    //create chooser will open the popup required to select the app to launch the email
-                    theContext.startActivity(Intent.createChooser(theEmailIntent, "Contact The Lecturer For This Module"));
-                }
+                //create chooser will open the popup required to select the app to launch the email
+                theContext.startActivity(Intent.createChooser(theEmailIntent, "Contact The Lecturer For This Module"));
             });
         }
 
         if (holder.getScheduleLectureButton().getVisibility() == View.VISIBLE) {
-            holder.getScheduleLectureButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //method to handle click of schedule lecture button
-                    if (theModuleAtPosition.getTheBatchList().size() > 0) {
-                        Intent createModuleIntent = new Intent(theContext, ScheduleLecture.class);
-                        createModuleIntent.putExtra("theModuleId", theModuleAtPosition.getModuleId()); //put the module id as a string to intent so it can be accessed from next activity
-                        theContext.startActivity(createModuleIntent);
-                    } else {
-                        Snackbar theSnackbar = Snackbar.make(v, "This module has no batches enrolled to it. Therefore, you cannot schedule any lectures for it", Snackbar.LENGTH_LONG);
-                        theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_danger, null));
-                        theSnackbar.show();
-                    }
+            holder.getScheduleLectureButton().setOnClickListener(v -> {
+                //method to handle click of schedule lecture button
+                if (theModuleAtPosition.getTheBatchList().size() > 0) {
+                    Intent createModuleIntent = new Intent(theContext, ScheduleLecture.class);
+                    createModuleIntent.putExtra("theModuleId", theModuleAtPosition.getModuleId()); //put the module id as a string to intent so it can be accessed from next activity
+                    theContext.startActivity(createModuleIntent);
+                } else {
+                    Snackbar theSnackbar = Snackbar.make(v, "This module has no batches enrolled to it. Therefore, you cannot schedule any lectures for it", Snackbar.LENGTH_LONG);
+                    theSnackbar.setBackgroundTint(theContext.getResources().getColor(R.color.btn_danger, null));
+                    theSnackbar.show();
                 }
             });
         }
@@ -102,14 +101,13 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
     public static class ModuleViewHolder extends RecyclerView.ViewHolder {
         //UI elements and everything for one module to be defined here.
 
-        private MaterialTextView moduleName;
-        private MaterialTextView taughtByLabel;
-        private MaterialTextView lecturerName;
-        private MaterialTextView creditCount;
-        private MaterialTextView independentHours;
-        private MaterialTextView contactLearning;
-        private Button contactLecturerButton; //used by student
-        private Button scheduleLectureButton; //used by lecturer
+        private final MaterialTextView moduleName;
+        private final MaterialTextView lecturerName;
+        private final MaterialTextView creditCount;
+        private final MaterialTextView independentHours;
+        private final MaterialTextView contactLearning;
+        private final Button contactLecturerButton; //used by student
+        private final Button scheduleLectureButton; //used by lecturer
 
         public ModuleViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -119,7 +117,7 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
             contactLearning = itemView.findViewById(R.id.contact_learning);
             moduleName = itemView.findViewById(R.id.module_title);
             contactLecturerButton = itemView.findViewById(R.id.contact_lecturer_button);
-            taughtByLabel = itemView.findViewById(R.id.taught_by_label);
+            MaterialTextView taughtByLabel = itemView.findViewById(R.id.taught_by_label);
             scheduleLectureButton = itemView.findViewById(R.id.confirm_lecture_button);
 
             if (loggedInUser.getRole().equalsIgnoreCase("lecturer")) {
@@ -142,48 +140,25 @@ public class ModuleRecycler extends RecyclerView.Adapter<ModuleRecycler.ModuleVi
             return contactLecturerButton;
         }
 
-        public void setContactLecturerButton(Button contactLecturerButton) {
-            this.contactLecturerButton = contactLecturerButton;
-        }
-
         public MaterialTextView getModuleName() {
             return moduleName;
-        }
-
-        public void setModuleName(MaterialTextView moduleName) {
-            this.moduleName = moduleName;
         }
 
         public MaterialTextView getLecturerName() {
             return lecturerName;
         }
 
-        public void setLecturerName(MaterialTextView lecturerName) {
-            this.lecturerName = lecturerName;
-        }
-
         public MaterialTextView getCreditCount() {
             return creditCount;
-        }
-
-        public void setCreditCount(MaterialTextView creditCount) {
-            this.creditCount = creditCount;
         }
 
         public MaterialTextView getIndependentHours() {
             return independentHours;
         }
 
-        public void setIndependentHours(MaterialTextView independentHours) {
-            this.independentHours = independentHours;
-        }
-
         public MaterialTextView getContactLearning() {
             return contactLearning;
         }
 
-        public void setContactLearning(MaterialTextView contactLearning) {
-            this.contactLearning = contactLearning;
-        }
     }
 }

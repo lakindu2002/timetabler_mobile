@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.Module;
-import com.cb007787.timetabler.recyclers.ModuleRecycler;
+import com.cb007787.timetabler.recyclers.ModuleRecyclerStudentLecturer;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.ModuleService;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -36,7 +36,7 @@ public class LecturerModules extends AppCompatActivity {
     private LinearProgressIndicator progressIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private ModuleRecycler moduleAdapter;
+    private ModuleRecyclerStudentLecturer moduleAdapter;
 
     private ModuleService moduleService;
     private String token;
@@ -111,7 +111,7 @@ public class LecturerModules extends AppCompatActivity {
 
     private void handleOnResponse(Response<List<Module>> response) {
         if (response.isSuccessful()) {
-            moduleAdapter = new ModuleRecycler(response.body(), this);
+            moduleAdapter = new ModuleRecyclerStudentLecturer(response.body(), this);
             recyclerView.setAdapter(moduleAdapter);
             if (response.body().size() == 0) {
                 constructError(

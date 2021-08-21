@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".view.system_admin.UserLoadingFragment">
+    tools:context=".view.common.shared.UserLoadingFragment">
 
     <include
         android:id="@+id/loading"

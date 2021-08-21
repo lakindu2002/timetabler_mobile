@@ -2,6 +2,7 @@ package com.cb007787.timetabler.recyclers;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,51 +10,71 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
+import androidx.appcompat.widget.ThemeUtils;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.model.Module;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.User;
 import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.cb007787.timetabler.service.UserService;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminModuleManagement;
+import com.cb007787.timetabler.view.academic_admin.AcademicAdminViewLecturerTimetable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 
+/**
+ * Loads the users on academic admin, system admin side and also loads users on single batch information.
+ */
 public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> {
     private final Context theContext;
     private List<User> userList;
-    private SimpleDateFormat dateFormat;
-    private String userRole;
-    private UserService userService;
+    private final SimpleDateFormat dateFormat;
+    private final String userRole;
+    private final UserService userService;
     private DeleteCallbacks onDeleteCallbacks; //implementation will be provided by fragments calling adapter.
+    private boolean isBatchViewMode; //true when viewing students in batch, will disable certain popup menu functions.
+    private boolean inflatedInTimeTableComponent; //if true, enable view timetable button.
 
     public UserRecycler(Context theContext, String userRole) {
         this.theContext = theContext;
         this.userRole = userRole;
         this.userService = APIConfigurer.getApiConfigurer().getUserService();
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        isBatchViewMode = false;
+        inflatedInTimeTableComponent = false;
+    }
+
+    public void setBatchViewMode(boolean batchViewMode) {
+        isBatchViewMode = batchViewMode;
+    }
+
+    public void setInflatedInTimeTableComponent(boolean inflatedInTimeTableComponent) {
+        this.inflatedInTimeTableComponent = inflatedInTimeTableComponent;
     }
 
     public void setUserList(List<User> userList) {
@@ -85,19 +106,62 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         holder.getDateOfBirth().setText(dateFormat.format(theUser.getDateOfBirth()));
         holder.getMemberSince().setText(String.format("Member Since: %s", dateFormat.format(theUser.getMemberSince())));
 
+        if (theUser.getTheBatch() != null) {
+            //if academic admin loads in the user directory.
+            holder.getBatchNameStudent().setText(String.format("Batch: %s", theUser.getTheBatch().getBatchCode()));
+        }
+
+        if (isBatchViewMode) {
+            //if recycler called inside the single batch information page,
+            //hide the batch name section.
+            holder.getRuleStudent().setVisibility(View.GONE);
+            holder.getBatchNameStudent().setVisibility(View.GONE);
+        }
+
         //anchor the popup menu to the more button
         PopupMenu theMoreOption = new PopupMenu(theContext, holder.getMore());
         theMoreOption.inflate(R.menu.user_popup); //inflate the menu resource file for the popup
 
         Menu theInflatedMenu = theMoreOption.getMenu();
+
         //disable certain actions on the menu based on requirements done below.
         if (userRole.equalsIgnoreCase("academic administrator")) {
             //do not show the delete button to the academic administrator as they cannot delete the user information
             theInflatedMenu.removeItem(R.id.delete_click);
+        } else {
+            //system admin opens the recycler
+            //system admin cannot view modules assigned
+            theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
         }
-        if (theUser.getUserRole().getRoleName().equalsIgnoreCase("academic administrator")) {
-            //prevent deleting academic admin
+
+
+        if (!inflatedInTimeTableComponent) {
+            //inflated in the another place except the timetable section, disable view lectures
+            theInflatedMenu.removeItem(R.id.view_lectures_lecturer);
+        }
+
+        String userRoleForTheDBUser = theUser.getUserRole().getRoleName(); //get user role retrieved from a list item
+        if (userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
+            //prevent deleting academic admin as academic admins cannot be deleted from the system.
             theInflatedMenu.removeItem(R.id.delete_click);
+        }
+
+        if (userRoleForTheDBUser.equalsIgnoreCase("student") || userRoleForTheDBUser.equalsIgnoreCase("academic administrator")) {
+            //if student or academic admin being rendered on recycler view, cannot view modules assigned as only lecturers have modules
+            theInflatedMenu.removeItem(R.id.view_modules_assigned_lecturer);
+        }
+
+        //if academic admin launches recycler on user view, show batch
+        if (userRole.equalsIgnoreCase("system administrator") || userRoleForTheDBUser.equalsIgnoreCase("lecturer")) {
+            //hide if opened by system admin or rendering user is a lecturer.
+            holder.getRuleStudent().setVisibility(View.GONE);
+            holder.getBatchNameStudent().setVisibility(View.GONE);
+        }
+
+        if (!isBatchViewMode) {
+            //if not viewing from batch, delete the de-assign button
+            //this is because to de-assign students from batch, you must be inside the single batch operation.
+            theInflatedMenu.removeItem(R.id.de_assign_batch);
         }
 
         theMoreOption.setOnMenuItemClickListener(item -> {
@@ -119,8 +183,9 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             } else if (item.getItemId() == R.id.delete_click) {
                 //user click delete
                 //construct confirmation dialog
-                AlertDialog theDeleteDialog = new MaterialAlertDialogBuilder(theContext)
-                        .setTitle("Would you like to delete this user?")
+                new MaterialAlertDialogBuilder(theContext)
+                        .setTitle("Delete User")
+                        .setMessage("Would you like to delete this user?")
                         .setPositiveButton("Delete", (dialog, which) -> {
                             //user click delete.
                             deleteUserInDb(theUser);
@@ -139,6 +204,25 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
                 theEmailIntent.putExtra(Intent.EXTRA_EMAIL, theUser.getEmailAddress());
                 theContext.startActivity(Intent.createChooser(theEmailIntent, "Contact User"));
                 return true;
+            } else if (item.getItemId() == R.id.view_modules_assigned_lecturer) {
+                //academic admin clicks "View Assigned Modules For Lecturer"
+
+                if (userRoleForTheDBUser.equalsIgnoreCase("lecturer")) {
+                    //view modules on a dialog.
+                    showModulesLecturerHasInPopUpDialog(theUser.getTheModule());
+                } else {
+                    Toast.makeText(theContext, "User is not a lecturer", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            } else if (item.getItemId() == R.id.de_assign_batch) {
+                showDeAssignConfirmation(theUser.getUsername());
+                return true;
+            } else if (item.getItemId() == R.id.view_lectures_lecturer) {
+                //navigate to lecturer view timetable
+                Intent navigationIntent = new Intent(theContext, AcademicAdminViewLecturerTimetable.class);
+                navigationIntent.putExtra("lecturerUsername", theUser.getUsername());
+                theContext.startActivity(navigationIntent);
+                return true;
             } else {
                 return false;
             }
@@ -148,6 +232,45 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             //user click show more, open the popup menu
             theMoreOption.show();
         });
+    }
+
+    private void showDeAssignConfirmation(String username) {
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("De-Assign Student")
+                .setMessage("Are you sure you want to de-assign student from batch")
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+                .setPositiveButton("De-Assign Student", (dialog, which) -> {
+                    //remove batch from student in api (De-assign)
+                    onDeleteCallbacks.onDeleteCalled();
+                    Call<SuccessResponseAPI> deAssignCall = userService.deAssignStudentFromBatch(
+                            SharedPreferenceService.getToken(theContext, PreferenceInformation.PREFERENCE_NAME),
+                            username
+                    );
+
+                    deAssignCall.enqueue(new Callback<SuccessResponseAPI>() {
+                        @Override
+                        public void onResponse(@NonNull Call<SuccessResponseAPI> call, @NonNull Response<SuccessResponseAPI> response) {
+                            if (response.isSuccessful()) {
+                                //de-assigned successfully
+                                onDeleteCallbacks.onDeleteSuccessResponse(response.body());
+                            } else {
+                                try {
+                                    ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                                    onDeleteCallbacks.onDeleteFailure(theErrorReturned.getErrorMessage());
+                                } catch (IOException e) {
+                                    onDeleteCallbacks.onDeleteFailure("We ran into an error while de-assigning the student from the batch");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<SuccessResponseAPI> call, @NonNull Throwable t) {
+                            onDeleteCallbacks.onDeleteFailure("We ran into an error while de-assigning the student from the batch");
+                        }
+                    });
+
+                })
+                .show();
     }
 
     private void deleteUserInDb(User theUser) {
@@ -180,6 +303,31 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         });
     }
 
+    private void showModulesLecturerHasInPopUpDialog(List<Module> theModules) {
+        //re-use array adapter layout.
+        if (theModules.size() == 0) {
+            //do not launch modal
+            Toast.makeText(theContext, "This lecturer has no modules assigned yet", Toast.LENGTH_LONG).show();
+            return;
+        }
+        ArrayAdapter<String> moduleList = new ArrayAdapter<String>(theContext, R.layout.module_view_user_adapter);
+
+        for (Module eachModule : theModules) {
+            moduleList.add(eachModule.getModuleName());
+        }
+
+        new MaterialAlertDialogBuilder(theContext)
+                .setTitle("The Modules Assigned")
+                .setPositiveButton("Okay", (dialog, which) -> {
+                    dialog.cancel();
+                })
+                .setAdapter(moduleList, (dialog, which) -> {
+                    //when item is clicked, navigate to module management component
+                    theContext.startActivity(new Intent(theContext, AcademicAdminModuleManagement.class));
+                })
+                .show();
+    }
+
     @Override
     public int getItemCount() {
         return userList.size();
@@ -195,6 +343,9 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
         private final MaterialTextView dateOfBirth;
         private final MaterialTextView memberSince;
 
+        private final MaterialTextView batchNameStudent;
+        private final View ruleStudent;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.username);
@@ -204,6 +355,16 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
             contactNumber = itemView.findViewById(R.id.contact_number);
             dateOfBirth = itemView.findViewById(R.id.date_of_birth);
             memberSince = itemView.findViewById(R.id.member_since);
+            batchNameStudent = itemView.findViewById(R.id.batch_name_student);
+            ruleStudent = itemView.findViewById(R.id.student_section);
+        }
+
+        public View getRuleStudent() {
+            return ruleStudent;
+        }
+
+        public MaterialTextView getBatchNameStudent() {
+            return batchNameStudent;
         }
 
         public ImageView getMore() {
