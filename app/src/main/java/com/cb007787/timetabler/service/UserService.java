@@ -55,4 +55,7 @@ public interface UserService {
 
     @GET(BASE_ENDPOINT + "find/studentsWithNoBatch")
     Call<List<User>> getStudentsWithoutABatch(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "find/content/systemAdminHome")
+    Call<HashMap<String, Integer>> getContentForSystemAdminHome(@Header("Authorization") String token);
 }

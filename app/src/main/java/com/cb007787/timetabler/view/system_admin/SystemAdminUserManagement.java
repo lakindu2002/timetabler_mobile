@@ -24,33 +24,7 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
     private Toolbar theToolbar;
     private BottomNavigationView navigationView;
     private UserLoadingFragment theLoadedFragment;
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.search, menu);
-        MenuItem searchMenuItem = menu.findItem(R.id.search); //the search menu item will be instantiated as a SearchView as defined in menu file
-        SearchView actionView = (SearchView) searchMenuItem.getActionView(); //retrieve the underlying SearchView for the menu item.
-        actionView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set background to white.
-        actionView.setQueryHint("Provide Username");
-
-        actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                //text input submitted
-                theLoadedFragment.search(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //keyboard click detected
-                theLoadedFragment.search(newText);
-                return true;
-            }
-        });
-        return true;
-    }
+    private String loadingFromDashboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +43,11 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
         }
 
         navigationView.setOnNavigationItemSelectedListener(this);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            loadingFromDashboard = intent.getStringExtra("load");
+        }
     }
 
     @Override
@@ -76,6 +55,17 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
         super.onStart();
         //once view renders, initially show all academic admins.
         navigationView.setSelectedItemId(R.id.user_admin);
+        if (loadingFromDashboard != null) {
+            if (loadingFromDashboard.equalsIgnoreCase("academic-admin")) {
+                navigationView.setSelectedItemId(R.id.user_admin);
+            }
+            if (loadingFromDashboard.equalsIgnoreCase("students")) {
+                navigationView.setSelectedItemId(R.id.user_student);
+            }
+            if (loadingFromDashboard.equalsIgnoreCase("lecturers")) {
+                navigationView.setSelectedItemId(R.id.user_lecturer);
+            }
+        }
     }
 
     private void getReferences() {
@@ -113,4 +103,32 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
         }
         return false;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.search, menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.search); //the search menu item will be instantiated as a SearchView as defined in menu file
+        SearchView actionView = (SearchView) searchMenuItem.getActionView(); //retrieve the underlying SearchView for the menu item.
+        actionView.setBackgroundColor(getResources().getColor(R.color.white, null)); //set background to white.
+        actionView.setQueryHint("Provide Username");
+
+        actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //text input submitted
+                theLoadedFragment.search(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //keyboard click detected
+                theLoadedFragment.search(newText);
+                return true;
+            }
+        });
+        return true;
+    }
+
 }

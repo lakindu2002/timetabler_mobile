@@ -13,6 +13,7 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -26,6 +27,205 @@
             </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
+
+
+        <include
+            android:id="@+id/loading"
+            layout="@layout/loading_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appbar" />
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swiper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/loading">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alignmentMode="alignMargins"
+                android:columnCount="2"
+                android:padding="10dp"
+                android:rowCount="2">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/academic_admin_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="10dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/academic_admin_header_02"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="Academic"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/academic_admin_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="Admins"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/academic_admin_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="0"
+                            android:textColor="@android:color/black"
+                            android:textSize="26dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/lecturer_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="10dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/lecturers_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="Lecturers"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="16dp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/lecturer_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="0"
+                            android:textColor="@android:color/black"
+                            android:textSize="26dp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/students_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="10dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/students_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="Students"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="16dp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/students_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="0"
+                            android:textColor="@android:color/black"
+                            android:textSize="26dp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/classrooms_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="10dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="5dp">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/classroom_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="Classrooms"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/classrooms_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:text="0"
+                            android:textColor="@android:color/black"
+                            android:textSize="26dp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+            </GridLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
