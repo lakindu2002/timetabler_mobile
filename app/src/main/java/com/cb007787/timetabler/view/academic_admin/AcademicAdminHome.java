@@ -6,10 +6,12 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,20 +24,45 @@ import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
+import com.cb007787.timetabler.model.ErrorResponseAPI;
+import com.cb007787.timetabler.service.APIConfigurer;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.cb007787.timetabler.service.UserService;
 import com.cb007787.timetabler.view.common.CommonContainer;
 import com.cb007787.timetabler.view.common.shared.SharedUserProfile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textview.MaterialTextView;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AcademicAdminHome extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private AuthReturn loggedInAdmin;
     private DrawerLayout theDrawer;
     private Toolbar theToolbar;
     private NavigationView navigationView;
+    private CardView studentCard;
+    private CardView lecturerCard;
+    private CardView moduleCard;
+    private CardView batchCard;
+    private MaterialTextView studentCount;
+    private MaterialTextView lecturerCount;
+    private MaterialTextView moduleCount;
+    private MaterialTextView batchCount;
+    private LinearProgressIndicator linearProgressIndicator;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    private UserService userService;
+    private AuthReturn loggedInAdmin;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +72,7 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
 
         //validate jwt
         SharedPreferenceService.validateToken(this, PreferenceInformation.PREFERENCE_NAME);
-
+        token = SharedPreferenceService.getToken(this, PreferenceInformation.PREFERENCE_NAME);
         setSupportActionBar(theToolbar);
 
         //create a toggle to slide nav bar.
@@ -67,12 +94,91 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
         }
 
         navigationView.setNavigationItemSelectedListener(this);
+
+        swipeRefreshLayout.setOnRefreshListener(this::loadDashboard);
+
+        studentCard.setOnClickListener(v -> {
+            Intent navigationIntent = new Intent(this, AcademicAdminUserManagement.class);
+            navigationIntent.putExtra("loading", "student");
+            startActivity(navigationIntent);
+        });
+
+        moduleCard.setOnClickListener(v -> {
+            startActivity(new Intent(this, AcademicAdminModuleManagement.class));
+        });
+
+        lecturerCard.setOnClickListener(v -> {
+            Intent navigationIntent = new Intent(this, AcademicAdminUserManagement.class);
+            navigationIntent.putExtra("loading", "lecturer");
+            startActivity(navigationIntent);
+        });
+
+        batchCard.setOnClickListener(v -> {
+            startActivity(new Intent(this, AcademicAdministratorBatchManagement.class));
+        });
     }
 
     private void getReferences() {
         this.theDrawer = findViewById(R.id.academic_admin_home_layout);
         this.theToolbar = findViewById(R.id.toolbar);
         this.navigationView = findViewById(R.id.navigation);
+        userService = APIConfigurer.getApiConfigurer().getUserService();
+        linearProgressIndicator = findViewById(R.id.progress_bar);
+        studentCard = findViewById(R.id.student_card);
+        lecturerCard = findViewById(R.id.lecturer_card);
+        moduleCard = findViewById(R.id.modules_card);
+        batchCard = findViewById(R.id.batches_card);
+        studentCount = findViewById(R.id.student_count);
+        lecturerCount = findViewById(R.id.lecturer_count);
+        moduleCount = findViewById(R.id.modules_count);
+        batchCount = findViewById(R.id.batch_count);
+        swipeRefreshLayout = findViewById(R.id.swiper);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadDashboard();
+        constructError("Click on a card to dive deeper", true);
+    }
+
+    private void loadDashboard() {
+        linearProgressIndicator.setVisibility(View.VISIBLE);
+        userService.getContentForAcademicAdminHome(token).enqueue(new Callback<HashMap<String, Integer>>() {
+            @Override
+            public void onResponse(@NonNull Call<HashMap<String, Integer>> call, @NonNull Response<HashMap<String, Integer>> response) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                if (response.isSuccessful()) {
+                    HashMap<String, Integer> content = response.body();
+                    if (content != null) {
+                        studentCount.setText(String.valueOf(content.get("students")));
+                        batchCount.setText(String.valueOf(content.get("batches")));
+                        lecturerCount.setText(String.valueOf(content.get("lecturers")));
+                        moduleCount.setText(String.valueOf(content.get("modules")));
+                    }
+                } else {
+                    try {
+                        ErrorResponseAPI theErrorReturned = APIConfigurer.getTheErrorReturned(response.errorBody());
+                        constructError(theErrorReturned.getErrorMessage(), false);
+                    } catch (IOException e) {
+                        constructError("We ran into an error while loading the dashboard content", false);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<HashMap<String, Integer>> call, @NonNull Throwable t) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                constructError("We ran into an error while loading the dashboard content", false);
+            }
+        });
     }
 
     @Override
@@ -114,5 +220,19 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
             theDrawer.closeDrawer(GravityCompat.START);
         }
         return true;
+    }
+
+    private void constructError(String errorMessage, boolean isInfo) {
+        Snackbar theSnackBar = Snackbar.make(theToolbar, errorMessage, Snackbar.LENGTH_LONG);
+        if (isInfo) {
+            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
+        } else {
+            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        }
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
+        theSnackBar.show();
     }
 }

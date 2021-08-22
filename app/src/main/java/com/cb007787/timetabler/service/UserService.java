@@ -58,4 +58,7 @@ public interface UserService {
 
     @GET(BASE_ENDPOINT + "find/content/systemAdminHome")
     Call<HashMap<String, Integer>> getContentForSystemAdminHome(@Header("Authorization") String token);
+
+    @GET(BASE_ENDPOINT + "find/content/academicAdminHome")
+    Call<HashMap<String, Integer>> getContentForAcademicAdminHome(@Header("Authorization") String token);
 }

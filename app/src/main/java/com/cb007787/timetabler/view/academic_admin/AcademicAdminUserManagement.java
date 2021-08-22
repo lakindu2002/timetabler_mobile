@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,7 @@ public class AcademicAdminUserManagement extends AppCompatActivity implements Na
     private Toolbar toolbar;
     private UserLoadingFragment loader = null;
     private BottomNavigationView navigationView;
+    private String loadingPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,15 @@ public class AcademicAdminUserManagement extends AppCompatActivity implements Na
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            //check if user is coming from a card
+            if (intent.getStringExtra("loading") != null) {
+                //coming from check, load the required card user type.
+                loadingPage = intent.getStringExtra("loading");
+            }
+        }
+
         navigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
     }
 
@@ -54,6 +65,14 @@ public class AcademicAdminUserManagement extends AppCompatActivity implements Na
         //default to loading lecturer
         navigationView.setSelectedItemId(R.id.user_lecturer_admin);
         //utilize common UserLoadingFragment
+
+        if (loadingPage != null) {
+            if (loadingPage.equalsIgnoreCase("student")) {
+                navigationView.setSelectedItemId(R.id.user_student_admin);
+            } else if (loadingPage.equalsIgnoreCase("lecturer")) {
+                navigationView.setSelectedItemId(R.id.user_lecturer_admin);
+            }
+        }
     }
 
 
