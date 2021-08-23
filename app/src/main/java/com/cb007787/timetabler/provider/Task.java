@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 public class Task {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    private int taskId;
+    private int _ID; //name required to ensure auto-retrieval from provider for the ID.
 
     @ColumnInfo(name = "name")
     private String taskName;
@@ -22,7 +22,7 @@ public class Task {
     @ColumnInfo(name = "due_date")
     private long dueDateInMs;
 
-    @ColumnInfo(name = "status")
+    @ColumnInfo(name = "status", defaultValue = "Pending")
     private String taskStatus;
 
     @ColumnInfo(name = "created_at")
@@ -37,12 +37,12 @@ public class Task {
     public Task() {
     }
 
-    public int getTaskId() {
-        return taskId;
+    public int get_ID() {
+        return _ID;
     }
 
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
+    public void set_ID(int _ID) {
+        this._ID = _ID;
     }
 
     public String getTaskName() {

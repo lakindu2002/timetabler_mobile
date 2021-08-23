@@ -21,7 +21,7 @@ public abstract class TimeTablerDatabase extends RoomDatabase {
 
     //synchronized used in multi-threading scenarios.
     public static synchronized TimeTablerDatabase getTimeTablerDatabase(Context theContext) {
-        if (timeTablerDatabase != null) {
+        if (timeTablerDatabase == null) {
             createDbInstance(theContext);
         }
         return timeTablerDatabase;

@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
+import androidx.loader.content.CursorLoader;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,8 +18,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.model.AuthReturn;
+import com.cb007787.timetabler.provider.TaskContentProvider;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -48,6 +54,7 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
     private long selectedStartDate;
     private long selectedEndDate;
     private SimpleDateFormat simpleDateFormat;
+    private AuthReturn loggedInUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +112,11 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         endDateLayout = findViewById(R.id.end_date_layout);
         endDateBtn = findViewById(R.id.end_date_btn);
         manageButton = findViewById(R.id.task_manage_btn);
+        try {
+            loggedInUser = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -176,10 +188,22 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
     }
 
     private void handleTask() {
+        String enteredTaskName = taskName.getText().toString();
+        String enteredTaskDescription = taskName.getText().toString();
+        long enteredStart = selectedStartDate;
+        long enteredEnd = selectedEndDate;
+        String username = loggedInUser.getUsername();
+
         if (isUpdate) {
             //update task
         } else {
             //create new task.
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("taskName", enteredTaskName);
+            contentValues.put("taskDescription", enteredTaskDescription);
+            contentValues.put("startDate", enteredStart);
+            contentValues.put("endDate", enteredEnd);
+            contentValues.put("username", username);
         }
     }
 }
