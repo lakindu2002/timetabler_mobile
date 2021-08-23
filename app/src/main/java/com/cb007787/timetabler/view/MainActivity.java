@@ -88,61 +88,58 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchApp() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                AuthReturn loggedInUser = null;
-                PasswordReset resetInfo = null;
+        new Handler().postDelayed(() -> {
+            AuthReturn loggedInUser = null;
+            PasswordReset resetInfo = null;
 
-                try {
-                    loggedInUser = SharedPreferenceService.getLoggedInUser(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
-                    resetInfo = SharedPreferenceService.getResetInformation(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
-                } catch (JsonProcessingException e) {
-                    Log.i(MainActivity.class.getName(), "ERROR PARSING JSON DURING RETRIEVAL");
-                }
+            try {
+                loggedInUser = SharedPreferenceService.getLoggedInUser(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
+                resetInfo = SharedPreferenceService.getResetInformation(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
+            } catch (JsonProcessingException e) {
+                Log.i(MainActivity.class.getName(), "ERROR PARSING JSON DURING RETRIEVAL");
+            }
 
-                if (resetInfo != null) {
-                    //a reset info user present
-                    //check if the reset token has expired, if so send to login
-                    if (resetInfo.getTokenExpirationTime() > new Date().getTime()) {
-                        //expiration token is valid,
-                        //send the password reset fragment
-                        Intent intent = new Intent(MainActivity.this, CommonContainer.class);
-                        intent.putExtra("loadingPage", "RESET");
-                        startActivity(intent);
-                    } else {
-                        //password reset token has expired, clear the password reset information
-                        SharedPreferenceService.clearSharedPreferences(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
-                        //send to login
-                        Intent intent = new Intent(MainActivity.this, CommonContainer.class);
-                        intent.putExtra("loadingPage", "LOGIN");
-                        startActivity(intent);
-                    }
-                    finish();
-
-                } else if (loggedInUser != null) {
-                    //there is a user
-                    //check if their token has expired
-                    if (loggedInUser.getTokenExpiresIn() < new Date().getTime()) {
-                        //token has expired, remove the objects from shared preferences and send to login
-                        SharedPreferenceService.clearSharedPreferences(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
-
-                        Intent intent = new Intent(MainActivity.this, CommonContainer.class);
-                        intent.putExtra("loadingPage", "LOGIN");
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        //check role and send to the respective home page
-                        navigateToHome(loggedInUser.getRole());
-                    }
+            if (resetInfo != null) {
+                //a reset info user present
+                //check if the reset token has expired, if so send to login
+                if (resetInfo.getTokenExpirationTime() > new Date().getTime()) {
+                    //expiration token is valid,
+                    //send the password reset fragment
+                    Intent intent = new Intent(MainActivity.this, CommonContainer.class);
+                    intent.putExtra("loadingPage", "RESET");
+                    startActivity(intent);
                 } else {
-                    //no session is present at all,
-                    //direct to login
+                    //password reset token has expired, clear the password reset information
+                    SharedPreferenceService.clearSharedPreferences(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
+                    //send to login
+                    Intent intent = new Intent(MainActivity.this, CommonContainer.class);
+                    intent.putExtra("loadingPage", "LOGIN");
+                    startActivity(intent);
+                }
+                finish();
+
+            } else if (loggedInUser != null) {
+                //there is a user
+                //check if their token has expired
+                if (loggedInUser.getTokenExpiresIn() < new Date().getTime()) {
+                    //token has expired, remove the objects from shared preferences and send to login
+                    SharedPreferenceService.clearSharedPreferences(getApplicationContext(), PreferenceInformation.PREFERENCE_NAME);
+
                     Intent intent = new Intent(MainActivity.this, CommonContainer.class);
                     intent.putExtra("loadingPage", "LOGIN");
                     startActivity(intent);
                     finish();
+                } else {
+                    //check role and send to the respective home page
+                    navigateToHome(loggedInUser.getRole());
                 }
+            } else {
+                //no session is present at all,
+                //direct to login
+                Intent intent = new Intent(MainActivity.this, CommonContainer.class);
+                intent.putExtra("loadingPage", "LOGIN");
+                startActivity(intent);
+                finish();
             }
         }, 1000);
     }

@@ -8,6 +8,12 @@
                     android:enabled="true"
                     android:icon="@drawable/ic_enrolments"
                     android:title="@string/student_enrolments" />
+
+                <item
+                    android:id="@+id/student_task_management"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_tasks"
+                    android:title="@string/my_tasks" />
             </menu>
         </item>
     </group>

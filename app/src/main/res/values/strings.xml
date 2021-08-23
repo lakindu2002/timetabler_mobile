@@ -136,6 +136,5 @@
     <string name="view_modules_assigned">View Modules Assigned</string>
     <string name="batch_no_batch">Batch: No Batch</string>
     <string name="batch_information">Batch Information</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="my_tasks">My Tasks</string>
 </resources>

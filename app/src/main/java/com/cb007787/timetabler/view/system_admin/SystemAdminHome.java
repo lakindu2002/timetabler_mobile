@@ -118,7 +118,7 @@ public class SystemAdminHome extends AppCompatActivity implements NavigationView
     protected void onStart() {
         super.onStart();
         loadCardContent();
-        constructError("Click on a card to dive deeper", true);
+        Toast.makeText(this, "Click on a card to dive deeper", Toast.LENGTH_SHORT).show();
     }
 
     private void getReferences() {
