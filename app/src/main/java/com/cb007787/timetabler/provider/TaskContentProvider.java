@@ -2,6 +2,7 @@ package com.cb007787.timetabler.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -13,6 +14,8 @@ import androidx.annotation.Nullable;
  */
 public class TaskContentProvider extends ContentProvider {
     private TaskDAO taskDAO; //the DAO used to perform crud with task database.
+    //do not create a match for the root URI
+    private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     @Override
     public boolean onCreate() {

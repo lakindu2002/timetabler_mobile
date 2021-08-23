@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".view.student.StudentTaskCreateUpdate">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:title="Create/Update Task"
+            app:titleTextColor="@color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include
+        android:id="@+id/loading"
+        layout="@layout/loading_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/appbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/loading">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            app:cardBackgroundColor="@color/background"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="20dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/task_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Task Name"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/task_name_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/task_name"
+                    android:paddingTop="5dp"
+                    app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="25"
+                    app:errorIconTint="@color/btn_danger"
+                    app:errorTextColor="@color/btn_danger"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/task_name_field"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Provide Task Name"
+                        android:maxLength="25" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/task_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/task_name_layout"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:paddingTop="5dp"
+                    android:text="Task Description"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/task_description_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/task_description"
+                    android:paddingTop="5dp"
+                    app:boxStrokeErrorColor="@color/btn_danger"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="255"
+                    app:errorIconTint="@color/btn_danger"
+                    app:errorTextColor="@color/btn_danger"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/task_description_field"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Provide Task Description"
+                        android:lines="5"
+                        android:maxLength="255"
+                        android:maxLines="5" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/task_description_layout"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:paddingTop="5dp"
+                    android:text="Start Date"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:id="@+id/start_date_relative"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/start_date">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/start_date_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@id/start_date_btn"
+                        android:paddingTop="5dp"
+                        app:boxStrokeErrorColor="@color/btn_danger"
+                        app:errorIconTint="@color/btn_danger"
+                        app:errorTextColor="@color/btn_danger"
+                        app:hintAnimationEnabled="false"
+                        app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/start_date_field"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="Provide Start Date"
+                            android:inputType="none" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageButton
+                        android:id="@+id/start_date_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginBottom="15dp"
+                        android:backgroundTint="@color/btn_info"
+                        android:contentDescription="@string/time_image"
+                        android:src="@drawable/ic_baseline_calendar_today_24" />
+                </RelativeLayout>
+
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/end_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/start_date_relative"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:paddingTop="5dp"
+                    android:text="End Date"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:id="@+id/end_date_relative"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/end_date">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/end_date_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@id/end_date_btn"
+                        android:paddingTop="5dp"
+                        app:boxStrokeErrorColor="@color/btn_danger"
+                        app:errorIconTint="@color/btn_danger"
+                        app:errorTextColor="@color/btn_danger"
+                        app:hintAnimationEnabled="false"
+                        app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/end_date_field"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="Provide End Date"
+                            android:inputType="none" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageButton
+                        android:id="@+id/end_date_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginBottom="15dp"
+                        android:backgroundTint="@color/btn_info"
+                        android:contentDescription="@string/time_image"
+                        android:src="@drawable/ic_baseline_calendar_today_24" />
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/task_manage_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="70dp"
+                    android:layout_below="@id/end_date_relative"
+                    android:layout_centerHorizontal="true"
+                    android:backgroundTint="@color/btn_primary"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Create/Update Task"
+                    android:textAllCaps="false"
+                    android:textSize="16sp" />
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+    </ScrollView>
+</RelativeLayout>
