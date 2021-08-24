@@ -210,8 +210,8 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
 
     private void handleTask() {
         linearProgressIndicator.setVisibility(View.VISIBLE);
-        String enteredTaskName = taskName.getText().toString();
-        String enteredTaskDescription = taskDescription.getText().toString();
+        String enteredTaskName = taskName.getText().toString().trim();
+        String enteredTaskDescription = taskDescription.getText().toString().trim();
         long enteredStart = selectedStartDate;
         long enteredEnd = selectedEndDate;
         String username = loggedInUser.getUsername();
