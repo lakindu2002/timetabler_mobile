@@ -148,6 +148,7 @@ public class TaskContentProvider extends ContentProvider {
                 //mark as complete
                 ContentValues completeValue = new ContentValues();
                 completeValue.put(TaskDbHelper.TASK_STATUS, "Completed");
+                completeValue.put(TaskDbHelper.LAST_UPDATED_AT, Calendar.getInstance().getTimeInMillis());
                 //table name, update value, where clause, where criteria
                 updatedRows = database.update(TaskDbHelper.TABLE_NAME, completeValue, selection, selectionArgs);
             } else if (uriMatcher.match(uri) == 8) {
