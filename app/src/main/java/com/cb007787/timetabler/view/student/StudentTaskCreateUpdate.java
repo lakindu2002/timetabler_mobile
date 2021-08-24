@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
+import com.cb007787.timetabler.model.Task;
 import com.cb007787.timetabler.provider.TaskContentProvider;
 import com.cb007787.timetabler.provider.TaskDbHelper;
 import com.cb007787.timetabler.service.PreferenceInformation;
@@ -29,15 +31,18 @@ import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
 import java.util.Locale;
 
 public class StudentTaskCreateUpdate extends AppCompatActivity {
 
     private boolean isUpdate = false;
-    private int taskId;
+    private int taskId = 0;
 
     private Toolbar toolbar;
     private TextInputLayout taskNameLayout;
@@ -52,6 +57,8 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
     private ImageButton endDateBtn;
     private ImageButton startDateBtn;
     private LinearProgressIndicator linearProgressIndicator;
+    private MaterialTextView lastUpdatedAt; //used only when updating a task.
+    private MaterialTextView taskStatus; // used for updating only.
 
     private long selectedStartDate;
     private long selectedEndDate;
@@ -121,6 +128,8 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         manageButton = findViewById(R.id.task_manage_btn);
         contentResolver = getContentResolver();
         linearProgressIndicator = findViewById(R.id.progress_bar);
+        lastUpdatedAt = findViewById(R.id.last_updated_at);
+        taskStatus = findViewById(R.id.task_status);
         try {
             loggedInUser = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
         } catch (JsonProcessingException e) {
@@ -134,6 +143,9 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         if (isUpdate) {
             toolbar.setTitle("Update Task");
             manageButton.setText("Update Task");
+            lastUpdatedAt.setVisibility(View.VISIBLE);
+            taskStatus.setVisibility(View.VISIBLE);
+            loadTaskInformation();
         } else {
             toolbar.setTitle("Create Task");
             manageButton.setText("Create Task");
@@ -209,6 +221,29 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         if (isValid) {
             if (isUpdate) {
                 //update task
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(TaskDbHelper.TASK_NAME, enteredTaskName);
+                contentValues.put(TaskDbHelper.TASK_DESCRIPTION, enteredTaskDescription);
+                contentValues.put(TaskDbHelper.START_DATE, enteredStart);
+                contentValues.put(TaskDbHelper.DUE_DATE, enteredEnd);
+
+                String whereClause = TaskDbHelper.TASK_ID + "=?";
+                String[] whereArgs = {String.valueOf(taskId)};
+
+                int affectedRows = contentResolver.update(TaskContentProvider.PERFORM_UPDATE, contentValues, whereClause, whereArgs);
+
+                if (affectedRows == 0) {
+                    //no rows affected, error.
+                    constructError("We ran into an error while updating the task", false);
+                    linearProgressIndicator.setVisibility(View.GONE);
+                } else if (affectedRows == 1) {
+                    //success, only one ID so one should get updated.
+                    Toast.makeText(this, "The task has been updated successfully", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(this, StudentTaskManagement.class));
+                    finish();//do not load this activity on back
+                    linearProgressIndicator.setVisibility(View.GONE);
+                }
+
             } else {
                 //create new task.
                 ContentValues contentValues = new ContentValues();
@@ -281,5 +316,63 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         }
 
         return isEnteredEndValid && isUsernameValid && isEnteredStartValid && isTaskDescriptionValid && isTaskNameValid;
+    }
+
+    private void loadTaskInformation() {
+        SimpleDateFormat updateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.ENGLISH);
+        //use the content provider to fetch from the database the task for the given user.
+        linearProgressIndicator.setVisibility(View.VISIBLE);
+        String[] requiredColumns = {
+                TaskDbHelper.TASK_ID,
+                TaskDbHelper.TASK_NAME,
+                TaskDbHelper.TASK_DESCRIPTION,
+                TaskDbHelper.TASK_STATUS,
+                TaskDbHelper.START_DATE,
+                TaskDbHelper.DUE_DATE,
+                TaskDbHelper.LAST_UPDATED_AT
+        }; //the columns to get from the query.
+
+        //where username is equal to given username and task id is equal to given task it
+        String whereClause = TaskDbHelper.USERNAME + "=? AND " + TaskDbHelper.TASK_ID + "=?";
+        String[] whereData = {loggedInUser.getUsername(), String.valueOf(taskId)};
+        Cursor executedQuery = contentResolver.query(TaskContentProvider.PERFORM_FIND_ONE_URI, requiredColumns, whereClause, whereData, null);
+        //executed query will have only one.
+        boolean firstExist = executedQuery.moveToFirst();//get the first row.
+
+        //retrieve data on first row.
+        if (firstExist) {
+            String savedTaskName = executedQuery.getString(executedQuery.getColumnIndex(TaskDbHelper.TASK_NAME));
+            int savedTaskId = executedQuery.getInt(executedQuery.getColumnIndex(TaskDbHelper.TASK_ID));
+            String savedTaskDescription = executedQuery.getString(executedQuery.getColumnIndex(TaskDbHelper.TASK_DESCRIPTION));
+            long savedStartDate = executedQuery.getLong(executedQuery.getColumnIndex(TaskDbHelper.START_DATE));
+            long savedDueDate = executedQuery.getLong(executedQuery.getColumnIndex(TaskDbHelper.DUE_DATE));
+            String savedStatus = executedQuery.getString(executedQuery.getColumnIndex(TaskDbHelper.TASK_STATUS));
+            long savedLastUpdatedAt = executedQuery.getLong(executedQuery.getColumnIndex(TaskDbHelper.LAST_UPDATED_AT));
+
+
+            //show in view
+            taskId = savedTaskId;
+            selectedStartDate = savedStartDate;
+            selectedEndDate = savedDueDate;
+
+            taskName.setText(savedTaskName);
+            taskDescription.setText(savedTaskDescription);
+            startDate.setText(simpleDateFormat.format(new java.sql.Date(savedStartDate)));
+            endDate.setText(simpleDateFormat.format(new java.sql.Date(savedDueDate)));
+            taskStatus.setText(String.format("Task Status: %s", savedStatus));
+            lastUpdatedAt.setText(String.format("Last Updated: %s", updateFormat.format(new java.sql.Date(savedLastUpdatedAt))));
+
+
+            if (savedStatus.equalsIgnoreCase("completed")) {
+                //if task is completed, cannot update date.
+                startDateBtn.setEnabled(false);
+                endDateBtn.setEnabled(false);
+            }
+
+        } else {
+            constructError("The Task Could Not Be Retrieved", false);
+        }
+        executedQuery.close();
+        linearProgressIndicator.setVisibility(View.GONE);
     }
 }

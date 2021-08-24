@@ -52,11 +52,10 @@ public class TaskContentProvider extends ContentProvider {
     //execute when class is loaded into JVM
     static {
         //output for - 1: content://com.cb007787.timetabler.provider/task/all
-        //output for - 4: content://com.cb007787.timetabler.provider/task/one/#
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + ALL_TASKS, 1);//content uri for the get all tasks query
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + COMPLETED_TASKS, 2);//content uri for the get all completed tasks
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + PENDING, 3);//content uri for the get all pending tasks
-        uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + ONE + "/#", 4);//content uri for the get task by id
+        uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + ONE, 4);//content uri for the get task by id
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + NEW, 5);//content uri for the create new task.
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + DELETE, 6);//content uri for the delete task.
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + COMPLETE, 7);//content uri for the complete task.
@@ -83,20 +82,18 @@ public class TaskContentProvider extends ContentProvider {
                 //client requires all tasks
                 return database.query(TaskDbHelper.TABLE_NAME, projection, selection, selectionArgs, null, null, TaskDbHelper.DUE_DATE + " " + sortOrder);
             }
-            case 2: {
-                //client requires all completed tasks
-                break;
-            }
-            case 3: {
-                //client requires all pending tasks
-                break;
+            case 2://client requires all completed tasks
+
+            case 3: { //client requires all pending tasks
+                return database.query(TaskDbHelper.TABLE_NAME, projection, TaskDbHelper.TASK_STATUS + "=? AND " + TaskDbHelper.USERNAME + "=?", selectionArgs, null, null, TaskDbHelper.DUE_DATE + " " + sortOrder);
             }
             case 4: {
                 //client requires task by id
-                break;
+                return database.query(TaskDbHelper.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
             }
         }
-        return null;
+        //in case nothing matches, return all tasks for the user.
+        return database.query(TaskDbHelper.TABLE_NAME, projection, selection, selectionArgs, null, null, TaskDbHelper.DUE_DATE + " " + sortOrder);
     }
 
     @Nullable
@@ -153,6 +150,7 @@ public class TaskContentProvider extends ContentProvider {
                 updatedRows = database.update(TaskDbHelper.TABLE_NAME, completeValue, selection, selectionArgs);
             } else if (uriMatcher.match(uri) == 8) {
                 //update the row.
+                updatedRows = database.update(TaskDbHelper.TABLE_NAME, values, selection, selectionArgs);
             }
         }
         return updatedRows;
