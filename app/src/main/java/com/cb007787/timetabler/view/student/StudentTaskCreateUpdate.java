@@ -322,7 +322,8 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
     }
 
     private void loadTaskInformation() {
-        SimpleDateFormat updateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.ENGLISH);
+        //24 hour time view.
+        SimpleDateFormat updateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
         //use the content provider to fetch from the database the task for the given user.
         linearProgressIndicator.setVisibility(View.VISIBLE);
         String[] requiredColumns = {
