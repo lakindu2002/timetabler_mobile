@@ -10,6 +10,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -150,6 +151,7 @@ public class TaskContentProvider extends ContentProvider {
                 updatedRows = database.update(TaskDbHelper.TABLE_NAME, completeValue, selection, selectionArgs);
             } else if (uriMatcher.match(uri) == 8) {
                 //update the row.
+                values.put(TaskDbHelper.LAST_UPDATED_AT, Calendar.getInstance().getTimeInMillis());
                 updatedRows = database.update(TaskDbHelper.TABLE_NAME, values, selection, selectionArgs);
             }
         }
