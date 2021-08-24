@@ -35,8 +35,10 @@ import java.util.Locale;
 
 public class StudentTaskCreateUpdate extends AppCompatActivity {
 
-    private Toolbar toolbar;
     private boolean isUpdate = false;
+    private int taskId;
+
+    private Toolbar toolbar;
     private TextInputLayout taskNameLayout;
     private TextInputEditText taskName;
     private TextInputLayout taskDescriptionLayout;
@@ -76,6 +78,10 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             isUpdate = intent.getBooleanExtra("isUpdate", false);
+            if (isUpdate) {
+                //if task is being updated, load task being updated.
+                taskId = intent.getIntExtra("taskId", 0);
+            }
         }
 
         startDate.setEnabled(false);

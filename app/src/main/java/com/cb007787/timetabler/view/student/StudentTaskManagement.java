@@ -12,9 +12,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
+import com.cb007787.timetabler.interfaces.DeleteCallbacks;
 import com.cb007787.timetabler.model.AuthReturn;
+import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.Task;
 import com.cb007787.timetabler.provider.TaskContentProvider;
 import com.cb007787.timetabler.provider.TaskDbHelper;
@@ -24,6 +27,7 @@ import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +70,32 @@ public class StudentTaskManagement extends AppCompatActivity {
 
         adapter = new TaskRecycler(this);
         adapter.setTheTasks(taskList);
+
+        adapter.setDeleteCallbacks(new DeleteCallbacks() {
+            @Override
+            public void onDeleteSuccessResponse(SuccessResponseAPI theSuccessObject) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                Snackbar theSnackBar = Snackbar.make(toolbar, "The task was removed successfully", Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                View view = theSnackBar.getView();
+                //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+                TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                snackBarText.setMaxLines(5);
+                theSnackBar.show();
+                loadTasks();
+            }
+
+            @Override
+            public void onDeleteFailure(String message) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                constructError(message, false);
+            }
+
+            @Override
+            public void onDeleteCalled() {
+                linearProgressIndicator.setVisibility(View.VISIBLE);
+            }
+        });
 
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setAdapter(adapter);
@@ -134,5 +164,22 @@ public class StudentTaskManagement extends AppCompatActivity {
         if (swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
+        if (taskList.size() == 0) {
+            constructError("You have no tasks. Create some tasks for them to be visible", true);
+        }
+    }
+
+    private void constructError(String errorMessage, boolean isInfo) {
+        Snackbar theSnackBar = Snackbar.make(toolbar, errorMessage, Snackbar.LENGTH_LONG);
+        if (isInfo) {
+            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
+        } else {
+            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        }
+        View view = theSnackBar.getView();
+        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        snackBarText.setMaxLines(5);
+        theSnackBar.show();
     }
 }

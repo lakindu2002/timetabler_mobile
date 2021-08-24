@@ -20,6 +20,9 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Utilized by academic admin when viewing modules having batches and lecturer so lecture can be scheduled.
+ */
 public class ModuleListWithBatchesAndLecturersAdapter extends RecyclerView.Adapter<ModuleListWithBatchesAndLecturersAdapter.ViewHolder> {
     private Context theContext;
     private List<Module> moduleList;
