@@ -129,6 +129,29 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <!--        an app widget is provided by app widget provider.-->
+        <!--        define app widget provider class-->
+        <!--        register the receiver to allow listening for system events-->
+        <receiver android:name=".widgets.PendingTaskListProvider">
+            <intent-filter>
+                <!--app widget manager sends all update requests to app widget provider-->
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <!--specify the app widget provider info-->
+            <!--layouts, refresh time-->
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/pending_task_list_widget_provider_info" />
+
+        </receiver>
+
+        <!--register the pending task list service so the remote view factory can load the remote views from db-->
+        <!--bind remote view is a permission only present in android system allowing only android to start the service-->
+        <service
+            android:name=".widgets.PendingTaskListService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

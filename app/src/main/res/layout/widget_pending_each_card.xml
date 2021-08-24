@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#5978E3"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/widget_task_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_semibold"
+        android:paddingBottom="5dp"
+        android:text="Task Name"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/widget_created"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/widget_task_name"
+        android:fontFamily="@font/poppins"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:text="Created: 29 December 2021"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/widget_duration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/widget_created"
+        android:fontFamily="@font/poppins"
+        android:paddingBottom="5dp"
+        android:text="From 25 December 2021 to 29 December 2021"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/widget_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/widget_duration"
+        android:fontFamily="@font/poppins"
+        android:paddingBottom="5dp"
+        android:text="Status: Pending"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+</RelativeLayout>
