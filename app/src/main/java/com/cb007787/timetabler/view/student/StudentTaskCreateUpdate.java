@@ -227,9 +227,11 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
                 contentValues.put(TaskDbHelper.START_DATE, enteredStart);
                 contentValues.put(TaskDbHelper.DUE_DATE, enteredEnd);
 
+                //prepare sql query
                 String whereClause = TaskDbHelper.TASK_ID + "=?";
                 String[] whereArgs = {String.valueOf(taskId)};
 
+                //use the content provider to access database and update.
                 int affectedRows = contentResolver.update(TaskContentProvider.PERFORM_UPDATE, contentValues, whereClause, whereArgs);
 
                 if (affectedRows == 0) {
@@ -246,6 +248,7 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
 
             } else {
                 //create new task.
+                //prepare values for column name to value.
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(TaskDbHelper.TASK_NAME, enteredTaskName);
                 contentValues.put(TaskDbHelper.TASK_DESCRIPTION, enteredTaskDescription);
