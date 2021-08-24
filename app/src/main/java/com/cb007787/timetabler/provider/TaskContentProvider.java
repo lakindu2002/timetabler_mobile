@@ -110,8 +110,8 @@ public class TaskContentProvider extends ContentProvider {
                     theTask.setTaskCreatedAtInMs(Calendar.getInstance().getTimeInMillis());
                     theTask.setLastUpdatedAtInMs(Calendar.getInstance().getTimeInMillis());
 
-                    TaskDAO taskDAO = TimeTablerDatabase.getTimeTablerDatabase(getContext()).getTaskDAO();
-                    taskDAO.createTask(theTask);
+//                    TaskDAO taskDAO = TimeTablerDatabase.getTimeTablerDatabase(getContext()).getTaskDAO();
+//                    taskDAO.createTask(theTask);
                     return SUCCESS_URI;
                 } catch (Exception ex) {
                     ex.printStackTrace();

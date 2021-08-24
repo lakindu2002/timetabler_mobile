@@ -34,6 +34,14 @@ public abstract class TimeTablerDatabase extends RoomDatabase {
                 .build();
     }
 
+    public static void closeDatabase() {
+        if (timeTablerDatabase != null) {
+            if (timeTablerDatabase.isOpen()) {
+                timeTablerDatabase.close();
+            }
+        }
+    }
+
     //has @Query that has SQL queries defined in it. Room defined the underlying sql implementations at compile time
     public abstract TaskDAO getTaskDAO();
 }
