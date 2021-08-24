@@ -145,6 +145,22 @@ public class TaskRecycler extends RecyclerView.Adapter<TaskRecycler.ViewHolder> 
                 .setMessage("Are you sure you mark this task as completed?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     //mark as complete in the content provider.
+                    updateCallbacks.onUpdate();
+
+                    String[] updateValue = {String.valueOf(id)};
+                    //get the content resolver and hit the Update - Mark Complete URI.
+                    //pass the WHERE clause and the parameters for TaskId=? where updatedValue = ?.
+                    int updatedRows = context.getContentResolver().update(
+                            TaskContentProvider.PERFORM_MARK_COMPLETE, null,
+                            TaskDbHelper.TASK_ID + "=?",
+                            updateValue
+                    );
+                    if (updatedRows == 0) {
+                        //failed to update as no rows were affected
+                        updateCallbacks.onUpdateFailed("We could not mark this task as complete");
+                    } else {
+                        updateCallbacks.onUpdateCompleted(new SuccessResponseAPI());
+                    }
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     //cancel

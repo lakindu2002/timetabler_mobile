@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.interfaces.DeleteCallbacks;
+import com.cb007787.timetabler.interfaces.UpdateCallbacks;
 import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.model.SuccessResponseAPI;
 import com.cb007787.timetabler.model.Task;
@@ -97,6 +98,32 @@ public class StudentTaskManagement extends AppCompatActivity {
             }
         });
 
+        adapter.setUpdateCallbacks(new UpdateCallbacks() {
+            @Override
+            public void onUpdate() {
+                linearProgressIndicator.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onUpdateCompleted(SuccessResponseAPI theResponse) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                Snackbar theSnackBar = Snackbar.make(toolbar, "The task was marked as complete successfully", Snackbar.LENGTH_LONG);
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_success, null));
+                View view = theSnackBar.getView();
+                //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+                TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                snackBarText.setMaxLines(5);
+                theSnackBar.show();
+                loadTasks();
+            }
+
+            @Override
+            public void onUpdateFailed(String errorMessage) {
+                linearProgressIndicator.setVisibility(View.GONE);
+                constructError(errorMessage, false);
+            }
+        });
+
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setAdapter(adapter);
         swipeRefreshLayout.setOnRefreshListener(this::loadTasks);
@@ -135,8 +162,8 @@ public class StudentTaskManagement extends AppCompatActivity {
             }; //required columns from the query.
 
             Cursor query = contentResolver.query(TaskContentProvider.PERFORM_ALL_URI, requiredColumns, TaskDbHelper.USERNAME + "=" + "'" + loggedInUser.getUsername() + "'", null, "ASC");
-            boolean movedToFirst = query.moveToFirst();
-            if (movedToFirst) {
+            boolean movedToFirst = query.moveToFirst(); //bring the cursor from the top to the first row.
+            if (movedToFirst) { //if first row exists.
                 while (!query.isAfterLast()) {
                     //loop till at the last row.
                     int taskId = query.getInt(query.getColumnIndex(TaskDbHelper.TASK_ID));

@@ -32,6 +32,8 @@ public class TaskContentProvider extends ContentProvider {
     private static final String PENDING = "pending";
     private static final String ONE = "one";
     private static final String DELETE = "delete";
+    private static final String COMPLETE = "complete";
+    private static final String UPDATE = "update";
 
     //uris to be called from the client.
     public static final Uri PERFORM_ALL_URI = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, ALL_TASKS));
@@ -40,6 +42,8 @@ public class TaskContentProvider extends ContentProvider {
     public static final Uri PERFORM_FIND_ONE_URI = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, ONE));
     public static final Uri PERFORM_INSERT = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, NEW));
     public static final Uri PERFORM_DELETE = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, DELETE));
+    public static final Uri PERFORM_MARK_COMPLETE = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, COMPLETE));
+    public static final Uri PERFORM_UPDATE = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, UPDATE));
 
     public static final Uri SUCCESS_URI = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, "SUCCESS"));
     public static final Uri FAIL_URI = Uri.parse(String.format("content://%s/%s/%s", AUTHORITY, TASK_TABLE, "FAIL"));
@@ -55,6 +59,8 @@ public class TaskContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + ONE + "/#", 4);//content uri for the get task by id
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + NEW, 5);//content uri for the create new task.
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + DELETE, 6);//content uri for the delete task.
+        uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + COMPLETE, 7);//content uri for the complete task.
+        uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + UPDATE, 8);//content uri for the update task.
     }
 
     private SQLiteDatabase database;
@@ -125,16 +131,29 @@ public class TaskContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int deletedRows = 0;
-        if (uriMatcher.match(uri) == 6) {
-            //sql delete statement to delete from db.
-            System.out.println("HIT");
-            deletedRows = database.delete(TaskDbHelper.TABLE_NAME, selection, selectionArgs);
+        if (selection != null && selectionArgs != null) {
+            if (uriMatcher.match(uri) == 6) {
+                //sql delete statement to delete from db.
+                deletedRows = database.delete(TaskDbHelper.TABLE_NAME, selection, selectionArgs);
+            }
         }
         return deletedRows;
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int updatedRows = 0;
+        if (selection != null && selectionArgs != null) {
+            if (uriMatcher.match(uri) == 7) {
+                //mark as complete
+                ContentValues completeValue = new ContentValues();
+                completeValue.put(TaskDbHelper.TASK_STATUS, "Completed");
+                //table name, update value, where clause, where criteria
+                updatedRows = database.update(TaskDbHelper.TABLE_NAME, completeValue, selection, selectionArgs);
+            } else if (uriMatcher.match(uri) == 8) {
+                //update the row.
+            }
+        }
+        return updatedRows;
     }
 }
