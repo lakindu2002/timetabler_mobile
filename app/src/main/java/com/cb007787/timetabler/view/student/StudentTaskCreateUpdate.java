@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -46,11 +48,13 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
     private Button manageButton;
     private ImageButton endDateBtn;
     private ImageButton startDateBtn;
+    private LinearProgressIndicator linearProgressIndicator;
 
     private long selectedStartDate;
     private long selectedEndDate;
     private SimpleDateFormat simpleDateFormat;
     private AuthReturn loggedInUser;
+    private ContentResolver contentResolver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +112,8 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         endDateLayout = findViewById(R.id.end_date_layout);
         endDateBtn = findViewById(R.id.end_date_btn);
         manageButton = findViewById(R.id.task_manage_btn);
+        contentResolver = getContentResolver();
+        linearProgressIndicator = findViewById(R.id.progress_bar);
         try {
             loggedInUser = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
         } catch (JsonProcessingException e) {
@@ -184,6 +190,7 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
     }
 
     private void handleTask() {
+        linearProgressIndicator.setVisibility(View.VISIBLE);
         String enteredTaskName = taskName.getText().toString();
         String enteredTaskDescription = taskName.getText().toString();
         long enteredStart = selectedStartDate;
@@ -200,6 +207,17 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
             contentValues.put(TaskDbHelper.START_DATE, enteredStart);
             contentValues.put(TaskDbHelper.DUE_DATE, enteredEnd);
             contentValues.put(TaskDbHelper.USERNAME, username);
+
+            Uri insertUri = contentResolver.insert(TaskContentProvider.PERFORM_INSERT, contentValues);
+            if (insertUri.equals(TaskContentProvider.SUCCESS_URI)) {
+                Toast.makeText(getApplicationContext(), "Your Task Has Been Created Successfully", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(this, StudentTaskManagement.class));
+                finish();
+                linearProgressIndicator.setVisibility(View.GONE);
+            } else {
+                linearProgressIndicator.setVisibility(View.GONE);
+                constructError("We ran into an error while creating your task", false);
+            }
         }
     }
 }

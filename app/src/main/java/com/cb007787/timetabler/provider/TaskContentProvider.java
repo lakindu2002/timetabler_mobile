@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -53,8 +54,13 @@ public class TaskContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, TASK_TABLE + "/" + NEW, 5);//content uri for the create new task.
     }
 
+    private SQLiteDatabase database;
+
     @Override
+
     public boolean onCreate() {
+        TaskDbHelper taskDbHelper = new TaskDbHelper(getContext());
+        database = taskDbHelper.getWritableDatabase();
         return true;
     }
 
@@ -86,29 +92,26 @@ public class TaskContentProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return null;
+        if (uri.equals(PERFORM_ALL_PENDING_URI) || uri.equals(PERFORM_ALL_URI) || uri.equals(PERFORM_ALL_COMPLETED_URI)) {
+            return "vnd.android.cursor.dir/tasks"; //multiple
+        } else {
+            return "vnd.android.cursor.item/tasks"; //single
+        }
+
     }
 
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        if (uriMatcher.match(uri) == 5) {
-            if (values != null) {
-                try {
-                    long currentTime = Calendar.getInstance().getTimeInMillis();
-                    values.put(TaskDbHelper.TASK_STATUS, "Pending");
-                    values.put(TaskDbHelper.TASK_CREATED_AT, currentTime);
-                    values.put(TaskDbHelper.LAST_UPDATED_AT, currentTime);
+        if (values != null && uri.equals(PERFORM_INSERT)) {
+            long currentTime = Calendar.getInstance().getTimeInMillis();
+            values.put(TaskDbHelper.TASK_CREATED_AT, currentTime);
+            values.put(TaskDbHelper.LAST_UPDATED_AT, currentTime);
+            values.put(TaskDbHelper.TASK_STATUS, "Pending");
 
-                    //set to null, as we don't need to implicitly insert null data
-                    return SUCCESS_URI;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    return FAIL_URI;
-                }
-            } else {
-                return FAIL_URI;
-            }
+
+            long insertedRowId = database.insert(TaskDbHelper.TABLE_NAME, null, values);
+            return SUCCESS_URI;
         } else {
             return FAIL_URI;
         }

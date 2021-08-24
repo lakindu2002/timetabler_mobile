@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cb007787.timetabler.R;
-import com.cb007787.timetabler.provider.Task;
+import com.cb007787.timetabler.model.Task;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.sql.Date;

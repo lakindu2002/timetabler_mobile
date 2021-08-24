@@ -1,4 +1,4 @@
-package com.cb007787.timetabler.provider;
+package com.cb007787.timetabler.model;
 
 public class Task {
     private int _ID; //name required to ensure auto-retrieval from provider for the ID.
