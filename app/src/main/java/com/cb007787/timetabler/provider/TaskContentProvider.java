@@ -24,6 +24,7 @@ public class TaskContentProvider extends ContentProvider {
     private static final String AUTHORITY = "com.cb007787.timetabler.provider"; //name of the provider (single authority).
     private static final String TASK_TABLE = "task";
 
+    //used to identify the type of function type, conjoined during the Content URI creation.
     private static final String ALL_TASKS = "all";
     private static final String NEW = "create";
     private static final String COMPLETED_TASKS = "completed";
@@ -94,24 +95,12 @@ public class TaskContentProvider extends ContentProvider {
         if (uriMatcher.match(uri) == 5) {
             if (values != null) {
                 try {
-                    String taskName = values.getAsString("taskName").trim();
-                    String taskDescription = values.getAsString("taskDescription").trim();
-                    long startDate = values.getAsLong("startDate");
-                    long endDate = values.getAsLong("endDate");
-                    String usernameOfStudent = values.getAsString("username");
+                    long currentTime = Calendar.getInstance().getTimeInMillis();
+                    values.put(TaskDbHelper.TASK_STATUS, "Pending");
+                    values.put(TaskDbHelper.TASK_CREATED_AT, currentTime);
+                    values.put(TaskDbHelper.LAST_UPDATED_AT, currentTime);
 
-                    Task theTask = new Task();
-                    theTask.setTaskName(taskName);
-                    theTask.setTaskDescription(taskDescription);
-                    theTask.setStartDateInMs(startDate);
-                    theTask.setDueDateInMs(endDate);
-                    theTask.setStudentUsername(usernameOfStudent);
-                    theTask.setTaskStatus("Pending");
-                    theTask.setTaskCreatedAtInMs(Calendar.getInstance().getTimeInMillis());
-                    theTask.setLastUpdatedAtInMs(Calendar.getInstance().getTimeInMillis());
-
-//                    TaskDAO taskDAO = TimeTablerDatabase.getTimeTablerDatabase(getContext()).getTaskDAO();
-//                    taskDAO.createTask(theTask);
+                    //set to null, as we don't need to implicitly insert null data
                     return SUCCESS_URI;
                 } catch (Exception ex) {
                     ex.printStackTrace();

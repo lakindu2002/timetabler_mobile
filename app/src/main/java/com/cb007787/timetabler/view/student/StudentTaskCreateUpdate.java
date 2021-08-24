@@ -4,11 +4,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.util.Pair;
-import androidx.loader.content.CursorLoader;
 
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,22 +13,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cb007787.timetabler.R;
 import com.cb007787.timetabler.model.AuthReturn;
 import com.cb007787.timetabler.provider.TaskContentProvider;
+import com.cb007787.timetabler.provider.TaskDbHelper;
 import com.cb007787.timetabler.service.PreferenceInformation;
 import com.cb007787.timetabler.service.SharedPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 
@@ -199,11 +195,11 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         } else {
             //create new task.
             ContentValues contentValues = new ContentValues();
-            contentValues.put("taskName", enteredTaskName);
-            contentValues.put("taskDescription", enteredTaskDescription);
-            contentValues.put("startDate", enteredStart);
-            contentValues.put("endDate", enteredEnd);
-            contentValues.put("username", username);
+            contentValues.put(TaskDbHelper.TASK_NAME, enteredTaskName);
+            contentValues.put(TaskDbHelper.TASK_DESCRIPTION, enteredTaskDescription);
+            contentValues.put(TaskDbHelper.START_DATE, enteredStart);
+            contentValues.put(TaskDbHelper.DUE_DATE, enteredEnd);
+            contentValues.put(TaskDbHelper.USERNAME, username);
         }
     }
 }

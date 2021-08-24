@@ -1,37 +1,14 @@
 package com.cb007787.timetabler.provider;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "task")
 public class Task {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
     private int _ID; //name required to ensure auto-retrieval from provider for the ID.
-
-    @ColumnInfo(name = "name")
     private String taskName;
-
-    @ColumnInfo(name = "description")
     private String taskDescription;
-
-    @ColumnInfo(name = "start_date")
     private long startDateInMs;
-
-    @ColumnInfo(name = "due_date")
     private long dueDateInMs;
-
-    @ColumnInfo(name = "status", defaultValue = "Pending")
     private String taskStatus;
-
-    @ColumnInfo(name = "created_at")
     private long taskCreatedAtInMs;
-
-    @ColumnInfo(name = "updated_at")
     private long lastUpdatedAtInMs;
-
-    @ColumnInfo(name = "student")
     private String studentUsername; //denote the user creating the task, only view logged in users tasks.
 
     public Task() {
