@@ -66,12 +66,13 @@ public class TaskContentProvider extends ContentProvider {
 
     @Nullable
     @Override
+    //projection - rows, selection - where clause, sort order - ASC or DESC
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         //match is tested against the "code" added in static block for each uri.
         switch (uriMatcher.match(uri)) {
             case 1: {
                 //client requires all tasks
-                break;
+                return database.query(TaskDbHelper.TABLE_NAME, projection, selection, selectionArgs, null, null, TaskDbHelper.DUE_DATE + " " + sortOrder);
             }
             case 2: {
                 //client requires all completed tasks
@@ -97,20 +98,21 @@ public class TaskContentProvider extends ContentProvider {
         } else {
             return "vnd.android.cursor.item/tasks"; //single
         }
-
     }
 
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        if (values != null && uri.equals(PERFORM_INSERT)) {
+        //if the caller wishes to create a task
+        if (values != null && uriMatcher.match(uri) == 5) {
+            //execute only if passed uri is meant for inserting data.
             long currentTime = Calendar.getInstance().getTimeInMillis();
             values.put(TaskDbHelper.TASK_CREATED_AT, currentTime);
             values.put(TaskDbHelper.LAST_UPDATED_AT, currentTime);
             values.put(TaskDbHelper.TASK_STATUS, "Pending");
 
-
-            long insertedRowId = database.insert(TaskDbHelper.TABLE_NAME, null, values);
+            //insert into database.
+            database.insert(TaskDbHelper.TABLE_NAME, null, values);
             return SUCCESS_URI;
         } else {
             return FAIL_URI;
@@ -119,7 +121,10 @@ public class TaskContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int taskId = Integer.parseInt(uri.getLastPathSegment());
+        //sql delete statement to delete from db.
+        database.execSQL("DELETE FROM " + TaskDbHelper.TABLE_NAME + " WHERE " + TaskDbHelper.TASK_ID + " ='" + taskId + "'");
+        return taskId;
     }
 
     @Override

@@ -27,6 +27,11 @@ public class TaskRecycler extends RecyclerView.Adapter<TaskRecycler.ViewHolder> 
         simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
     }
 
+    public void setTheTasks(List<Task> theTasks) {
+        this.theTasks = theTasks;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

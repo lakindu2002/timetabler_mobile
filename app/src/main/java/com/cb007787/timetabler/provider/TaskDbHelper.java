@@ -10,6 +10,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     public static String TABLE_NAME = "tasks";
     private static final int DATABASE_VERSION = 1;
 
+    public static final String TASK_ID = "id";
     public static String TASK_NAME = "task_name";
     public static String TASK_DESCRIPTION = "task_description";
     public static String START_DATE = "start_date";
@@ -21,7 +22,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_TABLE = String.format(
             "CREATE TABLE IF NOT EXISTS %s (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s VARCHAR(255) NOT NULL," +
                     "%s VARCHAR(255) NOT NULL," +
                     "%s LONG NOT NULL," +
@@ -29,7 +30,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
                     "%s VARCHAR(255) NOT NULL," +
                     "%s LONG NOT NULL," +
                     "%s LONG NOT NULL," +
-                    "%s VARCHAR(255) NOT NULL); ", TABLE_NAME, TASK_NAME, TASK_DESCRIPTION, START_DATE, DUE_DATE, TASK_STATUS, TASK_CREATED_AT, LAST_UPDATED_AT, USERNAME
+                    "%s VARCHAR(255) NOT NULL); ", TABLE_NAME, TASK_ID, TASK_NAME, TASK_DESCRIPTION, START_DATE, DUE_DATE, TASK_STATUS, TASK_CREATED_AT, LAST_UPDATED_AT, USERNAME
     );
 
     public TaskDbHelper(Context theContext) {
