@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -198,32 +199,87 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
     private void handleTask() {
         linearProgressIndicator.setVisibility(View.VISIBLE);
         String enteredTaskName = taskName.getText().toString();
-        String enteredTaskDescription = taskName.getText().toString();
+        String enteredTaskDescription = taskDescription.getText().toString();
         long enteredStart = selectedStartDate;
         long enteredEnd = selectedEndDate;
         String username = loggedInUser.getUsername();
 
-        if (isUpdate) {
-            //update task
-        } else {
-            //create new task.
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(TaskDbHelper.TASK_NAME, enteredTaskName);
-            contentValues.put(TaskDbHelper.TASK_DESCRIPTION, enteredTaskDescription);
-            contentValues.put(TaskDbHelper.START_DATE, enteredStart);
-            contentValues.put(TaskDbHelper.DUE_DATE, enteredEnd);
-            contentValues.put(TaskDbHelper.USERNAME, username);
+        boolean isValid = validateInputs(enteredTaskName, enteredTaskDescription, enteredStart, enteredEnd, username);
 
-            Uri insertUri = contentResolver.insert(TaskContentProvider.PERFORM_INSERT, contentValues);
-            if (insertUri.equals(TaskContentProvider.SUCCESS_URI)) {
-                Toast.makeText(getApplicationContext(), "Your Task Has Been Created Successfully", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(this, StudentTaskManagement.class));
-                finish();
-                linearProgressIndicator.setVisibility(View.GONE);
+        if (isValid) {
+            if (isUpdate) {
+                //update task
             } else {
-                linearProgressIndicator.setVisibility(View.GONE);
-                constructError("We ran into an error while creating your task", false);
+                //create new task.
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(TaskDbHelper.TASK_NAME, enteredTaskName);
+                contentValues.put(TaskDbHelper.TASK_DESCRIPTION, enteredTaskDescription);
+                contentValues.put(TaskDbHelper.START_DATE, enteredStart);
+                contentValues.put(TaskDbHelper.DUE_DATE, enteredEnd);
+                contentValues.put(TaskDbHelper.USERNAME, username);
+
+                Uri insertUri = contentResolver.insert(TaskContentProvider.PERFORM_INSERT, contentValues);
+                if (insertUri.equals(TaskContentProvider.SUCCESS_URI)) {
+                    Toast.makeText(getApplicationContext(), "Your Task Has Been Created Successfully", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(this, StudentTaskManagement.class));
+                    finish();
+                    linearProgressIndicator.setVisibility(View.GONE);
+                } else {
+                    linearProgressIndicator.setVisibility(View.GONE);
+                    constructError("We ran into an error while creating your task", false);
+                }
             }
+        } else {
+            linearProgressIndicator.setVisibility(View.GONE);
+            constructError("Provide Valid Inputs Before Proceeding", false);
         }
+    }
+
+    private boolean validateInputs(String enteredTaskName, String enteredTaskDescription, long enteredStart, long enteredEnd, String username) {
+        boolean isTaskNameValid = true;
+        boolean isTaskDescriptionValid = true;
+        boolean isEnteredStartValid = true;
+        boolean isEnteredEndValid = true;
+        boolean isUsernameValid = true;
+
+        if (TextUtils.isEmpty(enteredTaskName)) {
+            isTaskNameValid = false;
+            taskNameLayout.setError("Provide a Task Name");
+        } else {
+            taskNameLayout.setError(null);
+        }
+
+        if (TextUtils.isEmpty(enteredTaskDescription)) {
+            isTaskDescriptionValid = false;
+            taskDescriptionLayout.setError("Provide a Task Description");
+        } else {
+            taskDescriptionLayout.setError(null);
+        }
+
+        if (enteredStart > enteredEnd) {
+            isEnteredStartValid = false;
+            Toast.makeText(this, "Start Date Cannot Be After End Date", Toast.LENGTH_LONG).show();
+        }
+
+        if (enteredStart == 0) {
+            isEnteredStartValid = false;
+            startDateLayout.setError("Provide a Start Date");
+        } else {
+            startDateLayout.setError(null);
+        }
+
+        if (enteredEnd == 0) {
+            isEnteredEndValid = false;
+            endDateLayout.setError("Provide a Start Date");
+        } else {
+            endDateLayout.setError(null);
+        }
+
+        if (username == null || TextUtils.isEmpty(username)) {
+            isUsernameValid = false;
+            Toast.makeText(this, "Logged In User Not Present", Toast.LENGTH_LONG).show();
+        }
+
+        return isEnteredEndValid && isUsernameValid && isEnteredStartValid && isTaskDescriptionValid && isTaskNameValid;
     }
 }
