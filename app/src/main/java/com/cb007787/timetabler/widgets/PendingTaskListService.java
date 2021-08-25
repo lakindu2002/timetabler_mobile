@@ -3,6 +3,7 @@ package com.cb007787.timetabler.widgets;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -47,53 +48,61 @@ public class PendingTaskListService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            //connect to database and get data to load to the widget.
-            try {
-                authReturn = SharedPreferenceService.getLoggedInUser(context, PreferenceInformation.PREFERENCE_NAME);
-            } catch (JsonProcessingException e) {
-                System.out.println("ERROR ON PendingTaskListViewFactory");
-            }
-
-            if (authReturn != null) {
-                String[] columnsRequired = {
-                        TaskDbHelper.TASK_NAME,
-                        TaskDbHelper.START_DATE,
-                        TaskDbHelper.DUE_DATE,
-                        TaskDbHelper.TASK_CREATED_AT,
-                        TaskDbHelper.TASK_STATUS
-                };
-                String[] whereArgs = {"Pending", authReturn.getUsername()};
-                retrievedQuery = context.getContentResolver().query(TaskContentProvider.PERFORM_ALL_PENDING_URI, columnsRequired, null, whereArgs, "ASC");
-            }
         }
 
         @Override
         public void onDataSetChanged() {
-            if (retrievedQuery != null && !retrievedQuery.isClosed()) {
-                if (retrievedQuery.moveToFirst()) {
-                    //row exists
-                    taskList.clear();
-                    while (!retrievedQuery.isAfterLast()) {
-                        //iterate over the rows
-                        String taskName = retrievedQuery.getString(retrievedQuery.getColumnIndex(TaskDbHelper.TASK_NAME));
-                        String taskStatus = retrievedQuery.getString(retrievedQuery.getColumnIndex(TaskDbHelper.TASK_STATUS));
-                        long startDate = retrievedQuery.getLong(retrievedQuery.getColumnIndex(TaskDbHelper.START_DATE));
-                        long dueDate = retrievedQuery.getLong(retrievedQuery.getColumnIndex(TaskDbHelper.DUE_DATE));
-                        long createDate = retrievedQuery.getLong(retrievedQuery.getColumnIndex(TaskDbHelper.TASK_CREATED_AT));
+            //clear identity of remote process, so permission is checked against app and not against external caller.
+            //it uses the external party context for permission checking, but this self call so can clear.
+            long contentProviderToken = Binder.clearCallingIdentity();
+            try {
+                authReturn = SharedPreferenceService.getLoggedInUser(context, PreferenceInformation.PREFERENCE_NAME);
+                if (authReturn != null) {
+                    //if logged in user, then fetch data.
+                    String[] columnsRequired = {
+                            TaskDbHelper.TASK_NAME,
+                            TaskDbHelper.START_DATE,
+                            TaskDbHelper.DUE_DATE,
+                            TaskDbHelper.TASK_CREATED_AT,
+                            TaskDbHelper.TASK_STATUS
+                    };
+                    String[] whereArgs = {"Pending", authReturn.getUsername()};
+                    retrievedQuery = context.getContentResolver().query(TaskContentProvider.PERFORM_ALL_PENDING_URI, columnsRequired, null, whereArgs, "ASC");
 
-                        Task eachTask = new Task();
-                        eachTask.setTaskName(taskName);
-                        eachTask.setStartDateInMs(startDate);
-                        eachTask.setDueDateInMs(dueDate);
-                        eachTask.setTaskCreatedAtInMs(createDate);
-                        eachTask.setTaskStatus(taskStatus);
 
-                        taskList.add(eachTask);
+                    if (retrievedQuery != null && !retrievedQuery.isClosed()) {
+                        //if query is prsent and it is not closed.
+                        if (retrievedQuery.moveToFirst()) {
+                            //row exists
+                            taskList.clear(); //clear data before adding again.
+                            while (!retrievedQuery.isAfterLast()) {
+                                //iterate over the rows
+                                String taskName = retrievedQuery.getString(retrievedQuery.getColumnIndex(TaskDbHelper.TASK_NAME));
+                                String taskStatus = retrievedQuery.getString(retrievedQuery.getColumnIndex(TaskDbHelper.TASK_STATUS));
+                                long startDate = retrievedQuery.getLong(retrievedQuery.getColumnIndex(TaskDbHelper.START_DATE));
+                                long dueDate = retrievedQuery.getLong(retrievedQuery.getColumnIndex(TaskDbHelper.DUE_DATE));
+                                long createDate = retrievedQuery.getLong(retrievedQuery.getColumnIndex(TaskDbHelper.TASK_CREATED_AT));
 
-                        retrievedQuery.moveToNext(); //go to next row.
+                                Task eachTask = new Task();
+                                eachTask.setTaskName(taskName);
+                                eachTask.setStartDateInMs(startDate);
+                                eachTask.setDueDateInMs(dueDate);
+                                eachTask.setTaskCreatedAtInMs(createDate);
+                                eachTask.setTaskStatus(taskStatus);
+
+                                taskList.add(eachTask);
+
+                                retrievedQuery.moveToNext(); //go to next row.
+                            }
+                        }
+                        retrievedQuery.close(); //close query.
                     }
                 }
-                retrievedQuery.close(); //close query.
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                //give the token back to the caller.
+                Binder.restoreCallingIdentity(contentProviderToken);
             }
         }
 
@@ -101,7 +110,7 @@ public class PendingTaskListService extends RemoteViewsService {
         @Override
         public void onDestroy() {
             if (retrievedQuery != null) {
-                retrievedQuery.close();
+                retrievedQuery.close(); //close connection.
             }
         }
 

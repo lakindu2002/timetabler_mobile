@@ -23,6 +23,7 @@ public class PendingTaskListProvider extends AppWidgetProvider {
             remoteViews.setRemoteAdapter(R.id.task_list, pendingTaskService); //set the adapter
             remoteViews.setEmptyView(R.id.task_list, R.id.empty_list); //when no data, show message
 
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetInstanceId, R.id.task_list); //refresh data.
             appWidgetManager.updateAppWidget(widgetInstanceId, remoteViews); //update the UI on the widget.
         }
     }
