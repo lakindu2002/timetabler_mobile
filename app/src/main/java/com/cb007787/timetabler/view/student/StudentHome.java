@@ -247,6 +247,9 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
         } else if (item.getItemId() == R.id.student_enrolments) {
             navigationIntent = new Intent(this, StudentEnrolments.class);
             isSelected = true;
+        } else if (item.getItemId() == R.id.student_task_management) {
+            navigationIntent = new Intent(this, StudentTaskManagement.class);
+            isSelected = true;
         }
         if (studentLayout.isDrawerOpen(GravityCompat.START)) {
             //layout open in start (left side), close the drawer

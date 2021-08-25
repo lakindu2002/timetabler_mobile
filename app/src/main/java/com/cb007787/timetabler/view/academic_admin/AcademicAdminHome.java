@@ -139,7 +139,7 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
     protected void onStart() {
         super.onStart();
         loadDashboard();
-        constructError("Click on a card to dive deeper", true);
+        Toast.makeText(this, "Click on a card to dive deeper", Toast.LENGTH_SHORT).show();
     }
 
     private void loadDashboard() {

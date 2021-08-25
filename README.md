@@ -20,6 +20,7 @@ Clone the repo using the `ssh` link or the `https` link. If using `ssh` make sur
 ## Dependencies Used
 - UI: Google Material UI
 - Networking: Retrofit + Jackson Parser
+- Content Provider - Utilizes A Custom Built Content Provider Communicating With SQLite DB
 
 ## Endpoint Declaration 
 - Testing: `http://localhost:8080`
