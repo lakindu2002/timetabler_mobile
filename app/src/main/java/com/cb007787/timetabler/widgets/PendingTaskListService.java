@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -52,6 +53,7 @@ public class PendingTaskListService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
+            Log.i("onDataSetChanged - PendingTaskListService", "Data Set Update Triggered");
             //clear identity of remote process, so permission is checked against app and not against external caller.
             //it uses the external party context for permission checking, but this self call so can clear.
             long contentProviderToken = Binder.clearCallingIdentity();

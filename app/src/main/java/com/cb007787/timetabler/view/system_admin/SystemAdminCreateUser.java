@@ -210,10 +210,10 @@ public class SystemAdminCreateUser extends AppCompatActivity {
         loadingBar.setVisibility(View.VISIBLE);
         //retrieve the user inputs
         String username = usernameField.getText().toString();
-        String firstName = firstNameField.getText().toString();
-        String lastName = lastNameField.getText().toString();
-        String emailAddress = emailAddressField.getText().toString();
-        String contactNumber = contactNumberField.getText().toString();
+        String firstName = firstNameField.getText().toString().trim();
+        String lastName = lastNameField.getText().toString().trim();
+        String emailAddress = emailAddressField.getText().toString().trim();
+        String contactNumber = contactNumberField.getText().toString().trim();
         Date selectedDateInPicker = selectedDate == null ? null : selectedDate.getTime();
         Role userType = getUserRole(userRoleField.getText().toString());
 
@@ -269,6 +269,20 @@ public class SystemAdminCreateUser extends AppCompatActivity {
         if (TextUtils.isEmpty(theNewUser.getLastName())) {
             lastNameLayout.setError("Provide a Last Name");
             isLastNameValid = false;
+        } else {
+            lastNameLayout.setError(null);
+        }
+
+        if (!theNewUser.getFirstName().matches("^[A-Za-z ]+")) {
+            isFirstNameValid = false;
+            firstNameLayout.setError("First Name Can Only Contain Text");
+        } else {
+            firstNameLayout.setError(null);
+        }
+
+        if (!theNewUser.getLastName().matches("^[A-Za-z ]+")) {
+            isLastNameValid = false;
+            lastNameLayout.setError("Last Name Can Only Contain Text");
         } else {
             lastNameLayout.setError(null);
         }

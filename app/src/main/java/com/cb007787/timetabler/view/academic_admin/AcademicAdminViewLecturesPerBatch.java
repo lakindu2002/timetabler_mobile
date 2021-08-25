@@ -120,6 +120,7 @@ public class AcademicAdminViewLecturesPerBatch extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        toolbar.setTitle("Timetable - " + batchCode);
         loadLecturesPerBatch(); //get all lectures for batch from the api.
     }
 
@@ -198,6 +199,7 @@ public class AcademicAdminViewLecturesPerBatch extends AppCompatActivity {
 
                 if (response.isSuccessful()) {
                     lecturesPerBatch = response.body();
+                    toolbar.setTitle("Timetable - " + batchCode);
                     adapter.setTheLectureList(lecturesPerBatch);
                 } else {
                     try {
