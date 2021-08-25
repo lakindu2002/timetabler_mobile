@@ -63,7 +63,7 @@ public class AcademicAdministratorBatchManagement extends AppCompatActivity {
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             //set white color back button
-            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_home_24);
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
 

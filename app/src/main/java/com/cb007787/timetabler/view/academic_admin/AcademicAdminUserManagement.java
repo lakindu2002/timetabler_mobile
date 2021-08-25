@@ -38,7 +38,7 @@ public class AcademicAdminUserManagement extends AppCompatActivity implements Na
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             //assign back button
-            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_home_24);
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
 

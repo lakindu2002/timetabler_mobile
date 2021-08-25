@@ -147,7 +147,9 @@ public class LecturerHome extends AppCompatActivity implements NavigationView.On
 
     private void addLecturerInformationToNavHeader() {
         //set the logged in lecturer first name and last name to the nav header file.
-        fullNameHeader.setText(String.format("Welcome, %s %s", loggedInLecturer.getFirstName(), loggedInLecturer.getLastName()));
+        if (loggedInLecturer != null) {
+            fullNameHeader.setText(String.format("Welcome, %s %s", loggedInLecturer.getFirstName(), loggedInLecturer.getLastName()));
+        }
     }
 
     @Override

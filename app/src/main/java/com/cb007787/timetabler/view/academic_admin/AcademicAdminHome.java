@@ -86,9 +86,11 @@ public class AcademicAdminHome extends AppCompatActivity implements NavigationVi
         try {
             loggedInAdmin = SharedPreferenceService.getLoggedInUser(this, PreferenceInformation.PREFERENCE_NAME);
             //add the welcome message on the header
-            View headerFile = navigationView.getHeaderView(0);//one header file so get first one.
-            TextView fullName = headerFile.findViewById(R.id.fullName_header); //retrieve reference to text view on header file
-            fullName.setText(String.format("Welcome, %s %s", loggedInAdmin.getFirstName(), loggedInAdmin.getLastName()));
+            if (loggedInAdmin != null) {
+                View headerFile = navigationView.getHeaderView(0);//one header file so get first one.
+                TextView fullName = headerFile.findViewById(R.id.fullName_header); //retrieve reference to text view on header file
+                fullName.setText(String.format("Welcome, %s %s", loggedInAdmin.getFirstName(), loggedInAdmin.getLastName()));
+            }
         } catch (JsonProcessingException e) {
             Log.i(AcademicAdminHome.class.getName(), "ERROR PARSING JSON");
         }

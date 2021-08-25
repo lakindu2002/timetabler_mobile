@@ -166,8 +166,10 @@ public class StudentHome extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void assignHeadersInNav() {
-        fullNameNavHeader.setText(String.format("Welcome, %s %s", loggedInStudent.getFirstName(), loggedInStudent.getLastName()));
-        batchCodeHeader.setText(String.format("Batch Code - %s", loggedInStudent.getBatchCode()));
+        if (loggedInStudent != null) {
+            fullNameNavHeader.setText(String.format("Welcome, %s %s", loggedInStudent.getFirstName(), loggedInStudent.getLastName()));
+            batchCodeHeader.setText(String.format("Batch Code - %s", loggedInStudent.getBatchCode()));
+        }
     }
 
     @Override
