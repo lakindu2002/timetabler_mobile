@@ -133,10 +133,10 @@ public class AcademicAdminCreateModule extends AppCompatActivity {
 
     public void saveModule() {
         progressIndicator.setVisibility(View.VISIBLE);
-        String enteredModuleName = moduleName.getText().toString();
-        String selectedCreditCount = creditCount.getText().toString();
-        String enteredContactHours = contactHours.getText().toString();
-        String selectedIndependentHours = independentLearningHours.getText().toString();
+        String enteredModuleName = moduleName.getText().toString().trim();
+        String selectedCreditCount = creditCount.getText().toString().trim();
+        String enteredContactHours = contactHours.getText().toString().trim();
+        String selectedIndependentHours = independentLearningHours.getText().toString().trim();
 
         Module theModule = new Module();
         theModule.setModuleName(enteredModuleName);
@@ -197,6 +197,14 @@ public class AcademicAdminCreateModule extends AppCompatActivity {
             //module name not provided
             moduleNameLayout.setError("Please provide a module name");
             isModuleNameValid = false;
+        } else {
+            moduleNameLayout.setError(null);
+        }
+
+        if (!theModule.getModuleName().trim().matches("^[A-Za-z ]+$")) {
+            moduleNameLayout.setError("Provide only text");
+            isModuleNameValid = false;
+
         } else {
             moduleNameLayout.setError(null);
         }
