@@ -210,7 +210,8 @@ public class StudentTaskManagement extends AppCompatActivity {
                     TaskDbHelper.START_DATE,
                     TaskDbHelper.DUE_DATE,
                     TaskDbHelper.TASK_STATUS,
-                    TaskDbHelper.TASK_CREATED_AT
+                    TaskDbHelper.TASK_CREATED_AT,
+                    TaskDbHelper.TASK_DESCRIPTION //used for calendar event
             }; //required columns from the query.
 
             Cursor query = contentResolver.query(TaskContentProvider.PERFORM_ALL_URI, requiredColumns, TaskDbHelper.USERNAME + "=" + "'" + loggedInUser.getUsername() + "'", null, "ASC");
@@ -224,6 +225,7 @@ public class StudentTaskManagement extends AppCompatActivity {
                     long dueDate = query.getLong(query.getColumnIndex(TaskDbHelper.DUE_DATE));
                     String taskStatus = query.getString(query.getColumnIndex(TaskDbHelper.TASK_STATUS));
                     long createdAy = query.getLong(query.getColumnIndex(TaskDbHelper.TASK_CREATED_AT));
+                    String description = query.getString(query.getColumnIndex(TaskDbHelper.TASK_DESCRIPTION));
 
                     Task eachTask = new Task();
                     eachTask.set_ID(taskId);
@@ -232,6 +234,7 @@ public class StudentTaskManagement extends AppCompatActivity {
                     eachTask.setStartDateInMs(startDate);
                     eachTask.setTaskStatus(taskStatus);
                     eachTask.setTaskCreatedAtInMs(createdAy);
+                    eachTask.setTaskDescription(description);
 
                     taskList.add(eachTask);
                     query.moveToNext(); //move to the next row.
