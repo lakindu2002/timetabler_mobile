@@ -3,6 +3,7 @@ package com.cb007787.timetabler.recyclers;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import com.cb007787.timetabler.model.Task;
 import com.cb007787.timetabler.provider.TaskContentProvider;
 import com.cb007787.timetabler.provider.TaskDbHelper;
 import com.cb007787.timetabler.view.student.StudentTaskCreateUpdate;
+import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -107,6 +109,22 @@ public class TaskRecycler extends RecyclerView.Adapter<TaskRecycler.ViewHolder> 
                 } else if (item.getItemId() == R.id.task_complete) {
                     //user click complete task.
                     launchMarkCompleteModal(theTask.get_ID());
+                    return true;
+                } else if (item.getItemId() == R.id.task_add_to_calendar) {
+                    //save the intent to the calendar of the mobile
+                    Intent theCalendarIntent = new Intent(Intent.ACTION_INSERT); //allow calendar to handle insertion task.
+                    theCalendarIntent.setData(CalendarContract.Events.CONTENT_URI); //uri for interacting with calendar events
+                    //provide start and end date for the calendar event
+                    theCalendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, theTask.getStartDateInMs());
+                    theCalendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, theTask.getDueDateInMs());
+
+                    //task title
+                    theCalendarIntent.putExtra(CalendarContract.Events.TITLE, theTask.getTaskName());
+
+                    //task description
+                    theCalendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, theTask.getTaskDescription());
+
+                    context.startActivity(theCalendarIntent); //launch calendar create
                     return true;
                 }
                 return false;
