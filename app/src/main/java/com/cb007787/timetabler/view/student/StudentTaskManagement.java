@@ -2,7 +2,9 @@ package com.cb007787.timetabler.view.student;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -11,6 +13,9 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -33,6 +38,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentTaskManagement extends AppCompatActivity {
 
@@ -127,6 +133,52 @@ public class StudentTaskManagement extends AppCompatActivity {
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setAdapter(adapter);
         swipeRefreshLayout.setOnRefreshListener(this::loadTasks);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.search, menu); //inflate search menu
+        MenuItem searchMenuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        searchView.setQueryHint("Provide Task Name");
+        searchView.setBackgroundColor(ActivityCompat.getColor(this, R.color.white));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchTask(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchTask(newText);
+                return true;
+            }
+        });
+        return true;
+    }
+
+    private void searchTask(String key) {
+        key = key.trim().toLowerCase();
+        if (key.length() == 0) {
+            //no search value
+            adapter.setTheTasks(taskList);
+        } else {
+            //filter
+            String finalKey = key;
+            List<Task> filteredTask =
+                    taskList.stream()
+                            .filter((eachTask) -> eachTask.getTaskName().trim().toLowerCase().contains(finalKey))
+                            .collect(Collectors.toList());
+
+            if (filteredTask.size() == 0) {
+                constructError("There are no tasks for the provided name", true);
+            }
+
+            adapter.setTheTasks(filteredTask);
+        }
     }
 
     private void getReferences() {
