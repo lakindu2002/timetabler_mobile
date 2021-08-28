@@ -352,6 +352,7 @@ public class SystemAdminCreateUser extends AppCompatActivity {
     }
 
     private Role getUserRole(String selectedRole) {
+        //method will load the role for the selected role during create form
         for (Role role : roleListFromDB) {
             if (selectedRole.toLowerCase().trim().equalsIgnoreCase(role.getRoleName())) {
                 return role;
