@@ -66,7 +66,6 @@ public class TaskContentProvider extends ContentProvider {
     private SQLiteDatabase database;
 
     @Override
-
     public boolean onCreate() {
         TaskDbHelper taskDbHelper = new TaskDbHelper(getContext());
         database = taskDbHelper.getWritableDatabase();
