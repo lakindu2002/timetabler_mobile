@@ -145,7 +145,7 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
             manageButton.setText("Update Task");
             lastUpdatedAt.setVisibility(View.VISIBLE);
             taskStatus.setVisibility(View.VISIBLE);
-            loadTaskInformation();
+            loadTaskInformation(); //fetch task being updated from DB
         } else {
             toolbar.setTitle("Create Task");
             manageButton.setText("Create Task");
@@ -321,6 +321,9 @@ public class StudentTaskCreateUpdate extends AppCompatActivity {
         return isEnteredEndValid && isUsernameValid && isEnteredStartValid && isTaskDescriptionValid && isTaskNameValid;
     }
 
+    /**
+     * Loads the task information from the SQLite DB using content provider when the task is being updated
+     */
     private void loadTaskInformation() {
         //24 hour time view.
         SimpleDateFormat updateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
