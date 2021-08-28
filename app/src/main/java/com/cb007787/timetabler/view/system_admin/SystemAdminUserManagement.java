@@ -24,7 +24,7 @@ public class SystemAdminUserManagement extends AppCompatActivity implements Bott
     private Toolbar theToolbar;
     private BottomNavigationView navigationView;
     private UserLoadingFragment theLoadedFragment;
-    private String loadingFromDashboard;
+    private String loadingFromDashboard; //variable to identify if user is coming to activity from a card in the dashboard.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
