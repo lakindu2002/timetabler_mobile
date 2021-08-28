@@ -48,7 +48,7 @@ public class StudentTaskManagement extends AppCompatActivity {
     private FloatingActionButton floatingActionButton;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearProgressIndicator linearProgressIndicator;
-    private ContentResolver contentResolver;
+    private ContentResolver contentResolver; //utilize the content provider to communicate to SQLite DB "timetabler-note-keeper"
     private List<Task> taskList = new ArrayList<>();
     private TaskRecycler adapter;
 
@@ -198,7 +198,7 @@ public class StudentTaskManagement extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        loadTasks();
+        loadTasks(); //load all tasks from SQLite db using content provider.
     }
 
     private void loadTasks() {
