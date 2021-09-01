@@ -10,12 +10,12 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class BatchServiceIntegrationTest {
     private static AuthService authService;

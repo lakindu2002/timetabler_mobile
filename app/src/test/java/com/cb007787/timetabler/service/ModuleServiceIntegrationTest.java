@@ -49,6 +49,7 @@ public class ModuleServiceIntegrationTest {
             System.out.println("testShouldGetAllModulesSuccessfully: PASSED");
         } catch (Exception ex) {
             System.out.println("testShouldGetAllModulesSuccessfully: FAILED");
+            fail("testShouldGetAllModulesSuccessfully: FAILED");
         }
     }
 
@@ -61,6 +62,7 @@ public class ModuleServiceIntegrationTest {
             System.out.println("testShouldNotGetAllModulesWhenTokenIsMissing: PASSED");
         } catch (Exception ex) {
             System.out.println("testShouldNotGetAllModulesWhenTokenIsMissing: FAILED");
+            fail("testShouldNotGetAllModulesWhenTokenIsMissing: FAILED");
         }
     }
 
@@ -80,6 +82,7 @@ public class ModuleServiceIntegrationTest {
             System.out.println("testShouldNotGetAllModulesWhenUserIsUnAuthorized: PASSED");
         } catch (Exception ex) {
             System.out.println("testShouldNotGetAllModulesWhenUserIsUnAuthorized: FAILED");
+            fail("testShouldNotGetAllModulesWhenUserIsUnAuthorized: FAILED");
         }
     }
 
@@ -92,6 +95,7 @@ public class ModuleServiceIntegrationTest {
             System.out.println("testShouldNotGetMyModulesForAcademicAdministrator: PASSED");
         } catch (Exception ex) {
             System.out.println("testShouldNotGetMyModulesForAcademicAdministrator: FAILED");
+            fail("testShouldNotGetMyModulesForAcademicAdministrator: FAILED");
         }
     }
 }

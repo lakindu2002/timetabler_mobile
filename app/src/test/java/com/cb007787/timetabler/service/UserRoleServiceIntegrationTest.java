@@ -49,6 +49,7 @@ public class UserRoleServiceIntegrationTest {
             System.out.println("testShouldGetAllUsersExceptSystemAdminSuccessfully: PASSED");
         } catch (Exception ex) {
             System.out.println("testShouldGetAllUsersExceptSystemAdminSuccessfully: FAILED");
+            fail("testShouldGetAllUsersExceptSystemAdminSuccessfully: FAILED");
         }
     }
 
@@ -62,6 +63,7 @@ public class UserRoleServiceIntegrationTest {
             System.out.println("testShouldGetAllUsersExceptSystemAdminSuccessfully: PASSED");
         } catch (Exception ex) {
             System.out.println("testShouldGetAllUsersExceptSystemAdminSuccessfully: FAILED");
+            fail("testShouldGetAllUsersExceptSystemAdminSuccessfully: FAILED");
         }
     }
 
@@ -70,11 +72,12 @@ public class UserRoleServiceIntegrationTest {
         try {
             //403 - forbidden
             Response<List<Role>> call = userRoleService.getAllRolesWithoutSystemAdmin(null).execute();
-            assertEquals("testShouldGetAllUsersExceptSystemAdminSuccessfully", 403, call
+            assertEquals("testShouldNotGetAllUsersExceptSystemAdminSuccessfullyWhenTokenIsMissing", 403, call
                     .code());
-            System.out.println("testShouldGetAllUsersExceptSystemAdminSuccessfully: PASSED");
+            System.out.println("testShouldNotGetAllUsersExceptSystemAdminSuccessfullyWhenTokenIsMissing: PASSED");
         } catch (Exception ex) {
-            System.out.println("testShouldGetAllUsersExceptSystemAdminSuccessfully: FAILED");
+            System.out.println("testShouldNotGetAllUsersExceptSystemAdminSuccessfullyWhenTokenIsMissing: FAILED");
+            fail("testShouldNotGetAllUsersExceptSystemAdminSuccessfullyWhenTokenIsMissing: FAILED");
         }
     }
 }
