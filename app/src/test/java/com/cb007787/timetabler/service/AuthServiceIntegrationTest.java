@@ -6,7 +6,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -19,12 +18,10 @@ public class AuthServiceIntegrationTest {
     //ending from primary thread
 
     private static AuthService authService;
-    private static Logger logger;
 
     @BeforeClass
     public static void beforeClass() {
         authService = APIConfigurer.getApiConfigurer().getAuthService();
-        logger = Logger.getLogger(AuthServiceIntegrationTest.class.getName());
     }
 
     @Test
@@ -37,9 +34,9 @@ public class AuthServiceIntegrationTest {
             Call<AuthReturn> loginCall = authService.login(loginRequest);
             Response<AuthReturn> execute = loginCall.execute(); //execute synchronously
             assertEquals(
-                    "testShouldLoginSuccessfully: ", execute.code(), 200
+                    "testShouldLoginSuccessfully: ", 200, execute.code()
             );
-            logger.info("testShouldLoginSuccessfully: PASSED");
+            System.out.println("testShouldLoginSuccessfully: PASSED");
         } catch (Exception ex) {
             fail("testShouldLoginSuccessfully: FAILED");
             ex.printStackTrace();
@@ -56,11 +53,11 @@ public class AuthServiceIntegrationTest {
             Call<AuthReturn> loginCall = authService.login(loginRequest);
             Response<AuthReturn> execute = loginCall.execute(); //execute synchronously
             assertEquals(
-                    "testShouldNotLoginWhenUsernameOrPasswordIsMissing: ", execute.code(), 400
+                    "testShouldNotLoginWhenUsernameIsMissing: ", 400, execute.code()
             );
-            logger.info("testShouldNotLoginWhenUsernameOrPasswordIsMissing: PASSED");
+            System.out.println("testShouldNotLoginWhenUsernameIsMissing: PASSED");
         } catch (Exception ex) {
-            fail("testShouldNotLoginWhenUsernameOrPasswordIsMissing: FAILED");
+            fail("testShouldNotLoginWhenUsernameIsMissing: FAILED");
             ex.printStackTrace();
         }
     }
@@ -75,11 +72,11 @@ public class AuthServiceIntegrationTest {
             Call<AuthReturn> loginCall = authService.login(loginRequest);
             Response<AuthReturn> execute = loginCall.execute(); //execute synchronously
             assertEquals(
-                    "testShouldNotLoginWhenUsernameOrPasswordIsMissing: ", execute.code(), 400
+                    "testShouldNotLoginWhenPasswordIsMissing: ", 400, execute.code()
             );
-            logger.info("testShouldNotLoginWhenUsernameOrPasswordIsMissing: PASSED");
+            System.out.println("testShouldNotLoginWhenPasswordIsMissing: PASSED");
         } catch (Exception ex) {
-            fail("testShouldNotLoginWhenUsernameOrPasswordIsMissing: FAILED");
+            fail("testShouldNotLoginWhenPasswordIsMissing: FAILED");
             ex.printStackTrace();
         }
     }
@@ -94,11 +91,11 @@ public class AuthServiceIntegrationTest {
             Call<AuthReturn> loginCall = authService.login(loginRequest);
             Response<AuthReturn> execute = loginCall.execute(); //execute synchronously
             assertEquals(
-                    "testShouldNotLoginWhenUsernameOrPasswordIsMissing: ", execute.code(), 400
+                    "testShouldNotLoginWhenUsernameExceeds30Characters: ", 400, execute.code()
             );
-            logger.info("testShouldNotLoginWhenUsernameOrPasswordIsMissing: PASSED");
+            System.out.println("testShouldNotLoginWhenUsernameExceeds30Characters: PASSED");
         } catch (Exception ex) {
-            fail("testShouldNotLoginWhenUsernameOrPasswordIsMissing: FAILED");
+            fail("testShouldNotLoginWhenUsernameExceeds30Characters: FAILED");
             ex.printStackTrace();
         }
     }
@@ -113,11 +110,11 @@ public class AuthServiceIntegrationTest {
             Call<AuthReturn> loginCall = authService.login(loginRequest);
             Response<AuthReturn> execute = loginCall.execute(); //execute synchronously
             assertEquals(
-                    "testShouldNotLoginWhenUsernameOrPasswordIsMissing: ", execute.code(), 400
+                    "testShouldNotLoginWhenPasswordExceeds30Characters: ", 400, execute.code()
             );
-            logger.info("testShouldNotLoginWhenUsernameOrPasswordIsMissing: PASSED");
+            System.out.println("testShouldNotLoginWhenPasswordExceeds30Characters: PASSED");
         } catch (Exception ex) {
-            fail("testShouldNotLoginWhenUsernameOrPasswordIsMissing: FAILED");
+            fail("testShouldNotLoginWhenPasswordExceeds30Characters: FAILED");
             ex.printStackTrace();
         }
     }
