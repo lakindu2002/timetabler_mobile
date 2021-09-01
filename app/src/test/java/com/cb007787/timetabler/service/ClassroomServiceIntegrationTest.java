@@ -27,20 +27,6 @@ public class ClassroomServiceIntegrationTest {
         doLoginAsSystemAdmin();
     }
 
-    public static void doLoginAsSystemAdmin() throws Exception {
-        HashMap<String, String> loginRequest = new HashMap<>();
-        loginRequest.put("username", "praveenr");
-        loginRequest.put("password", "123123123");
-
-        Call<AuthReturn> loginCall = authService.login(loginRequest);
-        Response<AuthReturn> execute = loginCall.execute(); //execute synchronously
-        if (execute.code() == 200) {
-            token = execute.headers().get("Authorization");
-        } else {
-            throw new Exception("Login Failed");
-        }
-    }
-
     @Test
     public void testShouldGetAllClassrooms() {
         try {
@@ -80,6 +66,20 @@ public class ClassroomServiceIntegrationTest {
         } catch (Exception ex) {
             fail("testShouldNotGetAllClassroomsWhenLoggedInAsStudent: FAILED");
             ex.printStackTrace();
+        }
+    }
+
+    public static void doLoginAsSystemAdmin() throws Exception {
+        HashMap<String, String> loginRequest = new HashMap<>();
+        loginRequest.put("username", "praveenr");
+        loginRequest.put("password", "123123123");
+
+        Call<AuthReturn> loginCall = authService.login(loginRequest);
+        Response<AuthReturn> execute = loginCall.execute(); //execute synchronously
+        if (execute.code() == 200) {
+            token = execute.headers().get("Authorization");
+        } else {
+            throw new Exception("Login Failed");
         }
     }
 }
