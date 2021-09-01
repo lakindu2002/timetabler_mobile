@@ -36,6 +36,7 @@ public class UserServiceIntegrationTest {
                 fail("testShouldGetAccountInformationSuccessfully: FAILED");
             } else {
                 assertEquals("testShouldGetAccountInformationSuccessfully", USER_NAME, call.body().getUsername());
+                System.out.println("testShouldGetAccountInformationSuccessfully: PASSED");
             }
         } catch (Exception ex) {
             System.out.println("testShouldGetAccountInformationSuccessfully: FAILED");

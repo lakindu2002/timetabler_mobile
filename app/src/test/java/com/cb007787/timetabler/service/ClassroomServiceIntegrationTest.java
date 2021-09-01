@@ -32,6 +32,7 @@ public class ClassroomServiceIntegrationTest {
         try {
             Response<List<Classroom>> call = classroomService.getAllClassrooms(token).execute();
             assertEquals("testShouldGetAllClassrooms", 200, call.code());
+            System.out.println("testShouldGetAllClassrooms: PASSED");
         } catch (Exception ex) {
             fail("testShouldGetAllClassrooms: FAILED");
             ex.printStackTrace();
@@ -44,6 +45,7 @@ public class ClassroomServiceIntegrationTest {
             //403 - forbidden
             Response<List<Classroom>> call = classroomService.getAllClassrooms(null).execute();
             assertEquals("testShouldNotGetAllClassroomsWhenTokenNotPresent", 403, call.code());
+            System.out.println("testShouldNotGetAllClassroomsWhenTokenNotPresent: PASSED");
         } catch (Exception ex) {
             fail("testShouldNotGetAllClassroomsWhenTokenNotPresent: FAILED");
             ex.printStackTrace();
@@ -63,6 +65,7 @@ public class ClassroomServiceIntegrationTest {
 
             Response<List<Classroom>> call = classroomService.getAllClassrooms(token).execute();
             assertEquals("testShouldNotGetAllClassroomsWhenLoggedInAsStudent", 403, call.code());
+            System.out.println("testShouldNotGetAllClassroomsWhenLoggedInAsStudent: PASSED");
         } catch (Exception ex) {
             fail("testShouldNotGetAllClassroomsWhenLoggedInAsStudent: FAILED");
             ex.printStackTrace();
