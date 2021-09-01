@@ -21,9 +21,15 @@ Clone the repo using the `ssh` link or the `https` link. If using `ssh` make sur
 - UI: Google Material UI
 - Networking: Retrofit + Jackson Parser
 - Content Provider - Utilizes A Custom Built Content Provider Communicating With SQLite DB
+- Widget - Has an application widget that is used to provide external communication with the content provider.
 
 ## Endpoint Declaration 
 - Testing: `http://localhost:8080`
+
+## Integration Testing 
+- JUnit Testing has been conducted to test the `Retrofit` API calls from  `Android` to `Backend`
+- To ensure accuracy between real world integration, `posting` is not done for the `production database`
+- To run the tests, ensure that the `backend` project is up and running before running the tests on the `Android` client.
 
 **Please note that this project requires a minimum sdk of Android 8.0 (SDK - 26 or Oreo).**
 
