@@ -201,7 +201,7 @@ public class UserRecycler extends RecyclerView.Adapter<UserRecycler.ViewHolder> 
                 //construct a app chooser that is capable of sending emails.
                 Intent theEmailIntent = new Intent(Intent.ACTION_SEND);
                 theEmailIntent.setType("text/plain");
-                theEmailIntent.putExtra(Intent.EXTRA_EMAIL, theUser.getEmailAddress());
+                theEmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{theUser.getEmailAddress()});
                 theContext.startActivity(Intent.createChooser(theEmailIntent, "Contact User"));
                 return true;
             } else if (item.getItemId() == R.id.view_modules_assigned_lecturer) {
