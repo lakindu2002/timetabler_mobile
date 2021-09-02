@@ -253,6 +253,9 @@ public class UserLoadingFragment extends Fragment {
         }
         if (response.isSuccessful()) {
             loadedUsers = response.body();
+            if (loadedUsers.size() == 0) {
+                constructError("The fetch returned 0 results");
+            }
             adapter.setUserList(loadedUsers); //trigger notify data set changed to update recycler.
         } else {
             try {
