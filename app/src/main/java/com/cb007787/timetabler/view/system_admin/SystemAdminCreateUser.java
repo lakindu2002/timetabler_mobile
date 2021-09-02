@@ -300,6 +300,9 @@ public class SystemAdminCreateUser extends AppCompatActivity {
         } else if (!TextUtils.isDigitsOnly(theNewUser.getContactNumber())) {
             contactNumberLayout.setError("Contact Number Must Be Digits Only");
             isContactNumberValid = false;
+        } else if (theNewUser.getContactNumber().length() < 10) {
+            contactNumberLayout.setError("Contact Number Must Be 10 Digits");
+            isContactNumberValid = false;
         } else {
             contactNumberLayout.setError(null);
         }
