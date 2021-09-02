@@ -68,7 +68,7 @@ public class ModuleRecyclerStudentLecturer extends RecyclerView.Adapter<ModuleRe
             holder.getContactLecturerButton().setOnClickListener(v -> {
                 Intent theEmailIntent = new Intent(Intent.ACTION_SEND); //email intent
                 theEmailIntent.setType("text/plain");
-                theEmailIntent.putExtra(Intent.EXTRA_EMAIL, theModuleAtPosition.getTheLecturer().getEmailAddress());
+                theEmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{theModuleAtPosition.getTheLecturer().getEmailAddress()});
                 theEmailIntent.putExtra(Intent.EXTRA_SUBJECT, "Contacting The Lecturer");
 
                 //create chooser will open the popup required to select the app to launch the email
