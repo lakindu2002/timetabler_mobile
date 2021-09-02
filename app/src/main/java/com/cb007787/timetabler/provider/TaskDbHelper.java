@@ -25,11 +25,11 @@ public class TaskDbHelper extends SQLiteOpenHelper {
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s VARCHAR(255) NOT NULL," +
                     "%s VARCHAR(255) NOT NULL," +
-                    "%s LONG NOT NULL," +
-                    "%s LONG NOT NULL," +
+                    "%s INTEGER NOT NULL," +
+                    "%s INTEGER NOT NULL," +
                     "%s VARCHAR(255) NOT NULL," +
-                    "%s LONG NOT NULL," +
-                    "%s LONG NOT NULL," +
+                    "%s INTEGER NOT NULL," +
+                    "%s INTEGER NOT NULL," +
                     "%s VARCHAR(255) NOT NULL); ", TABLE_NAME, TASK_ID, TASK_NAME, TASK_DESCRIPTION, START_DATE, DUE_DATE, TASK_STATUS, TASK_CREATED_AT, LAST_UPDATED_AT, USERNAME
     );
 
