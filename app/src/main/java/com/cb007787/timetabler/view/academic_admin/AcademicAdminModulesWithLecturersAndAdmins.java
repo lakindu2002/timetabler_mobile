@@ -123,16 +123,18 @@ public class AcademicAdminModulesWithLecturersAndAdmins extends Fragment {
     }
 
     private void constructError(String errorMessage, boolean isInfo) {
-        Snackbar theSnackBar = Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_LONG);
-        if (isInfo) {
-            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
-        } else {
-            theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+        if (requireView() != null) {
+            Snackbar theSnackBar = Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_LONG);
+            if (isInfo) {
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_info, null));
+            } else {
+                theSnackBar.setBackgroundTint(getResources().getColor(R.color.btn_danger, null));
+            }
+            View view = theSnackBar.getView();
+            //retrieve the underling text view on the snack bar and increase the lines on it to display full message
+            TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+            snackBarText.setMaxLines(5);
+            theSnackBar.show();
         }
-        View view = theSnackBar.getView();
-        //retrieve the underling text view on the snack bar and increase the lines on it to display full message
-        TextView snackBarText = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
-        snackBarText.setMaxLines(5);
-        theSnackBar.show();
     }
 }
