@@ -244,8 +244,11 @@ public class SharedUserProfile extends AppCompatActivity {
     private void getLoggedInUserInformation() {
         loadingBar.setVisibility(View.VISIBLE);
 
+        //communicate with the back-end api to update get the user information of the logged in user.
         Call<User> userInformation = theUserService.getUserInformation(jwtToken, loggedInUser.getUsername());
         userInformation.enqueue(new Callback<User>() {
+            //when enqueue is called, the method will be executed on a secondary thread to avoid UI blocking till operation completed
+            //when opearation is completed, a callback will be triggered to handle the errors/success and update UI on primary thread.
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 //the response given by rest api
@@ -381,6 +384,9 @@ public class SharedUserProfile extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        //navigate the user back to the home page based on the logged in user's role
+        //this helps in creating re-usable components.
+
         //event raised when the user clicks back using phone back button
         Intent homeIntent = null;
         switch (loggedInUser.getRole().toLowerCase().trim()) {
