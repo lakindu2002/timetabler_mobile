@@ -1,11 +1,18 @@
-# EEA Mobile Application for TimeTabler - CB007787
+# EEA Mobile Application for TimeTabler - CB007787 (by Lakindu Hewawasam)
 This repository maintains the code base for the `Android` application for the TimeTabler Web Application. 
 
-It aims to provide a mobile application that integrates with the existing Spring Boot application for EEA Web Application: [Access Web Application Repo Here](https://github.com/lakindu2002/EEA_CB007787)
+It aims to provide a mobile application that integrates with the existing Spring Boot application for EEA Web Application
+
+[Access Web Application Repo Here](https://github.com/lakindu2002/EEA_CB007787)
+[Access Mobile Application Repo Here](https://github.com/lakindu2002/EEA_CB007787_Mobile)
+
 
 ## Development Process 
-
-JWT has been used for the authentication between mobile application and server.
+- JWT has been used for the authentication between mobile application and server.
+- Content providers have been used along with an SQLite Database to create `Task Management` sub system for the students 
+- Material UI was used to style UI components 
+- Retrofit with Async operations were used to fetch and post data from and to the API
+- Application widgets were used to expose the tasks and it communicates with SQLite Database via Content Provider to retrieve data.
 
 ## Repo Access 
 
@@ -16,8 +23,9 @@ Clone the repo using the `ssh` link or the `https` link. If using `ssh` make sur
 - Open the project in `Android Studio`
 - Sync the gradle project
 - Run on an emulator.
+- Make sure the web application is up and running with a working database to ensure connectivity
 
-## Dependencies Used
+## Special Components Used
 - UI: Google Material UI
 - Networking: Retrofit + Jackson Parser
 - Content Provider - Utilizes A Custom Built Content Provider Communicating With SQLite DB
