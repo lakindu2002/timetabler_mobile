@@ -3,8 +3,8 @@ This repository maintains the code base for the `Android` application for the Ti
 
 It aims to provide a mobile application that integrates with the existing Spring Boot application for EEA Web Application
 
-[Access Web Application Repo Here](https://github.com/lakindu2002/EEA_CB007787)
-[Access Mobile Application Repo Here](https://github.com/lakindu2002/EEA_CB007787_Mobile)
+1. [Access Web Application Repo Here](https://github.com/lakindu2002/EEA_CB007787)
+2. [Access Mobile Application Repo Here](https://github.com/lakindu2002/EEA_CB007787_Mobile)
 
 
 ## Development Process 
