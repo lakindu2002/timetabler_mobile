@@ -74,7 +74,7 @@ public class TaskContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    //projection - rows, selection - where clause, sort order - ASC or DESC
+    //projection - columns to get from query, selection - where clause, sort order - ASC or DESC
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         //match is tested against the "code" added in static block for each uri.
         switch (uriMatcher.match(uri)) {

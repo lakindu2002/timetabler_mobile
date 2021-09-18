@@ -104,9 +104,9 @@
                         android:id="@+id/classroom_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:textColor="@color/black"
                         android:focusableInTouchMode="true"
-                        android:inputType="none">
+                        android:inputType="none"
+                        android:textColor="@color/black">
 
                     </AutoCompleteTextView>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -306,7 +306,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/batch_list_label"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                 </LinearLayout>
 
