@@ -1,4 +1,4 @@
-# EEA Mobile Application for TimeTabler - CB007787 (by Lakindu Hewawasam)
+# EEA Mobile Application for TimeTabler - by Lakindu Hewawasam
 This repository maintains the code base for the `Android` application for the TimeTabler Web Application. 
 
 It aims to provide a mobile application that integrates with the existing Spring Boot application for EEA Web Application
